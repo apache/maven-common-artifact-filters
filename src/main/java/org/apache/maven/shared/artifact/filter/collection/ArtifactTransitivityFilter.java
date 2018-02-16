@@ -118,15 +118,15 @@ public class ArtifactTransitivityFilter
             {
                 try
                 {
-                    @SuppressWarnings( "unchecked" ) List<org.sonatype.aether.graph.Dependency> dependencies =
-                        (List<org.sonatype.aether.graph.Dependency>) Invoker.invoke( resolutionResult,
+                    @SuppressWarnings( "unchecked" ) List<org.eclipse.aether.graph.Dependency> dependencies =
+                        (List<org.eclipse.aether.graph.Dependency>) Invoker.invoke( resolutionResult,
                                                                                      "getDependencies" );
 
-                    for ( org.sonatype.aether.graph.Dependency dependency : dependencies )
+                    for ( org.eclipse.aether.graph.Dependency dependency : dependencies )
                     {
                         Artifact mavenArtifact = 
                                         (Artifact) Invoker.invoke( RepositoryUtils.class, "toArtifact",
-                                                                    org.sonatype.aether.artifact.Artifact.class,
+                                                                    org.eclipse.aether.artifact.Artifact.class,
                                                                     dependency.getArtifact() );
 
                         transitiveArtifacts.add( mavenArtifact.getDependencyConflictId() );

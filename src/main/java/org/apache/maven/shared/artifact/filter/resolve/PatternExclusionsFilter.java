@@ -40,9 +40,9 @@ import java.util.Collections;
  * @author Robert Scholte
  * @since 3.0
  * 
- * @see org.sonatype.aether.util.filter.PatternExclusionsDependencyFilter
  * @see org.eclipse.aether.util.filter.PatternExclusionsDependencyFilter
- * @see org.sonatype.aether.version.VersionScheme
+ * @see org.eclipse.aether.util.filter.PatternExclusionsDependencyFilter
+ * @see org.eclipse.aether.version.VersionScheme
  * @see org.eclipse.aether.version.VersionScheme
  */
 public class PatternExclusionsFilter implements TransformableFilter

@@ -34,14 +34,14 @@ import org.apache.maven.shared.artifact.filter.resolve.PatternExclusionsFilter;
 import org.apache.maven.shared.artifact.filter.resolve.PatternInclusionsFilter;
 import org.apache.maven.shared.artifact.filter.resolve.ScopeFilter;
 import org.apache.maven.shared.artifact.filter.resolve.TransformableFilter;
-import org.sonatype.aether.graph.DependencyFilter;
-import org.sonatype.aether.graph.DependencyNode;
-import org.sonatype.aether.util.filter.AndDependencyFilter;
-import org.sonatype.aether.util.filter.ExclusionsDependencyFilter;
-import org.sonatype.aether.util.filter.OrDependencyFilter;
-import org.sonatype.aether.util.filter.PatternExclusionsDependencyFilter;
-import org.sonatype.aether.util.filter.PatternInclusionsDependencyFilter;
-import org.sonatype.aether.util.filter.ScopeDependencyFilter;
+import org.eclipse.aether.graph.DependencyFilter;
+import org.eclipse.aether.graph.DependencyNode;
+import org.eclipse.aether.util.filter.AndDependencyFilter;
+import org.eclipse.aether.util.filter.ExclusionsDependencyFilter;
+import org.eclipse.aether.util.filter.OrDependencyFilter;
+import org.eclipse.aether.util.filter.PatternExclusionsDependencyFilter;
+import org.eclipse.aether.util.filter.PatternInclusionsDependencyFilter;
+import org.eclipse.aether.util.filter.ScopeDependencyFilter;
 
 /**
  * FilterTransformer implementation for Sonatypes Aether

@@ -23,10 +23,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.maven.shared.artifact.filter.resolve.Node;
-import org.sonatype.aether.graph.Dependency;
-import org.sonatype.aether.graph.DependencyNode;
-import org.sonatype.aether.graph.Exclusion;
-import org.sonatype.aether.util.artifact.ArtifactProperties;
+import org.eclipse.aether.artifact.ArtifactProperties;
+import org.eclipse.aether.graph.Dependency;
+import org.eclipse.aether.graph.DependencyNode;
+import org.eclipse.aether.graph.Exclusion;
 
 /**
  * Adapter of a Sonatype Aether DependencyNode for common Node

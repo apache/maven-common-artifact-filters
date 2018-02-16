@@ -26,12 +26,12 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.apache.maven.shared.artifact.filter.resolve.Node;
+import org.eclipse.aether.artifact.DefaultArtifact;
+import org.eclipse.aether.graph.DefaultDependencyNode;
 import org.junit.Test;
-import org.sonatype.aether.graph.Dependency;
-import org.sonatype.aether.graph.DependencyNode;
-import org.sonatype.aether.graph.Exclusion;
-import org.sonatype.aether.util.artifact.DefaultArtifact;
-import org.sonatype.aether.util.graph.DefaultDependencyNode;
+import org.eclipse.aether.graph.Dependency;
+import org.eclipse.aether.graph.DependencyNode;
+import org.eclipse.aether.graph.Exclusion;
 
 public class SonatypeAetherNodeTest
 {

@@ -28,7 +28,7 @@ import java.util.Collections;
  * @author Robert Scholte
  * @since 3.0
  * 
- * @see org.sonatype.aether.util.filter.AndDependencyFilter
+ * @see org.eclipse.aether.util.filter.AndDependencyFilter
  * @see org.eclipse.aether.util.filter.AndDependencyFilter
  */
 public class AndFilter
