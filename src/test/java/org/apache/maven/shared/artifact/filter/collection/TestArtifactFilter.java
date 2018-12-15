@@ -29,8 +29,7 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.testing.ArtifactStubFactory;
 
 /**
- * @author clove TestCases for ArtifactFilter
- * @see org.apache.maven.plugin.dependency.testUtils.AbstractArtifactFeatureFilterTestCase
+ * TestCases for ArtifactFilter
  */
 public class TestArtifactFilter
     extends AbstractArtifactFeatureFilterTestCase

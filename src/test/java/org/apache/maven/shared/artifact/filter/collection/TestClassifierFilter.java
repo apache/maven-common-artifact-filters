@@ -29,8 +29,7 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.testing.ArtifactStubFactory;
 
 /**
- * @author <a href="mailto:brianf@apache.org">Brian Fox</a> Test case for ClassifierFilter
- * @see org.apache.maven.plugin.dependency.testUtils.AbstractArtifactFeatureFilterTestCase
+ * Test case for ClassifierFilter
  */
 public class TestClassifierFilter
     extends AbstractArtifactFeatureFilterTestCase

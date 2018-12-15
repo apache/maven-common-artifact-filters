@@ -28,7 +28,7 @@ package org.apache.maven.shared.artifact.filter.resolve;
 public interface Node
 {
     /**
-     * @return {@link Dependency}
+     * @return {@link org.apache.maven.model.Dependency}
      */
     org.apache.maven.model.Dependency getDependency();
 

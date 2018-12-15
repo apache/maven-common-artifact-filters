@@ -30,8 +30,7 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.testing.ArtifactStubFactory;
 
 /**
- * @author clove TestCases for GroupIdFilter
- * @see org.apache.maven.plugin.dependency.testUtils.AbstractArtifactFeatureFilterTestCase
+ * TestCases for GroupIdFilter
  */
 public class TestGroupIdFilter
     extends AbstractArtifactFeatureFilterTestCase

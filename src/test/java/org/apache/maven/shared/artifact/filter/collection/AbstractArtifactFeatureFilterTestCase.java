@@ -35,11 +35,6 @@ import junit.framework.TestCase;
 
 /**
  * Abstract test case for subclasses of AbstractArtifactFeatureFilter
- * 
- * @author clove
- * @see junit.framework.TestCase
- * @see org.apache.maven.plugin.dependency.utils.filters.AbstractArtifactFeatureFilter
- * @since 2.0
  */
 public abstract class AbstractArtifactFeatureFilterTestCase
     extends TestCase
