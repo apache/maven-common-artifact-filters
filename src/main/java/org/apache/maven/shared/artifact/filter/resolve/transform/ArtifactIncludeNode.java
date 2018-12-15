@@ -32,7 +32,7 @@ class ArtifactIncludeNode implements Node
 {
     private final Artifact artifact;
     
-    public ArtifactIncludeNode( Artifact artifact )
+    ArtifactIncludeNode( Artifact artifact )
     {
         this.artifact = artifact;
     }
