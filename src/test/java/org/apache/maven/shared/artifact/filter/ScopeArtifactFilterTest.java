@@ -19,21 +19,21 @@ package org.apache.maven.shared.artifact.filter;
  * under the License.
  */
 
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
-import junit.framework.TestCase;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.plugin.testing.ArtifactStubFactory;
+import org.junit.Test;
 
 public class ScopeArtifactFilterTest
-    extends TestCase
 {
     
+    @Test
     public void testExcludedArtifactWithRangeShouldNotCauseNPE()
         throws Exception
     {
@@ -46,6 +46,7 @@ public class ScopeArtifactFilterTest
         assertFalse( filter.include( excluded ) );
     }
 
+    @Test
     public void testNullScopeDisabled()
     {
         ScopeArtifactFilter filter = new ScopeArtifactFilter();
@@ -54,6 +55,7 @@ public class ScopeArtifactFilterTest
         verifyExcluded( filter, null );
     }
 
+    @Test
     public void testFineGrained_IncludeOnlyScopesThatWereEnabled_TestScope()
     {
         ScopeArtifactFilter filter = new ScopeArtifactFilter();
@@ -67,6 +69,7 @@ public class ScopeArtifactFilterTest
         verifyIncluded( filter, null );
     }
 
+    @Test
     public void testFineGrained_IncludeOnlyScopesThatWereEnabled_CompileScope()
     {
         ScopeArtifactFilter filter = new ScopeArtifactFilter();
@@ -80,6 +83,7 @@ public class ScopeArtifactFilterTest
         verifyIncluded( filter, null );
     }
 
+    @Test
     public void testFineGrained_IncludeOnlyScopesThatWereEnabled_RuntimeScope()
     {
         ScopeArtifactFilter filter = new ScopeArtifactFilter();
@@ -93,6 +97,7 @@ public class ScopeArtifactFilterTest
         verifyIncluded( filter, null );
     }
 
+    @Test
     public void testFineGrained_IncludeOnlyScopesThatWereEnabled_ProvidedScope()
     {
         ScopeArtifactFilter filter = new ScopeArtifactFilter();
@@ -106,6 +111,7 @@ public class ScopeArtifactFilterTest
         verifyIncluded( filter, null );
     }
 
+    @Test
     public void testFineGrained_IncludeOnlyScopesThatWereEnabled_SystemScope()
     {
         ScopeArtifactFilter filter = new ScopeArtifactFilter();
@@ -119,6 +125,7 @@ public class ScopeArtifactFilterTest
         verifyIncluded( filter, null );
     }
 
+    @Test
     public void testFineGrained_IncludeOnlyScopesThatWereEnabled_ProvidedAndRuntimeScopes()
     {
         ScopeArtifactFilter filter = new ScopeArtifactFilter();
@@ -133,6 +140,7 @@ public class ScopeArtifactFilterTest
         verifyIncluded( filter, null );
     }
 
+    @Test
     public void testFineGrained_IncludeOnlyScopesThatWereEnabled_SystemAndRuntimeScopes()
     {
         ScopeArtifactFilter filter = new ScopeArtifactFilter();
@@ -147,6 +155,7 @@ public class ScopeArtifactFilterTest
         verifyIncluded( filter, null );
     }
 
+    @Test
     public void testFineGrainedWithImplications_CompileScopeShouldIncludeOnlyArtifactsWithNullSystemProvidedOrCompileScopes()
     {
         ScopeArtifactFilter filter = new ScopeArtifactFilter();
@@ -161,6 +170,7 @@ public class ScopeArtifactFilterTest
         verifyExcluded( filter, Artifact.SCOPE_TEST );
     }
 
+    @Test
     public void testFineGrainedWithImplications_RuntimeScopeShouldIncludeOnlyArtifactsWithNullRuntimeOrCompileScopes()
     {
         ScopeArtifactFilter filter = new ScopeArtifactFilter();
@@ -175,6 +185,7 @@ public class ScopeArtifactFilterTest
         verifyExcluded( filter, Artifact.SCOPE_TEST );
     }
 
+    @Test
     public void testFineGrainedWithImplications_TestScopeShouldIncludeAllScopes()
     {
         ScopeArtifactFilter filter = new ScopeArtifactFilter();
@@ -189,6 +200,7 @@ public class ScopeArtifactFilterTest
         verifyIncluded( filter, Artifact.SCOPE_TEST );
     }
     
+    @Test
     public void testScopesShouldIncludeArtifactWithSameScope()
     {
         verifyIncluded( Artifact.SCOPE_COMPILE, Artifact.SCOPE_COMPILE );
@@ -199,6 +211,7 @@ public class ScopeArtifactFilterTest
         verifyIncluded( (String) null, null );
     }
 
+    @Test
     public void testCompileScopeShouldIncludeOnlyArtifactsWithNullSystemProvidedOrCompileScopes()
     {
         String scope = Artifact.SCOPE_COMPILE;
@@ -212,6 +225,7 @@ public class ScopeArtifactFilterTest
         verifyExcluded( scope, Artifact.SCOPE_TEST );
     }
 
+    @Test
     public void testRuntimeScopeShouldIncludeOnlyArtifactsWithNullRuntimeOrCompileScopes()
     {
         String scope = Artifact.SCOPE_RUNTIME;
@@ -225,6 +239,7 @@ public class ScopeArtifactFilterTest
         verifyExcluded( scope, Artifact.SCOPE_TEST );
     }
 
+    @Test
     public void testTestScopeShouldIncludeAllScopes()
     {
         String scope = Artifact.SCOPE_TEST;
@@ -238,6 +253,7 @@ public class ScopeArtifactFilterTest
         verifyIncluded( scope, Artifact.SCOPE_TEST );
     }
 
+    @Test
     public void testProvidedScopeShouldIncludeOnlyArtifactsWithNullOrProvidedScopes()
     {
         String scope = Artifact.SCOPE_PROVIDED;
@@ -252,6 +268,7 @@ public class ScopeArtifactFilterTest
         verifyExcluded( scope, Artifact.SCOPE_TEST );
     }
 
+    @Test
     public void testSystemScopeShouldIncludeOnlyArtifactsWithNullOrSystemScopes()
     {
         String scope = Artifact.SCOPE_SYSTEM;
@@ -270,59 +287,42 @@ public class ScopeArtifactFilterTest
     {
         Artifact artifact = createMockArtifact( artifactScope );
 
-        replay( artifact );
-
         ArtifactFilter filter = new ScopeArtifactFilter( filterScope );
 
         assertTrue( "Artifact scope: " + artifactScope + " NOT included using filter scope: " + filterScope, filter
             .include( artifact ) );
-
-        verify( artifact );
     }
 
     private void verifyExcluded( String filterScope, String artifactScope )
     {
         Artifact artifact = createMockArtifact( artifactScope );
         
-        replay( artifact );
-
         ArtifactFilter filter = new ScopeArtifactFilter( filterScope );
 
         assertFalse( "Artifact scope: " + artifactScope + " NOT excluded using filter scope: " + filterScope, filter
             .include( artifact ) );
-
-        verify( artifact );
     }
 
     private void verifyIncluded( ScopeArtifactFilter filter, String artifactScope )
     {
         Artifact artifact = createMockArtifact( artifactScope );
-                
-        replay( artifact );
 
         assertTrue( "Artifact scope: " + artifactScope + " SHOULD BE included", filter.include( artifact ) );
-
-        verify( artifact );
     }
 
     private void verifyExcluded( ScopeArtifactFilter filter, String artifactScope )
     {
         Artifact artifact = createMockArtifact( artifactScope );
-                
-        replay( artifact );
 
         assertFalse( "Artifact scope: " + artifactScope + " SHOULD BE excluded", filter.include( artifact ) );
-
-        verify( artifact );
     }
 
     private Artifact createMockArtifact( String scope )
     {
-        Artifact artifact = createMock( Artifact.class );
+        Artifact artifact = mock( Artifact.class );
 
-        expect( artifact.getScope() ).andReturn( scope ).anyTimes();
-        expect( artifact.getId() ).andReturn( "group:artifact:type:version" ).anyTimes();
-        expect( artifact.getVersionRange() ).andReturn( null ).anyTimes();
+        when( artifact.getScope() ).thenReturn( scope );
+        when( artifact.getId() ).thenReturn( "group:artifact:type:version" );
 
         return artifact;
     }

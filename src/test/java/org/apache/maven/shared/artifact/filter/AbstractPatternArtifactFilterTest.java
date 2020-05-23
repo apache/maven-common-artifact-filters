@@ -19,20 +19,21 @@ package org.apache.maven.shared.artifact.filter;
  * under the License.
  */
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
-
-import static org.easymock.EasyMock.*;
+import org.junit.Test;
 
 public abstract class AbstractPatternArtifactFilterTest
-    extends TestCase
 {
 
     protected abstract ArtifactFilter createFilter( List<String> patterns );
@@ -41,6 +42,7 @@ public abstract class AbstractPatternArtifactFilterTest
 
     protected abstract boolean isInclusionExpected();
 
+    @Test
     public void testShouldTriggerBothPatternsWithWildcards()
     {
         final String groupId1 = "group";
@@ -49,10 +51,17 @@ public abstract class AbstractPatternArtifactFilterTest
         final String groupId2 = "group2";
         final String artifactId2 = "artifact2";
 
-        final ArtifactMockAndControl mac1 = new ArtifactMockAndControl( groupId1, artifactId1 );
-        final ArtifactMockAndControl mac2 = new ArtifactMockAndControl( groupId2, artifactId2 );
-
-        replay( mac1.getMock(), mac2.getMock() );
+        Artifact artifact1 = mock( Artifact.class );
+        when( artifact1.getDependencyConflictId() ).thenReturn( groupId1 + ":" + artifactId1 + ":jar" );
+        when( artifact1.getGroupId() ).thenReturn( groupId1 );
+        when( artifact1.getArtifactId() ).thenReturn( artifactId1 );
+        when( artifact1.getId() ).thenReturn( groupId1 + ":" + artifactId1 + ":jar:version" );
+        
+        Artifact artifact2 = mock( Artifact.class );
+        when( artifact2.getDependencyConflictId() ).thenReturn( groupId2 + ":" + artifactId2 + ":jar" );
+        when( artifact2.getGroupId() ).thenReturn( groupId2 );
+        when( artifact2.getArtifactId() ).thenReturn( artifactId2 );
+        when( artifact2.getId() ).thenReturn( groupId2 + ":" + artifactId2 + ":jar:version" );
 
         final List<String> patterns = new ArrayList<String>();
         patterns.add( groupId1 + ":" + artifactId1 + ":*" );
@@ -62,18 +71,17 @@ public abstract class AbstractPatternArtifactFilterTest
 
         if ( !isInclusionExpected() )
         {
-            assertFalse( filter.include( mac1.artifact ) );
-            assertFalse( filter.include( mac2.artifact ) );
+            assertFalse( filter.include( artifact1 ) );
+            assertFalse( filter.include( artifact2 ) );
         }
         else
         {
-            assertTrue( filter.include( mac1.artifact ) );
-            assertTrue( filter.include( mac2.artifact ) );
+            assertTrue( filter.include( artifact1 ) );
+            assertTrue( filter.include( artifact2 ) );
         }
-
-        verify( mac1.getMock(), mac2.getMock() );
     }
 
+    @Test
     public void testShouldTriggerBothPatternsWithNonColonWildcards()
     {
         final String groupId1 = "group";
@@ -82,10 +90,17 @@ public abstract class AbstractPatternArtifactFilterTest
         final String groupId2 = "group2";
         final String artifactId2 = "artifact2";
 
-        final ArtifactMockAndControl mac1 = new ArtifactMockAndControl( groupId1, artifactId1 );
-        final ArtifactMockAndControl mac2 = new ArtifactMockAndControl( groupId2, artifactId2 );
+        Artifact artifact1 = mock( Artifact.class );
+        when( artifact1.getDependencyConflictId() ).thenReturn( groupId1 + ":" + artifactId1 + ":jar" );
+        when( artifact1.getGroupId() ).thenReturn( groupId1 );
+        when( artifact1.getArtifactId() ).thenReturn( artifactId1 );
+        when( artifact1.getId() ).thenReturn( groupId1 + ":" + artifactId1 + ":jar:version" );
 
-        replay( mac1.getMock(), mac2.getMock() );
+        Artifact artifact2 = mock( Artifact.class );
+        when( artifact2.getDependencyConflictId() ).thenReturn( groupId2 + ":" + artifactId2 + ":jar" );
+        when( artifact2.getGroupId() ).thenReturn( groupId2 );
+        when( artifact2.getArtifactId() ).thenReturn( artifactId2 );
+        when( artifact2.getId() ).thenReturn( groupId2 + ":" + artifactId2 + ":jar:version" );
 
         final List<String> patterns = new ArrayList<String>();
         patterns.add( groupId1 + "*" );
@@ -95,74 +110,77 @@ public abstract class AbstractPatternArtifactFilterTest
 
         if ( !isInclusionExpected() )
         {
-            assertFalse( filter.include( mac1.artifact ) );
-            assertFalse( filter.include( mac2.artifact ) );
+            assertFalse( filter.include( artifact1 ) );
+            assertFalse( filter.include( artifact2 ) );
         }
         else
         {
-            assertTrue( filter.include( mac1.artifact ) );
-            assertTrue( filter.include( mac2.artifact ) );
+            assertTrue( filter.include( artifact1 ) );
+            assertTrue( filter.include( artifact2 ) );
         }
-
-        verify( mac1.getMock(), mac2.getMock() );
     }
 
+    @Test
     public void testShouldIncludeDirectlyMatchedArtifactByGroupIdArtifactId()
     {
         final String groupId = "group";
         final String artifactId = "artifact";
 
-        final ArtifactMockAndControl mac = new ArtifactMockAndControl( groupId, artifactId );
-
-        replay( mac.getMock() );
+        Artifact artifact = mock( Artifact.class );
+        when( artifact.getDependencyConflictId() ).thenReturn( groupId + ":" + artifactId + ":jar" );
+        when( artifact.getGroupId() ).thenReturn( groupId );
+        when( artifact.getArtifactId() ).thenReturn( artifactId );
+        when( artifact.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
 
         final ArtifactFilter filter = createFilter( Collections.singletonList( groupId + ":" + artifactId ) );
 
         if ( !isInclusionExpected() )
         {
-            assertFalse( filter.include( mac.artifact ) );
+            assertFalse( filter.include( artifact ) );
         }
         else
         {
-            assertTrue( filter.include( mac.artifact ) );
+            assertTrue( filter.include( artifact ) );
         }
-
-        verify( mac.getMock() );
     }
 
+    @Test
     public void testShouldIncludeDirectlyMatchedArtifactByDependencyConflictId()
     {
         final String groupId = "group";
         final String artifactId = "artifact";
 
-        final ArtifactMockAndControl mac = new ArtifactMockAndControl( groupId, artifactId );
-
-        replay( mac.getMock() );
+        Artifact artifact = mock( Artifact.class );
+        when( artifact.getDependencyConflictId() ).thenReturn( groupId + ":" + artifactId + ":jar" );
+        when( artifact.getGroupId() ).thenReturn( groupId );
+        when( artifact.getArtifactId() ).thenReturn( artifactId );
+        when( artifact.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
 
         final ArtifactFilter filter = createFilter( Collections.singletonList( groupId + ":" + artifactId + ":jar" ) );
 
         if ( !isInclusionExpected() )
         {
-            assertFalse( filter.include( mac.artifact ) );
+            assertFalse( filter.include( artifact ) );
         }
         else
         {
-            assertTrue( filter.include( mac.artifact ) );
+            assertTrue( filter.include( artifact ) );
         }
-
-        verify( mac.getMock() );
     }
 
+    @Test
     public void testShouldNotIncludeWhenGroupIdDiffers()
     {
         final String groupId = "group";
         final String artifactId = "artifact";
 
-        final ArtifactMockAndControl mac = new ArtifactMockAndControl( groupId, artifactId );
+        Artifact artifact = mock( Artifact.class );
+        when( artifact.getDependencyConflictId() ).thenReturn( groupId + ":" + artifactId + ":jar" );
+        when( artifact.getGroupId() ).thenReturn( groupId );
+        when( artifact.getArtifactId() ).thenReturn( artifactId );
+        when( artifact.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
 
-        replay( mac.getMock() );
         final List<String> patterns = new ArrayList<String>();
-
         patterns.add( "otherGroup:" + artifactId + ":jar" );
         patterns.add( "otherGroup:" + artifactId );
 
@@ -170,27 +188,27 @@ public abstract class AbstractPatternArtifactFilterTest
 
         if ( !isInclusionExpected() )
         {
-            assertTrue( filter.include( mac.artifact ) );
+            assertTrue( filter.include( artifact ) );
         }
         else
         {
-            assertFalse( filter.include( mac.artifact ) );
+            assertFalse( filter.include( artifact ) );
         }
-
-        verify( mac.getMock() );
     }
 
+    @Test
     public void testShouldNotIncludeWhenArtifactIdDiffers()
     {
         final String groupId = "group";
         final String artifactId = "artifact";
 
-        final ArtifactMockAndControl mac = new ArtifactMockAndControl( groupId, artifactId );
-
-        replay( mac.getMock() );
+        Artifact artifact = mock( Artifact.class );
+        when( artifact.getDependencyConflictId() ).thenReturn( groupId + ":" + artifactId + ":jar" );
+        when( artifact.getGroupId() ).thenReturn( groupId );
+        when( artifact.getArtifactId() ).thenReturn( artifactId );
+        when( artifact.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
 
         final List<String> patterns = new ArrayList<String>();
-
         patterns.add( groupId + "otherArtifact:jar" );
         patterns.add( groupId + "otherArtifact" );
 
@@ -198,27 +216,27 @@ public abstract class AbstractPatternArtifactFilterTest
 
         if ( !isInclusionExpected() )
         {
-            assertTrue( filter.include( mac.artifact ) );
+            assertTrue( filter.include( artifact ) );
         }
         else
         {
-            assertFalse( filter.include( mac.artifact ) );
+            assertFalse( filter.include( artifact ) );
         }
-
-        verify( mac.getMock() );
     }
 
+    @Test
     public void testShouldNotIncludeWhenBothIdElementsDiffer()
     {
         final String groupId = "group";
         final String artifactId = "artifact";
 
-        final ArtifactMockAndControl mac = new ArtifactMockAndControl( groupId, artifactId );
-
-        replay( mac.getMock() );
+        Artifact artifact = mock( Artifact.class );
+        when( artifact.getDependencyConflictId() ).thenReturn( groupId + ":" + artifactId + ":jar" );
+        when( artifact.getGroupId() ).thenReturn( groupId );
+        when( artifact.getArtifactId() ).thenReturn( artifactId );
+        when( artifact.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
 
         final List<String> patterns = new ArrayList<String>();
-
         patterns.add( "otherGroup:otherArtifact:jar" );
         patterns.add( "otherGroup:otherArtifact" );
 
@@ -226,16 +244,15 @@ public abstract class AbstractPatternArtifactFilterTest
 
         if ( !isInclusionExpected() )
         {
-            assertTrue( filter.include( mac.artifact ) );
+            assertTrue( filter.include( artifact ) );
         }
         else
         {
-            assertFalse( filter.include( mac.artifact ) );
+            assertFalse( filter.include( artifact ) );
         }
-
-        verify( mac.getMock() );
     }
 
+    @Test
     public void testShouldIncludeWhenPatternMatchesDependencyTrailAndTransitivityIsEnabled()
     {
         final String groupId = "group";
@@ -247,24 +264,26 @@ public abstract class AbstractPatternArtifactFilterTest
         final List<String> depTrail = Arrays.asList( new String[] { rootDepTrailItem, depTrailItem + ":jar:1.0" } );
         final List<String> patterns = Collections.singletonList( depTrailItem );
 
-        final ArtifactMockAndControl mac = new ArtifactMockAndControl( groupId, artifactId, depTrail );
-
-        replay( mac.getMock() );
+        Artifact artifact = mock( Artifact.class );
+        when( artifact.getDependencyConflictId() ).thenReturn( groupId + ":" + artifactId + ":jar" );
+        when( artifact.getGroupId() ).thenReturn( groupId );
+        when( artifact.getArtifactId() ).thenReturn( artifactId );
+        when( artifact.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
+        when( artifact.getDependencyTrail() ).thenReturn( depTrail );
 
         final ArtifactFilter filter = createFilter( patterns, true );
 
         if ( !isInclusionExpected() )
         {
-            assertFalse( filter.include( mac.artifact ) );
+            assertFalse( filter.include( artifact ) );
         }
         else
         {
-            assertTrue( filter.include( mac.artifact ) );
+            assertTrue( filter.include( artifact ) );
         }
-
-        verify( mac.getMock() );
     }
 
+    @Test
     public void testIncludeWhenPatternMatchesDepTrailWithTransitivityUsingNonColonWildcard()
     {
         final String groupId = "group";
@@ -276,159 +295,164 @@ public abstract class AbstractPatternArtifactFilterTest
         final List<String> depTrail = Arrays.asList( new String[] { rootDepTrailItem, depTrailItem + ":jar:1.0" } );
         final List<String> patterns = Collections.singletonList( "otherGroup*" );
 
-        final ArtifactMockAndControl mac = new ArtifactMockAndControl( groupId, artifactId, depTrail );
-
-        replay( mac.getMock() );
+        Artifact artifact = mock( Artifact.class );
+        when( artifact.getDependencyConflictId() ).thenReturn( groupId + ":" + artifactId + ":jar" );
+        when( artifact.getGroupId() ).thenReturn( groupId );
+        when( artifact.getArtifactId() ).thenReturn( artifactId );
+        when( artifact.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
+        when( artifact.getDependencyTrail() ).thenReturn( depTrail );
 
         final ArtifactFilter filter = createFilter( patterns, true );
 
         if ( !isInclusionExpected() )
         {
-            assertFalse( filter.include( mac.artifact ) );
+            assertFalse( filter.include( artifact ) );
         }
         else
         {
-            assertTrue( filter.include( mac.artifact ) );
+            assertTrue( filter.include( artifact ) );
         }
-
-        verify( mac.getMock() );
     }
 
+    @Test
     public void testShouldNotIncludeWhenNegativeMatch()
     {
         final String groupId = "group";
         final String artifactId = "artifact";
 
-        final ArtifactMockAndControl mac = new ArtifactMockAndControl( groupId, artifactId );
-
-        replay( mac.getMock() );
+        Artifact artifact = mock( Artifact.class );
+        when( artifact.getDependencyConflictId() ).thenReturn( groupId + ":" + artifactId + ":jar" );
+        when( artifact.getGroupId() ).thenReturn( groupId );
+        when( artifact.getArtifactId() ).thenReturn( artifactId );
+        when( artifact.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
 
         final List<String> patterns = new ArrayList<String>();
-
         patterns.add( "!group:artifact:jar" );
 
         final ArtifactFilter filter = createFilter( patterns );
 
         if ( !isInclusionExpected() )
         {
-            assertTrue( filter.include( mac.artifact ) );
+            assertTrue( filter.include( artifact ) );
         }
         else
         {
-            assertFalse( filter.include( mac.artifact ) );
+            assertFalse( filter.include( artifact ) );
         }
-
-        verify( mac.getMock() );
     }
 
+    @Test
     public void testShouldIncludeWhenWildcardMatchesInsideSequence()
     {
         final String groupId = "group";
         final String artifactId = "artifact";
 
-        final ArtifactMockAndControl mac = new ArtifactMockAndControl( groupId, artifactId );
-
-        replay( mac.getMock() );
+        Artifact artifact = mock( Artifact.class );
+        when( artifact.getDependencyConflictId() ).thenReturn( groupId + ":" + artifactId + ":jar" );
+        when( artifact.getGroupId() ).thenReturn( groupId );
+        when( artifact.getArtifactId() ).thenReturn( artifactId );
+        when( artifact.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
 
         final List<String> patterns = new ArrayList<String>();
-
         patterns.add( "group:*:jar" );
 
         final ArtifactFilter filter = createFilter( patterns );
 
         if ( !isInclusionExpected() )
         {
-            assertFalse( filter.include( mac.artifact ) );
+            assertFalse( filter.include( artifact ) );
         }
         else
         {
-            assertTrue( filter.include( mac.artifact ) );
+            assertTrue( filter.include( artifact ) );
         }
-
-        verify( mac.getMock() );
     }
 
+    @Test
     public void testShouldIncludeWhenWildcardMatchesOutsideSequence()
     {
         final String groupId = "group";
         final String artifactId = "artifact";
 
-        final ArtifactMockAndControl mac = new ArtifactMockAndControl( groupId, artifactId );
+        Artifact artifact = mock( Artifact.class );
 
-        replay( mac.getMock() );
+        when( artifact.getDependencyConflictId() ).thenReturn( groupId + ":" + artifactId + ":jar" );
+        when( artifact.getGroupId() ).thenReturn( groupId );
+        when( artifact.getArtifactId() ).thenReturn( artifactId );
+        when( artifact.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
 
         final List<String> patterns = new ArrayList<String>();
-
         patterns.add( "*:artifact:*" );
 
         final ArtifactFilter filter = createFilter( patterns );
 
         if ( !isInclusionExpected() )
         {
-            assertFalse( filter.include( mac.artifact ) );
+            assertFalse( filter.include( artifact ) );
         }
         else
         {
-            assertTrue( filter.include( mac.artifact ) );
+            assertTrue( filter.include( artifact ) );
         }
-
-        verify( mac.getMock() );
     }
 
+    @Test
     public void testShouldIncludeWhenWildcardMatchesMiddleOfArtifactId()
     {
         final String groupId = "group";
         final String artifactId = "some-artifact-id";
 
-        final ArtifactMockAndControl mac = new ArtifactMockAndControl( groupId, artifactId );
+        Artifact artifact = mock( Artifact.class );
 
-        replay( mac.getMock() );
+        when( artifact.getDependencyConflictId() ).thenReturn( groupId + ":" + artifactId + ":jar" );
+        when( artifact.getGroupId() ).thenReturn( groupId );
+        when( artifact.getArtifactId() ).thenReturn( artifactId );
+        when( artifact.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
 
         final List<String> patterns = new ArrayList<String>();
-
         patterns.add( "group:some-*-id" );
 
         final ArtifactFilter filter = createFilter( patterns );
 
         if ( !isInclusionExpected() )
         {
-            assertFalse( filter.include( mac.artifact ) );
+            assertFalse( filter.include( artifact ) );
         }
         else
         {
-            assertTrue( filter.include( mac.artifact ) );
+            assertTrue( filter.include( artifact ) );
         }
-
-        verify( mac.getMock() );
     }
 
+    @Test
     public void testShouldIncludeWhenWildcardCoversPartOfGroupIdAndEverythingElse()
     {
         final String groupId = "some.group.id";
         final String artifactId = "some-artifact-id";
 
-        final ArtifactMockAndControl mac = new ArtifactMockAndControl( groupId, artifactId );
+        Artifact artifact = mock( Artifact.class );
 
-        replay( mac.getMock() );
+        when( artifact.getDependencyConflictId() ).thenReturn( groupId + ":" + artifactId + ":jar" );
+        when( artifact.getGroupId() ).thenReturn( groupId );
+        when( artifact.getArtifactId() ).thenReturn( artifactId );
+        when( artifact.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
 
         final List<String> patterns = new ArrayList<String>();
-
         patterns.add( "some.group*" );
 
         final ArtifactFilter filter = createFilter( patterns );
 
         if ( !isInclusionExpected() )
         {
-            assertFalse( filter.include( mac.artifact ) );
+            assertFalse( filter.include( artifact ) );
         }
         else
         {
-            assertTrue( filter.include( mac.artifact ) );
+            assertTrue( filter.include( artifact ) );
         }
-
-        verify( mac.getMock() );
     }
 
+    @Test
     public void testShouldIncludeTransitiveDependencyWhenWildcardMatchesButDoesntMatchParent()
     {
         final String groupId = "group";
@@ -438,165 +462,59 @@ public abstract class AbstractPatternArtifactFilterTest
         final String otherArtifact = "otherArtifact";
         final String otherType = "ejb";
 
-        final String depTrailItem = otherGroup + ":" + otherArtifact + ":" + otherType + ":version";
-        final List<String> depTrail = Collections.singletonList( depTrailItem );
         final List<String> patterns = Collections.singletonList( "*:jar:*" );
 
-        final ArtifactMockAndControl mac = new ArtifactMockAndControl( groupId, artifactId, "jar", depTrail );
-        final ArtifactMockAndControl otherMac =
-            new ArtifactMockAndControl( otherGroup, otherArtifact, otherType, Collections.<String> emptyList() );
-
-        replay( mac.getMock(), otherMac.getMock() );
+        Artifact artifact1 = mock( Artifact.class );
+        when( artifact1.getDependencyConflictId() ).thenReturn( groupId + ":" + artifactId + ":jar" );
+        when( artifact1.getGroupId() ).thenReturn( groupId );
+        when( artifact1.getArtifactId() ).thenReturn( artifactId );
+        when( artifact1.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
+        
+        Artifact artifact2 = mock( Artifact.class );
+        when( artifact2.getDependencyConflictId() ).thenReturn( otherGroup + ":" + otherArtifact + ":" + otherType );
+        when( artifact2.getGroupId() ).thenReturn( otherGroup );
+        when( artifact2.getArtifactId() ).thenReturn( otherArtifact );
+        when( artifact2.getId() ).thenReturn( otherGroup + ":" + otherArtifact + ":" + otherType + ":version" );
+        when( artifact2.getDependencyTrail() ).thenReturn( Collections.<String> emptyList() );
 
         final ArtifactFilter filter = createFilter( patterns, true );
 
         if ( !isInclusionExpected() )
         {
-            assertTrue( filter.include( otherMac.artifact ) );
-            assertFalse( filter.include( mac.artifact ) );
+            assertTrue( filter.include( artifact2 ) );
+            assertFalse( filter.include( artifact1 ) );
         }
         else
         {
-            assertFalse( filter.include( otherMac.artifact ) );
-            assertTrue( filter.include( mac.artifact ) );
+            assertFalse( filter.include( artifact2 ) );
+            assertTrue( filter.include( artifact1 ) );
         }
-
-        verify( mac.getMock(), otherMac.getMock() );
     }
     
+    @Test
     public void testShouldIncludeJarsWithAndWithoutClassifier()
     {
         final String groupId = "com.mycompany.myproject";
         final String artifactId = "some-artifact-id";
 
-        final ArtifactMockAndControl mac = new ArtifactMockAndControl( groupId, artifactId );
-
-        replay( mac.getMock() );
+        Artifact artifact = mock( Artifact.class );
+        when( artifact.getDependencyConflictId() ).thenReturn( groupId + ":" + artifactId + ":jar" );
+        when( artifact.getGroupId() ).thenReturn( groupId );
+        when( artifact.getArtifactId() ).thenReturn( artifactId );
+        when( artifact.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
 
         final List<String> patterns = new ArrayList<String>();
-
         patterns.add( "com.mycompany.*:*:jar:*:*" );
 
         final ArtifactFilter filter = createFilter( patterns );
 
         if ( !isInclusionExpected() )
         {
-            assertFalse( filter.include( mac.artifact ) );
+            assertFalse( filter.include( artifact ) );
         }
         else
         {
-            assertTrue( filter.include( mac.artifact ) );
-        }
-
-        verify( mac.getMock() );
-    }
-
-    // FIXME: Not sure what this is even trying to test.
-    // public void testShouldIncludeDirectDependencyWhenInvertedWildcardMatchesButDoesntMatchTransitiveChild(
-    // boolean reverse )
-    // {
-    // String groupId = "group";
-    // String artifactId = "artifact";
-    //
-    // String otherGroup = "otherGroup";
-    // String otherArtifact = "otherArtifact";
-    // String otherType = "ejb";
-    //
-    // String depTrailItem = otherGroup + ":" + otherArtifact + ":" + otherType + ":version";
-    // List depTrail = Collections.singletonList( depTrailItem );
-    // List patterns = Collections.singletonList( "!*:ejb:*" );
-    //
-    // ArtifactMockAndControl mac = new ArtifactMockAndControl( groupId, artifactId, "jar", depTrail );
-    // ArtifactMockAndControl otherMac = new ArtifactMockAndControl( otherGroup, otherArtifact, otherType, null );
-    //
-    // mockManager.replayAll();
-    //
-    // ArtifactFilter filter = createFilter( patterns, true );
-    //
-    // if ( isInclusionExpected() )
-    // {
-    // assertTrue( filter.include( otherMac.artifact ) );
-    // assertFalse( filter.include( mac.artifact ) );
-    // }
-    // else
-    // {
-    // assertFalse( filter.include( otherMac.artifact ) );
-    // assertFalse( filter.include( mac.artifact ) );
-    // }
-    //
-    // mockManager.verifyAll();
-    // }
-
-    private final class ArtifactMockAndControl
-    {
-        Artifact artifact;
-
-        String groupId;
-
-        String artifactId;
-
-        String version;
-
-        List<String> dependencyTrail;
-
-        String type;
-
-        ArtifactMockAndControl( final String groupId, final String artifactId, final List<String> depTrail )
-        {
-            this( groupId, artifactId, "jar", depTrail );
-        }
-
-        ArtifactMockAndControl( final String groupId, final String artifactId, final String type,
-                                final List<String> dependencyTrail )
-        {
-            this.groupId = groupId;
-            this.artifactId = artifactId;
-            this.dependencyTrail = dependencyTrail;
-            this.type = type;
-
-            artifact = createNiceMock( Artifact.class );
-
-            enableGetDependencyConflictId();
-            enableGetGroupIdArtifactIdAndVersion();
-            enableGetId();
-
-            if ( dependencyTrail != null )
-            {
-                enableGetDependencyTrail();
-            }
-        }
-
-        ArtifactMockAndControl( final String groupId, final String artifactId )
-        {
-            this( groupId, artifactId, "jar", null );
-        }
-
-        Artifact getMock()
-        {
-            return artifact;
-        }
-
-        void enableGetId()
-        {
-            expect( artifact.getId() ).andReturn( groupId + ":" + artifactId + ":" + type + ":version" ).anyTimes();
-        }
-
-        void enableGetDependencyTrail()
-        {
-            expect( artifact.getDependencyTrail() ).andReturn( dependencyTrail ).anyTimes();
-        }
-
-        void enableGetDependencyConflictId()
-        {
-            expect( artifact.getDependencyConflictId() ).andReturn( groupId + ":" + artifactId + ":" + type ).atLeastOnce();
-        }
-
-        void enableGetGroupIdArtifactIdAndVersion()
-        {
-            expect( artifact.getGroupId() ).andReturn( groupId ).atLeastOnce();
-            expect( artifact.getArtifactId() ).andReturn( artifactId ).atLeastOnce();
-            expect( artifact.getVersion() ).andReturn( version ).anyTimes();
+            assertTrue( filter.include( artifact ) );
         }
     }
-
 }
