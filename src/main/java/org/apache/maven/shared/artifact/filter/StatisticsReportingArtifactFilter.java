@@ -28,17 +28,17 @@ public interface StatisticsReportingArtifactFilter
 {
 
     /**
-     * @param logger The logger.
+     * @param logger the logger
      */
     void reportMissedCriteria( Logger logger );
 
     /**
-     * @param logger The logger.
+     * @param logger the logger
      */
     void reportFilteredArtifacts( Logger logger );
 
     /**
-     * @return {@code true} if missed cireteria {@code false} otherwise.
+     * @return {@code true} if missed criteria; {@code false} otherwise.
      */
     boolean hasMissedCriteria();
 
