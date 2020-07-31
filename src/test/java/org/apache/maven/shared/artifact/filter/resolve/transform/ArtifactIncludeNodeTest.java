@@ -26,7 +26,6 @@ import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.testing.ArtifactStubFactory;
 import org.apache.maven.shared.artifact.filter.resolve.Node;
-import org.eclipse.aether.graph.DependencyNode;
 import org.junit.Test;
 
 public class ArtifactIncludeNodeTest
