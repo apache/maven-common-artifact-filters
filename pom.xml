@@ -55,7 +55,7 @@
   </distributionManagement>
 
   <properties>
-    <maven.version>3.0</maven.version>
+    <maven.version>3.1.0</maven.version>
     <javaVersion>7</javaVersion>
     <project.build.outputTimestamp>2020-04-04T09:03:59Z</project.build.outputTimestamp>
   </properties>
