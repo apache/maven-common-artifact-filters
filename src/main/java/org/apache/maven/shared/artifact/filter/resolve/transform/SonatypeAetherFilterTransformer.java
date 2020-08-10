@@ -44,11 +44,13 @@ import org.sonatype.aether.util.filter.PatternInclusionsDependencyFilter;
 import org.sonatype.aether.util.filter.ScopeDependencyFilter;
 
 /**
- * FilterTransformer implementation for Sonatypes Aether
+ * FilterTransformer implementation for Sonatype Aether
  * 
+ * @deprecated update to Maven 3.10 or later and replace Sonatype Aether with Eclipse Aether
  * @author Robert Scholte  
  * @since 3.0
  */
+@Deprecated
 public class SonatypeAetherFilterTransformer
     implements FilterTransformer<DependencyFilter>
 {

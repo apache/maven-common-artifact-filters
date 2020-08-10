@@ -39,10 +39,9 @@ class ArtifactIncludeNode implements Node
     
     /**
      * Note: an artifact doesn't contain exclusion information, so it won't be available here.
-     * When required switch to filtering based on Aether
+     * When required switch to filtering based on Aether.
      * 
      * @see EclipseAetherNode
-     * @see SonatypeAetherNode
      */
     @Override
     public Dependency getDependency()

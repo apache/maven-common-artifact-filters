@@ -44,7 +44,7 @@ import org.eclipse.aether.util.filter.PatternInclusionsDependencyFilter;
 import org.eclipse.aether.util.filter.ScopeDependencyFilter;
 
 /**
- * FilterTransformer implementation for Eclipses Aether
+ * FilterTransformer implementation for Eclipse Aether.
  * 
  * @author Robert Scholte
  * @since 3.0
