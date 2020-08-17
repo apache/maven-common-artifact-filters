@@ -51,7 +51,7 @@ import org.sonatype.aether.util.filter.ScopeDependencyFilter;
  * @since 3.0
  */
 @Deprecated
-public class 
+public class SonatypeAetherFilterTransformer
     implements FilterTransformer<DependencyFilter>
 {
     /**
