@@ -18,11 +18,6 @@ package org.apache.maven.shared.artifact.filter.collection;
  * specific language governing permissions and limitations
  * under the License.    
  */
-
-/**
- * 
- */
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
@@ -31,24 +26,18 @@ import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Abstract test case for subclasses of AbstractArtifactFeatureFilter
  */
-public abstract class AbstractArtifactFeatureFilterTestCase
-    extends TestCase
+public abstract class AbstractArtifactFeatureFilterTest
 {
-    protected Set<Artifact> artifacts = new HashSet<Artifact>();
+    protected Set<Artifact> artifacts = new HashSet<>();
 
     protected Class<?> filterClass;
-
-    protected void setUp()
-        throws Exception
-    {
-        super.setUp();
-
-    }
 
     private Object createObjectViaReflection( Class<?> clazz, Object[] conArgs )
         throws SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException,
@@ -61,6 +50,7 @@ public abstract class AbstractArtifactFeatureFilterTestCase
         return ct.newInstance( conArgs );
     }
 
+    @Test
     public abstract void testParsing()
         throws Exception;
 
@@ -77,12 +67,13 @@ public abstract class AbstractArtifactFeatureFilterTestCase
 
         assertEquals( 2, includes.size() );
         assertEquals( 2, excludes.size() );
-        assertEquals( "one", includes.get( 0 ).toString() );
-        assertEquals( "two", includes.get( 1 ).toString() );
-        assertEquals( "three", excludes.get( 0 ).toString() );
-        assertEquals( "four", excludes.get( 1 ).toString() );
+        assertEquals( "one", includes.get( 0 ) );
+        assertEquals( "two", includes.get( 1 ) );
+        assertEquals( "three", excludes.get( 0 ) );
+        assertEquals( "four", excludes.get( 1 ) );
     }
 
+    @Test
     public abstract void testFiltering()
         throws Exception;
 
@@ -98,6 +89,7 @@ public abstract class AbstractArtifactFeatureFilterTestCase
         return result;
     }
 
+    @Test
     public abstract void testFiltering2()
         throws Exception;
 
@@ -114,6 +106,7 @@ public abstract class AbstractArtifactFeatureFilterTestCase
 
     }
 
+    @Test
     public abstract void testFiltering3()
         throws Exception;
 

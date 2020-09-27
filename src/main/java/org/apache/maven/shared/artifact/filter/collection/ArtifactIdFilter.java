@@ -26,7 +26,6 @@ import org.apache.maven.artifact.Artifact;
  * 
  * @author clove
  * @since 2.0-alpha-2
- * @version $Id$
  */
 public class ArtifactIdFilter
     extends AbstractArtifactFeatureFilter

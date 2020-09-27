@@ -66,7 +66,7 @@ class SonatypeAetherNode implements Node
         if ( nodeDependency.getExclusions() != null )
         {
             List<org.apache.maven.model.Exclusion> mavenExclusions =
-                new ArrayList<org.apache.maven.model.Exclusion>( nodeDependency.getExclusions().size() );
+                    new ArrayList<>( nodeDependency.getExclusions().size() );
 
             for ( Exclusion aetherExclusion : nodeDependency.getExclusions() )
             {

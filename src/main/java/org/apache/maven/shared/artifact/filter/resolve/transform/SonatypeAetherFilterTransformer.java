@@ -63,7 +63,7 @@ public class SonatypeAetherFilterTransformer
     @Override
     public AndDependencyFilter transform( AndFilter filter )
     {
-        Collection<DependencyFilter> filters = new ArrayList<DependencyFilter>( filter.getFilters().size() );
+        Collection<DependencyFilter> filters = new ArrayList<>( filter.getFilters().size() );
         for ( TransformableFilter dependencyFilter : filter.getFilters() )
         {
             filters.add( dependencyFilter.transform( this ) );
@@ -80,7 +80,7 @@ public class SonatypeAetherFilterTransformer
     @Override
     public OrDependencyFilter transform( OrFilter filter )
     {
-        Collection<DependencyFilter> filters = new ArrayList<DependencyFilter>( filter.getFilters().size() );
+        Collection<DependencyFilter> filters = new ArrayList<>( filter.getFilters().size() );
         for ( TransformableFilter dependencyFilter : filter.getFilters() )
         {
             filters.add( dependencyFilter.transform( this ) );
@@ -133,7 +133,7 @@ public class SonatypeAetherFilterTransformer
     
     private DependencyFilter newAdvancedPatternInclusionFilter( Collection<String> includes )
     {
-        List<DependencyFilter> filters = new ArrayList<DependencyFilter>( includes.size() );
+        List<DependencyFilter> filters = new ArrayList<>( includes.size() );
 
         Pattern pattern = Pattern.compile( GAE_C_V );
         for ( String include : includes )

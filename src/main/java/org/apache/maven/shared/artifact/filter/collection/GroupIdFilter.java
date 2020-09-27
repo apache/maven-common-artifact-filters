@@ -26,7 +26,6 @@ import org.apache.maven.artifact.Artifact;
  * 
  * @author clove
  * @since 2.0
- * @version $Id$
  */
 public class GroupIdFilter
     extends AbstractArtifactFeatureFilter

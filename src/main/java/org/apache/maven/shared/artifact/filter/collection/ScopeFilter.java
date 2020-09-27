@@ -29,7 +29,6 @@ import org.apache.maven.shared.utils.StringUtils;
 
 /**
  * @author <a href="mailto:brianf@apache.org">Brian Fox</a>
- * @version $Id$
  */
 public class ScopeFilter
     extends AbstractArtifactsFilter
@@ -73,7 +72,7 @@ public class ScopeFilter
                 throw new ArtifactFilterException( "Invalid Scope in includeScope: " + includeScope );
             }
 
-            results = new LinkedHashSet<Artifact>();
+            results = new LinkedHashSet<>();
 
             if ( Artifact.SCOPE_PROVIDED.equals( includeScope ) || Artifact.SCOPE_SYSTEM.equals( includeScope ) )
             {
@@ -100,7 +99,7 @@ public class ScopeFilter
             {
                 throw new ArtifactFilterException( "Invalid Scope in excludeScope: " + excludeScope );
             }
-            results = new LinkedHashSet<Artifact>();
+            results = new LinkedHashSet<>();
             // plexus ScopeArtifactFilter doesn't handle the provided scope so
             // we
             // need special handling for it.
@@ -131,7 +130,7 @@ public class ScopeFilter
 
     private Set<Artifact> includeSingleScope( Set<Artifact> artifacts, String scope )
     {
-        Set<Artifact> results = new LinkedHashSet<Artifact>();
+        Set<Artifact> results = new LinkedHashSet<>();
         for ( Artifact artifact : artifacts )
         {
             if ( scope.equals( artifact.getScope() ) )
@@ -144,7 +143,7 @@ public class ScopeFilter
 
     private Set<Artifact> excludeSingleScope( Set<Artifact> artifacts, String scope )
     {
-        Set<Artifact> results = new LinkedHashSet<Artifact>();
+        Set<Artifact> results = new LinkedHashSet<>();
         for ( Artifact artifact : artifacts )
         {
             if ( !scope.equals( artifact.getScope() ) )

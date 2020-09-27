@@ -138,13 +138,13 @@ public class ArtifactIncludeFilterTransformer implements FilterTransformer<Artif
     @Override
     public ArtifactFilter transform( final ExclusionsFilter exclusionsFilter )
     {
-        return new ExcludesArtifactFilter( new ArrayList<String>( exclusionsFilter.getExcludes() ) );
+        return new ExcludesArtifactFilter( new ArrayList<>( exclusionsFilter.getExcludes() ) );
     }
 
     @Override
     public ArtifactFilter transform( OrFilter orFilter )
     {
-        final Collection<ArtifactFilter> filters = new ArrayList<ArtifactFilter>( orFilter.getFilters().size() );
+        final Collection<ArtifactFilter> filters = new ArrayList<>( orFilter.getFilters().size() );
 
         for ( TransformableFilter subFilter : orFilter.getFilters() )
         {

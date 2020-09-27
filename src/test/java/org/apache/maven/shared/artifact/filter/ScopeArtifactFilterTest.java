@@ -39,7 +39,8 @@ public class ScopeArtifactFilterTest
     {
         ArtifactStubFactory factory = new ArtifactStubFactory();
         
-        Artifact excluded = factory.createArtifact( "group", "artifact", VersionRange.createFromVersionSpec( "[1.2.3]" ), Artifact.SCOPE_PROVIDED, "jar", null, false );
+        Artifact excluded = factory.createArtifact( "group", "artifact",
+                VersionRange.createFromVersionSpec( "[1.2.3]" ), Artifact.SCOPE_PROVIDED, "jar", null, false );
         
         ArtifactFilter filter = new ScopeArtifactFilter( Artifact.SCOPE_RUNTIME );
         

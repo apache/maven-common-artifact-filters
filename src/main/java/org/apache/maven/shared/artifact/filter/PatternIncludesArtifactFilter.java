@@ -48,9 +48,9 @@ public class PatternIncludesArtifactFilter
 
     private final boolean actTransitively;
 
-    private final Set<String> patternsTriggered = new HashSet<String>();
+    private final Set<String> patternsTriggered = new HashSet<>();
 
-    private final List<String> filteredArtifactIds = new ArrayList<String>();
+    private final List<String> filteredArtifactIds = new ArrayList<>();
 
     /**
      * @param patterns The pattern to be used.
@@ -67,8 +67,8 @@ public class PatternIncludesArtifactFilter
     public PatternIncludesArtifactFilter( final Collection<String> patterns, final boolean actTransitively )
     {
         this.actTransitively = actTransitively;
-        final List<String> pos = new ArrayList<String>();
-        final List<String> neg = new ArrayList<String>();
+        final List<String> pos = new ArrayList<>();
+        final List<String> neg = new ArrayList<>();
         if ( patterns != null && !patterns.isEmpty() )
         {
             for ( String pattern : patterns )
@@ -272,7 +272,7 @@ public class PatternIncludesArtifactFilter
         // support leading wildcard
         else if ( pattern.startsWith( "*" ) )
         {
-            final String suffix = pattern.substring( 1, pattern.length() );
+            final String suffix = pattern.substring( 1 );
 
             matches = token.endsWith( suffix );
         }
@@ -336,7 +336,7 @@ public class PatternIncludesArtifactFilter
         // if there are no patterns, there is nothing to report.
         if ( !positivePatterns.isEmpty() || !negativePatterns.isEmpty() )
         {
-            final List<String> missed = new ArrayList<String>();
+            final List<String> missed = new ArrayList<>();
             missed.addAll( positivePatterns );
             missed.addAll( negativePatterns );
 
@@ -352,7 +352,7 @@ public class PatternIncludesArtifactFilter
 
                 for ( String pattern : missed )
                 {
-                    buffer.append( "\no  \'" ).append( pattern ).append( "\'" );
+                    buffer.append( "\no  '" ).append( pattern ).append( "'" );
                 }
 
                 buffer.append( "\n" );
@@ -376,7 +376,7 @@ public class PatternIncludesArtifactFilter
         final StringBuilder buffer = new StringBuilder();
         for ( String pattern : positivePatterns )
         {
-            buffer.append( "\no \'" ).append( pattern ).append( "\'" );
+            buffer.append( "\no '" ).append( pattern ).append( "'" );
         }
 
         return buffer.toString();
@@ -413,7 +413,7 @@ public class PatternIncludesArtifactFilter
         // if there are no patterns, there is nothing to report.
         if ( !positivePatterns.isEmpty() || !negativePatterns.isEmpty() )
         {
-            final List<String> missed = new ArrayList<String>();
+            final List<String> missed = new ArrayList<>();
             missed.addAll( positivePatterns );
             missed.addAll( negativePatterns );
 

@@ -19,8 +19,6 @@ package org.apache.maven.shared.artifact.filter.resolve.transform;
  * under the License.
  */
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,6 +30,8 @@ import org.sonatype.aether.graph.DependencyNode;
 import org.sonatype.aether.graph.Exclusion;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
 import org.sonatype.aether.util.graph.DefaultDependencyNode;
+
+import static org.junit.Assert.*;
 
 public class SonatypeAetherNodeTest
 {
@@ -46,7 +46,7 @@ public class SonatypeAetherNodeTest
         assertEquals( "a", mavenDependency.getArtifactId()  );
         assertEquals( "v", mavenDependency.getVersion() );
         assertEquals( "", mavenDependency.getClassifier() );
-        assertEquals( null, mavenDependency.getType() );
+        assertNull( mavenDependency.getType() );
         assertEquals( "", mavenDependency.getScope() );
     }
 
@@ -61,7 +61,7 @@ public class SonatypeAetherNodeTest
         assertEquals( "a", mavenDependency.getArtifactId()  );
         assertEquals( "v", mavenDependency.getVersion() );
         assertEquals( "c", mavenDependency.getClassifier() );
-        assertEquals( null, mavenDependency.getType() );
+        assertNull( mavenDependency.getType() );
         assertEquals( "", mavenDependency.getScope() );
     }
 
@@ -76,7 +76,7 @@ public class SonatypeAetherNodeTest
         assertEquals( "a", mavenDependency.getArtifactId()  );
         assertEquals( "v", mavenDependency.getVersion() );
         assertEquals( "", mavenDependency.getClassifier() );
-        assertEquals( null, mavenDependency.getType() );
+        assertNull( mavenDependency.getType() );
         assertEquals( "s", mavenDependency.getScope() );
     }
     
@@ -86,15 +86,15 @@ public class SonatypeAetherNodeTest
         Node node = new SonatypeAetherNode( newDependencyNode( "g:a:v", null ) );
         
         assertEquals( "false", node.getDependency().getOptional()  );
-        assertEquals( false, node.getDependency().isOptional()  );
+        assertFalse( node.getDependency().isOptional() );
         
         node = new SonatypeAetherNode( newDependencyNode( "g:a:v", null, true ) );
         assertEquals( "true", node.getDependency().getOptional()  );
-        assertEquals( true, node.getDependency().isOptional()  );
+        assertTrue( node.getDependency().isOptional() );
 
         node = new SonatypeAetherNode( newDependencyNode( "g:a:v", null, false ) );
         assertEquals( "false", node.getDependency().getOptional()  );
-        assertEquals( false, node.getDependency().isOptional()  );
+        assertFalse( node.getDependency().isOptional() );
     }
 
     @Test
@@ -122,7 +122,7 @@ public class SonatypeAetherNodeTest
     {
         Dependency dependency = new Dependency( new DefaultArtifact( coor ), scope );
         
-        Collection<Exclusion> aetherExclusions = new ArrayList<Exclusion>( exclusions.size() );
+        Collection<Exclusion> aetherExclusions = new ArrayList<>( exclusions.size() );
         for ( String exclusion : exclusions )
         {
             String[] ga = exclusion.split( ":" );

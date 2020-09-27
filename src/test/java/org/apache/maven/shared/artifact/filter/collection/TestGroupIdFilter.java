@@ -18,39 +18,40 @@ package org.apache.maven.shared.artifact.filter.collection;
  * specific language governing permissions and limitations
  * under the License.    
  */
-
-/**
- * 
- */
-
-import java.lang.reflect.InvocationTargetException;
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.testing.ArtifactStubFactory;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * TestCases for GroupIdFilter
  */
 public class TestGroupIdFilter
-    extends AbstractArtifactFeatureFilterTestCase
+        extends AbstractArtifactFeatureFilterTest
 {
 
-    protected void setUp()
+    @Before
+    public void setUp()
         throws Exception
     {
-        super.setUp();
         filterClass = GroupIdFilter.class;
         ArtifactStubFactory factory = new ArtifactStubFactory( null, false );
         artifacts = factory.getGroupIdArtifacts();
     }
 
+    @Test
     public void testParsing()
         throws Exception
     {
         parsing();
     }
 
+    @Test
     public void testFiltering()
         throws Exception
     {
@@ -61,6 +62,7 @@ public class TestGroupIdFilter
         }
     }
 
+    @Test
     public void testFiltering2()
         throws Exception
     {
@@ -71,12 +73,14 @@ public class TestGroupIdFilter
         }
     }
 
+    @Test
     public void testFiltering3()
         throws Exception
     {
         filtering3();
     }
 
+    @Test
     public void testFiltering4()
         throws Exception
     {
@@ -87,7 +91,7 @@ public class TestGroupIdFilter
         result = filter.filter( result );
         for ( Artifact artifact : result )
         {
-            assertTrue( artifact.getGroupId().equals( "one" ) );
+            assertEquals( "one", artifact.getGroupId() );
 
         }
 
@@ -98,14 +102,14 @@ public class TestGroupIdFilter
         result = filter.filter( result );
         for ( Artifact artifact : result )
         {
-            assertTrue( artifact.getGroupId().equals( "two" ) );
+            assertEquals( "two", artifact.getGroupId() );
 
         }
     }
 
+    @Test
     public void testMultipleInclude()
-        throws SecurityException, IllegalArgumentException, NoSuchMethodException, InstantiationException,
-        IllegalAccessException, InvocationTargetException, ArtifactFilterException
+        throws SecurityException, IllegalArgumentException, ArtifactFilterException
     {
         ArtifactsFilter filter = new GroupIdFilter( "one,two", null );
 
@@ -116,9 +120,9 @@ public class TestGroupIdFilter
         assertEquals( 2, result.size() );
     }
 
+    @Test
     public void testMultipleExclude()
-        throws SecurityException, IllegalArgumentException, NoSuchMethodException, InstantiationException,
-        IllegalAccessException, InvocationTargetException, ArtifactFilterException
+        throws SecurityException, IllegalArgumentException, ArtifactFilterException
     {
         ArtifactsFilter filter = new GroupIdFilter( null, "one,two" );
 

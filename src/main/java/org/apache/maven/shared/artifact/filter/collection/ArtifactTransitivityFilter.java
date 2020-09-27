@@ -37,7 +37,6 @@ import java.util.Set;
  * This filter will exclude everything that is not a dependency of the selected artifact.
  *
  * @author <a href="mailto:brianf@apache.org">Brian Fox</a>
- * @version $Id$
  */
 public class ArtifactTransitivityFilter
     extends AbstractArtifactsFilter
@@ -98,17 +97,7 @@ public class ArtifactTransitivityFilter
                         transitiveArtifacts.add( mavenArtifact.getDependencyConflictId() );
                     }
                 }
-                catch ( IllegalAccessException e )
-                {
-                    // don't want to pollute method signature with ReflectionExceptions
-                    throw new RuntimeException( e.getMessage(), e );
-                }
-                catch ( InvocationTargetException e )
-                {
-                    // don't want to pollute method signature with ReflectionExceptions
-                    throw new RuntimeException( e.getMessage(), e );
-                }
-                catch ( NoSuchMethodException e )
+                catch ( IllegalAccessException | InvocationTargetException | NoSuchMethodException e )
                 {
                     // don't want to pollute method signature with ReflectionExceptions
                     throw new RuntimeException( e.getMessage(), e );
@@ -132,17 +121,7 @@ public class ArtifactTransitivityFilter
                         transitiveArtifacts.add( mavenArtifact.getDependencyConflictId() );
                     }
                 }
-                catch ( IllegalAccessException e )
-                {
-                    // don't want to pollute method signature with ReflectionExceptions
-                    throw new RuntimeException( e.getMessage(), e );
-                }
-                catch ( InvocationTargetException e )
-                {
-                    // don't want to pollute method signature with ReflectionExceptions
-                    throw new RuntimeException( e.getMessage(), e );
-                }
-                catch ( NoSuchMethodException e )
+                catch ( IllegalAccessException | InvocationTargetException | NoSuchMethodException e )
                 {
                     // don't want to pollute method signature with ReflectionExceptions
                     throw new RuntimeException( e.getMessage(), e );
@@ -179,7 +158,7 @@ public class ArtifactTransitivityFilter
     public Set<Artifact> filter( Set<Artifact> artifacts )
     {
 
-        Set<Artifact> result = new LinkedHashSet<Artifact>();
+        Set<Artifact> result = new LinkedHashSet<>();
         for ( Artifact artifact : artifacts )
         {
             if ( artifactIsATransitiveDependency( artifact ) )

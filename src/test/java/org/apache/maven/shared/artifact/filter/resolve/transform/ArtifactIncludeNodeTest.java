@@ -19,8 +19,6 @@ package org.apache.maven.shared.artifact.filter.resolve.transform;
  * under the License.
  */
 
-import static org.junit.Assert.assertEquals;
-
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.model.Dependency;
@@ -28,9 +26,11 @@ import org.apache.maven.plugin.testing.ArtifactStubFactory;
 import org.apache.maven.shared.artifact.filter.resolve.Node;
 import org.junit.Test;
 
+import static org.junit.Assert.*;
+
 public class ArtifactIncludeNodeTest
 {
-    private ArtifactStubFactory artifactFactory = new ArtifactStubFactory();
+    private final ArtifactStubFactory artifactFactory = new ArtifactStubFactory();
 
     @Test
     public void testGAV() throws Exception
@@ -72,7 +72,7 @@ public class ArtifactIncludeNodeTest
         assertEquals( "g", dependency.getGroupId() );
         assertEquals( "a", dependency.getArtifactId() );
         assertEquals( "v", dependency.getVersion() );
-        assertEquals( null, dependency.getClassifier() );
+        assertNull( dependency.getClassifier() );
         assertEquals( "pom", dependency.getType() );
     }
 
@@ -97,15 +97,15 @@ public class ArtifactIncludeNodeTest
         Node node = new ArtifactIncludeNode( newArtifact( "g:a:pom:v", null, null ) );
         
         assertEquals( "false", node.getDependency().getOptional()  );
-        assertEquals( false, node.getDependency().isOptional()  );
+        assertFalse( node.getDependency().isOptional() );
         
         node = new ArtifactIncludeNode( newArtifact( "g:a:pom:v", null, true ) );
         assertEquals( "true", node.getDependency().getOptional()  );
-        assertEquals( true, node.getDependency().isOptional()  );
+        assertTrue( node.getDependency().isOptional() );
 
         node = new ArtifactIncludeNode( newArtifact( "g:a:pom:v", null, false ) );
         assertEquals( "false", node.getDependency().getOptional()  );
-        assertEquals( false, node.getDependency().isOptional()  );
+        assertFalse( node.getDependency().isOptional() );
     }
 
     private Artifact newArtifact( String coor, String scope )

@@ -18,48 +18,52 @@ package org.apache.maven.shared.artifact.filter.collection;
  * specific language governing permissions and limitations
  * under the License.    
  */
-
-/**
- * 
- */
-
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.testing.ArtifactStubFactory;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * TestCases for ArtifactFilter
  */
 public class TestArtifactFilter
-    extends AbstractArtifactFeatureFilterTestCase
+        extends AbstractArtifactFeatureFilterTest
 {
 
-    protected void setUp()
+    @Before
+    public void setUp()
         throws Exception
     {
-        super.setUp();
         filterClass = ArtifactIdFilter.class;
         ArtifactStubFactory factory = new ArtifactStubFactory( null, false );
         artifacts = factory.getArtifactArtifacts();
     }
 
+
+    @Test
     public void testParsing()
         throws Exception
     {
         parsing();
     }
 
+    @Test
     public void testFiltering()
         throws Exception
     {
         Set<Artifact> result = filtering();
         for ( Artifact artifact : result )
         {
-            assertTrue( artifact.getArtifactId().equals( "two" ) );
+            assertEquals( "two", artifact.getArtifactId() );
         }
     }
 
+    @Test
     public void testFiltering2()
         throws Exception
     {
@@ -70,6 +74,7 @@ public class TestArtifactFilter
         }
     }
 
+    @Test
     public void testFiltering3()
         throws Exception
     {

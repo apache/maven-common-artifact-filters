@@ -40,7 +40,7 @@ public abstract class AbstractPatternArtifactFilterTest
 
     protected abstract ArtifactFilter createFilter( List<String> patterns, boolean actTransitively );
 
-    protected abstract boolean isInclusionExpected();
+    protected abstract boolean isInclusionNotExpected();
 
     @Test
     public void testShouldTriggerBothPatternsWithWildcards()
@@ -63,13 +63,13 @@ public abstract class AbstractPatternArtifactFilterTest
         when( artifact2.getArtifactId() ).thenReturn( artifactId2 );
         when( artifact2.getId() ).thenReturn( groupId2 + ":" + artifactId2 + ":jar:version" );
 
-        final List<String> patterns = new ArrayList<String>();
+        final List<String> patterns = new ArrayList<>();
         patterns.add( groupId1 + ":" + artifactId1 + ":*" );
         patterns.add( groupId2 + ":" + artifactId2 + ":*" );
 
         final ArtifactFilter filter = createFilter( patterns );
 
-        if ( !isInclusionExpected() )
+        if ( isInclusionNotExpected() )
         {
             assertFalse( filter.include( artifact1 ) );
             assertFalse( filter.include( artifact2 ) );
@@ -102,13 +102,13 @@ public abstract class AbstractPatternArtifactFilterTest
         when( artifact2.getArtifactId() ).thenReturn( artifactId2 );
         when( artifact2.getId() ).thenReturn( groupId2 + ":" + artifactId2 + ":jar:version" );
 
-        final List<String> patterns = new ArrayList<String>();
+        final List<String> patterns = new ArrayList<>();
         patterns.add( groupId1 + "*" );
         patterns.add( groupId2 + "*" );
 
         final ArtifactFilter filter = createFilter( patterns );
 
-        if ( !isInclusionExpected() )
+        if ( isInclusionNotExpected() )
         {
             assertFalse( filter.include( artifact1 ) );
             assertFalse( filter.include( artifact2 ) );
@@ -134,7 +134,7 @@ public abstract class AbstractPatternArtifactFilterTest
 
         final ArtifactFilter filter = createFilter( Collections.singletonList( groupId + ":" + artifactId ) );
 
-        if ( !isInclusionExpected() )
+        if ( isInclusionNotExpected() )
         {
             assertFalse( filter.include( artifact ) );
         }
@@ -158,7 +158,7 @@ public abstract class AbstractPatternArtifactFilterTest
 
         final ArtifactFilter filter = createFilter( Collections.singletonList( groupId + ":" + artifactId + ":jar" ) );
 
-        if ( !isInclusionExpected() )
+        if ( isInclusionNotExpected() )
         {
             assertFalse( filter.include( artifact ) );
         }
@@ -180,13 +180,13 @@ public abstract class AbstractPatternArtifactFilterTest
         when( artifact.getArtifactId() ).thenReturn( artifactId );
         when( artifact.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
 
-        final List<String> patterns = new ArrayList<String>();
+        final List<String> patterns = new ArrayList<>();
         patterns.add( "otherGroup:" + artifactId + ":jar" );
         patterns.add( "otherGroup:" + artifactId );
 
         final ArtifactFilter filter = createFilter( patterns );
 
-        if ( !isInclusionExpected() )
+        if ( isInclusionNotExpected() )
         {
             assertTrue( filter.include( artifact ) );
         }
@@ -208,13 +208,13 @@ public abstract class AbstractPatternArtifactFilterTest
         when( artifact.getArtifactId() ).thenReturn( artifactId );
         when( artifact.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
 
-        final List<String> patterns = new ArrayList<String>();
+        final List<String> patterns = new ArrayList<>();
         patterns.add( groupId + "otherArtifact:jar" );
         patterns.add( groupId + "otherArtifact" );
 
         final ArtifactFilter filter = createFilter( patterns );
 
-        if ( !isInclusionExpected() )
+        if ( isInclusionNotExpected() )
         {
             assertTrue( filter.include( artifact ) );
         }
@@ -236,13 +236,13 @@ public abstract class AbstractPatternArtifactFilterTest
         when( artifact.getArtifactId() ).thenReturn( artifactId );
         when( artifact.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
 
-        final List<String> patterns = new ArrayList<String>();
+        final List<String> patterns = new ArrayList<>();
         patterns.add( "otherGroup:otherArtifact:jar" );
         patterns.add( "otherGroup:otherArtifact" );
 
         final ArtifactFilter filter = createFilter( patterns );
 
-        if ( !isInclusionExpected() )
+        if ( isInclusionNotExpected() )
         {
             assertTrue( filter.include( artifact ) );
         }
@@ -261,7 +261,7 @@ public abstract class AbstractPatternArtifactFilterTest
         final String rootDepTrailItem = "current:project:jar:1.0";
         final String depTrailItem = "otherGroup:otherArtifact";
 
-        final List<String> depTrail = Arrays.asList( new String[] { rootDepTrailItem, depTrailItem + ":jar:1.0" } );
+        final List<String> depTrail = Arrays.asList( rootDepTrailItem, depTrailItem + ":jar:1.0" );
         final List<String> patterns = Collections.singletonList( depTrailItem );
 
         Artifact artifact = mock( Artifact.class );
@@ -273,7 +273,7 @@ public abstract class AbstractPatternArtifactFilterTest
 
         final ArtifactFilter filter = createFilter( patterns, true );
 
-        if ( !isInclusionExpected() )
+        if ( isInclusionNotExpected() )
         {
             assertFalse( filter.include( artifact ) );
         }
@@ -292,7 +292,7 @@ public abstract class AbstractPatternArtifactFilterTest
         final String rootDepTrailItem = "current:project:jar:1.0";
         final String depTrailItem = "otherGroup:otherArtifact";
 
-        final List<String> depTrail = Arrays.asList( new String[] { rootDepTrailItem, depTrailItem + ":jar:1.0" } );
+        final List<String> depTrail = Arrays.asList( rootDepTrailItem, depTrailItem + ":jar:1.0" );
         final List<String> patterns = Collections.singletonList( "otherGroup*" );
 
         Artifact artifact = mock( Artifact.class );
@@ -304,7 +304,7 @@ public abstract class AbstractPatternArtifactFilterTest
 
         final ArtifactFilter filter = createFilter( patterns, true );
 
-        if ( !isInclusionExpected() )
+        if ( isInclusionNotExpected() )
         {
             assertFalse( filter.include( artifact ) );
         }
@@ -326,12 +326,12 @@ public abstract class AbstractPatternArtifactFilterTest
         when( artifact.getArtifactId() ).thenReturn( artifactId );
         when( artifact.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
 
-        final List<String> patterns = new ArrayList<String>();
+        final List<String> patterns = new ArrayList<>();
         patterns.add( "!group:artifact:jar" );
 
         final ArtifactFilter filter = createFilter( patterns );
 
-        if ( !isInclusionExpected() )
+        if ( isInclusionNotExpected() )
         {
             assertTrue( filter.include( artifact ) );
         }
@@ -353,12 +353,12 @@ public abstract class AbstractPatternArtifactFilterTest
         when( artifact.getArtifactId() ).thenReturn( artifactId );
         when( artifact.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
 
-        final List<String> patterns = new ArrayList<String>();
+        final List<String> patterns = new ArrayList<>();
         patterns.add( "group:*:jar" );
 
         final ArtifactFilter filter = createFilter( patterns );
 
-        if ( !isInclusionExpected() )
+        if ( isInclusionNotExpected() )
         {
             assertFalse( filter.include( artifact ) );
         }
@@ -381,12 +381,12 @@ public abstract class AbstractPatternArtifactFilterTest
         when( artifact.getArtifactId() ).thenReturn( artifactId );
         when( artifact.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
 
-        final List<String> patterns = new ArrayList<String>();
+        final List<String> patterns = new ArrayList<>();
         patterns.add( "*:artifact:*" );
 
         final ArtifactFilter filter = createFilter( patterns );
 
-        if ( !isInclusionExpected() )
+        if ( isInclusionNotExpected() )
         {
             assertFalse( filter.include( artifact ) );
         }
@@ -409,12 +409,12 @@ public abstract class AbstractPatternArtifactFilterTest
         when( artifact.getArtifactId() ).thenReturn( artifactId );
         when( artifact.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
 
-        final List<String> patterns = new ArrayList<String>();
+        final List<String> patterns = new ArrayList<>();
         patterns.add( "group:some-*-id" );
 
         final ArtifactFilter filter = createFilter( patterns );
 
-        if ( !isInclusionExpected() )
+        if ( isInclusionNotExpected() )
         {
             assertFalse( filter.include( artifact ) );
         }
@@ -437,12 +437,12 @@ public abstract class AbstractPatternArtifactFilterTest
         when( artifact.getArtifactId() ).thenReturn( artifactId );
         when( artifact.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
 
-        final List<String> patterns = new ArrayList<String>();
+        final List<String> patterns = new ArrayList<>();
         patterns.add( "some.group*" );
 
         final ArtifactFilter filter = createFilter( patterns );
 
-        if ( !isInclusionExpected() )
+        if ( isInclusionNotExpected() )
         {
             assertFalse( filter.include( artifact ) );
         }
@@ -479,7 +479,7 @@ public abstract class AbstractPatternArtifactFilterTest
 
         final ArtifactFilter filter = createFilter( patterns, true );
 
-        if ( !isInclusionExpected() )
+        if ( isInclusionNotExpected() )
         {
             assertTrue( filter.include( artifact2 ) );
             assertFalse( filter.include( artifact1 ) );
@@ -503,12 +503,12 @@ public abstract class AbstractPatternArtifactFilterTest
         when( artifact.getArtifactId() ).thenReturn( artifactId );
         when( artifact.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
 
-        final List<String> patterns = new ArrayList<String>();
+        final List<String> patterns = new ArrayList<>();
         patterns.add( "com.mycompany.*:*:jar:*:*" );
 
         final ArtifactFilter filter = createFilter( patterns );
 
-        if ( !isInclusionExpected() )
+        if ( isInclusionNotExpected() )
         {
             assertFalse( filter.include( artifact ) );
         }

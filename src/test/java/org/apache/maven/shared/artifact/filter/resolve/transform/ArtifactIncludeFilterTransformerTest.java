@@ -50,7 +50,7 @@ public class ArtifactIncludeFilterTransformerTest
 
     private ArtifactIncludeFilterTransformer transformer;
 
-    private ArtifactStubFactory artifactFactory = new ArtifactStubFactory();
+    private final ArtifactStubFactory artifactFactory = new ArtifactStubFactory();
 
     @Before
     public void setUp()
@@ -64,7 +64,7 @@ public class ArtifactIncludeFilterTransformerTest
     {
         AndFilter filter =
             new AndFilter(
-                           Arrays.<TransformableFilter>asList( ScopeFilter.including( "compile" ),
+                           Arrays.asList( ScopeFilter.including( "compile" ),
                                                         new ExclusionsFilter( Collections.singletonList( "x:a" ) ) ) );
 
         AndArtifactFilter dependencyFilter = (AndArtifactFilter) filter.transform( transformer );
@@ -84,7 +84,7 @@ public class ArtifactIncludeFilterTransformerTest
     {
         ExclusionsFilter filter = new ExclusionsFilter( Collections.singletonList( "x:a" ) );
 
-        ArtifactFilter dependencyFilter = (ArtifactFilter) filter.transform( transformer );
+        ArtifactFilter dependencyFilter = filter.transform( transformer );
 
         assertTrue( dependencyFilter.include( newArtifact( "g:a:v", "compile" ) ) );
 
@@ -99,7 +99,7 @@ public class ArtifactIncludeFilterTransformerTest
             new OrFilter( Arrays.<TransformableFilter>asList( ScopeFilter.including( "compile" ),
                                                               ScopeFilter.including( "test" ) ) );
 
-        ArtifactFilter dependencyFilter = (ArtifactFilter) filter.transform( transformer );
+        ArtifactFilter dependencyFilter = filter.transform( transformer );
 
         assertTrue( dependencyFilter.include( newArtifact( "g:a:v", "compile" ) ) );
 

@@ -18,35 +18,26 @@ package org.apache.maven.shared.artifact.filter.collection;
  * specific language governing permissions and limitations
  * under the License.    
  */
-/**
- * 
- */
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import junit.framework.TestCase;
-
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.testing.ArtifactStubFactory;
-import org.apache.maven.shared.utils.io.FileUtils;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author <a href="mailto:brianf@apache.org">Brian Fox</a>
  */
 public class TestFilterArtifacts
-    extends TestCase
 {
-
-    protected void setUp()
-        throws Exception
-    {
-        super.setUp();
-    }
-
+    @Test
     public void testNullFilters()
         throws IOException, ArtifactFilterException
 
@@ -70,7 +61,7 @@ public class TestFilterArtifacts
         fa.filter( artifacts );
         assertEquals( 0, fa.getFilters().size() );
 
-        ArrayList<ArtifactsFilter> filters = new ArrayList<ArtifactsFilter>();
+        ArrayList<ArtifactsFilter> filters = new ArrayList<>();
         filters.add( null );
         filters.add( null );
         fa.setFilters( filters );
@@ -80,9 +71,10 @@ public class TestFilterArtifacts
         fa.filter( artifacts );
     }
 
+    @Test
     public void testArtifactFilter()
     {
-        Set<Artifact> a = new HashSet<Artifact>();
+        Set<Artifact> a = new HashSet<>();
         FilterArtifacts fa = new FilterArtifacts();
         ArtifactsFilter scope = new ScopeFilter( "compile", "system" );
         ArtifactsFilter type = new TypeFilter( "jar", "war" );
@@ -101,8 +93,7 @@ public class TestFilterArtifacts
         assertTrue( fa.getFilters().get( 1 ) instanceof ProjectTransitivityFilter );
         assertTrue( fa.getFilters().get( 2 ) instanceof TypeFilter );
 
-        ArrayList<ArtifactsFilter> list = new ArrayList<ArtifactsFilter>();
-        list.addAll( fa.getFilters() );
+        ArrayList<ArtifactsFilter> list = new ArrayList<>( fa.getFilters() );
 
         fa.clearFilters();
         assertEquals( 0, fa.getFilters().size() );
@@ -115,6 +106,7 @@ public class TestFilterArtifacts
 
     }
     
+    @Test
     public void testArtifactFilterWithClassifier() throws IOException, ArtifactFilterException
     {
         File outputFolder = new File( "target/filters/" );

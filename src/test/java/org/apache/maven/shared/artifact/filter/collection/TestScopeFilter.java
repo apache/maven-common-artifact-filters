@@ -18,38 +18,36 @@ package org.apache.maven.shared.artifact.filter.collection;
  * specific language governing permissions and limitations
  * under the License.    
  */
-/**
- * 
- */
-
 import java.util.Set;
-
-import junit.framework.TestCase;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugin.testing.ArtifactStubFactory;
 import org.apache.maven.plugin.testing.SilentLog;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * @author <a href="mailto:brianf@apache.org">Brian Fox</a>
  */
 public class TestScopeFilter
-    extends TestCase
 {
     Set<Artifact> artifacts;
 
     Log log = new SilentLog();
 
-    protected void setUp()
+    @Before
+    public void setUp()
         throws Exception
     {
-        super.setUp();
-
         ArtifactStubFactory factory = new ArtifactStubFactory( null, false );
         artifacts = factory.getScopedArtifacts();
     }
 
+    @Test
     public void testScopeCompile()
         throws ArtifactFilterException
     {
@@ -59,15 +57,16 @@ public class TestScopeFilter
 
     }
 
+    @Test
     public void testScopeRuntime()
         throws ArtifactFilterException
     {
         ScopeFilter filter = new ScopeFilter( Artifact.SCOPE_RUNTIME, null );
         Set<Artifact> result = filter.filter( artifacts );
         assertEquals( 2, result.size() );
-
     }
 
+    @Test
     public void testScopeTest()
         throws ArtifactFilterException
     {
@@ -76,10 +75,10 @@ public class TestScopeFilter
         assertEquals( 5, result.size() );
     }
 
+    @Test
     public void testScopeProvided()
         throws ArtifactFilterException
     {
-
         ScopeFilter filter = new ScopeFilter( Artifact.SCOPE_PROVIDED, null );
         Set<Artifact> result = filter.filter( artifacts );
         assertTrue( result.size() > 0 );
@@ -89,10 +88,10 @@ public class TestScopeFilter
         }
     }
 
+    @Test
     public void testScopeSystem()
         throws ArtifactFilterException
     {
-
         ScopeFilter filter = new ScopeFilter( Artifact.SCOPE_SYSTEM, null );
         Set<Artifact> result = filter.filter( artifacts );
         assertTrue( result.size() > 0 );
@@ -102,6 +101,7 @@ public class TestScopeFilter
         }
     }
 
+    @Test
     public void testScopeFilterNull()
         throws ArtifactFilterException
     {
@@ -110,6 +110,7 @@ public class TestScopeFilter
         assertEquals( 5, result.size() );
     }
 
+    @Test
     public void testScopeFilterEmpty()
         throws ArtifactFilterException
     {
@@ -118,13 +119,12 @@ public class TestScopeFilter
         assertEquals( 5, result.size() );
     }
 
+    @Test
     public void testExcludeProvided()
         throws ArtifactFilterException
     {
         ScopeFilter filter = new ScopeFilter( "", Artifact.SCOPE_PROVIDED );
         Set<Artifact> result = filter.filter( artifacts );
-        assertNotNull( result );
-        assertTrue( result.size() > 0 );
         assertNotNull( result );
         assertTrue( result.size() > 0 );
         for ( Artifact artifact : result )
@@ -133,6 +133,7 @@ public class TestScopeFilter
         }
     }
 
+    @Test
     public void testExcludeSystem()
         throws ArtifactFilterException
     {
@@ -146,6 +147,7 @@ public class TestScopeFilter
         }
     }
 
+    @Test
     public void testExcludeCompile()
         throws ArtifactFilterException
     {
@@ -154,29 +156,30 @@ public class TestScopeFilter
         assertEquals( 2, result.size() );
     }
 
+    @Test
     public void testExcludeTest()
     {
         try
         {
             ScopeFilter filter = new ScopeFilter( "", Artifact.SCOPE_TEST );
             filter.filter( artifacts );
-            fail( "Expected an Exception" );
+            Assert.fail( "Expected an Exception" );
         }
-        catch ( ArtifactFilterException e )
+        catch ( ArtifactFilterException ignored )
         {
-
         }
     }
 
+    @Test
     public void testBadScope()
     {
         ScopeFilter filter = new ScopeFilter( "cOmpile", "" );
         try
         {
             filter.filter( artifacts );
-            fail( "Expected an Exception" );
+            Assert.fail( "Expected an Exception" );
         }
-        catch ( ArtifactFilterException e )
+        catch ( ArtifactFilterException ignored )
         {
 
         }
@@ -184,14 +187,15 @@ public class TestScopeFilter
         {
             filter = new ScopeFilter( "", "coMpile" );
             filter.filter( artifacts );
-            fail( "Expected an Exception" );
+            Assert.fail( "Expected an Exception" );
         }
-        catch ( ArtifactFilterException e )
+        catch ( ArtifactFilterException ignored )
         {
 
         }
     }
 
+    @Test
     public void testSettersGetters()
     {
         ScopeFilter filter = new ScopeFilter( "include", "exclude" );

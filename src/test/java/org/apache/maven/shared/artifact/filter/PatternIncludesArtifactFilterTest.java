@@ -39,8 +39,8 @@ public class PatternIncludesArtifactFilterTest
     }
 
     @Override
-    protected boolean isInclusionExpected()
+    protected boolean isInclusionNotExpected()
     {
-        return true;
+        return false;
     }
 }

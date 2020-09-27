@@ -19,10 +19,6 @@ package org.apache.maven.shared.artifact.filter.collection;
  * under the License.    
  */
 
-/**
- * 
- */
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -31,7 +27,6 @@ import org.apache.maven.artifact.Artifact;
 
 /**
  * @author <a href="mailto:brianf@apache.org">Brian Fox</a>
- * @version $Id$
  */
 public class FilterArtifacts
 {
@@ -42,7 +37,7 @@ public class FilterArtifacts
      */
     public FilterArtifacts()
     {
-        filters = new ArrayList<ArtifactsFilter>();
+        filters = new ArrayList<>();
     }
 
     /**
@@ -101,7 +96,6 @@ public class FilterArtifacts
             catch ( NullPointerException e )
             {
                 // don't do anything, just skip this.
-                continue;
             }
         }
 

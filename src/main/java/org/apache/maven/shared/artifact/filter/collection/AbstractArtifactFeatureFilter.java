@@ -22,6 +22,7 @@ package org.apache.maven.shared.artifact.filter.collection;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
@@ -31,7 +32,6 @@ import org.apache.maven.shared.utils.StringUtils;
  * This is the common base class of ClassifierFilter and TypeFilter
  * 
  * @author <a href="richardv@mxtelecom.com">Richard van der Hoff</a>
- * @version $Id$
  */
 public abstract class AbstractArtifactFeatureFilter
     extends AbstractArtifactsFilter
@@ -86,7 +86,7 @@ public abstract class AbstractArtifactFeatureFilter
      */
     private Set<Artifact> filterIncludes( Set<Artifact> artifacts, List<String> theIncludes )
     {
-        Set<Artifact> result = new LinkedHashSet<Artifact>();
+        Set<Artifact> result = new LinkedHashSet<>();
 
         for ( String include : theIncludes )
         {
@@ -108,13 +108,13 @@ public abstract class AbstractArtifactFeatureFilter
     /**
      * Processes the dependencies list and excludes the dependencies that match a filter in the list.
      * 
-     * @param depends List of dependencies.
-     * @param excludes List of types or classifiers to exclude.
+     * @param artifacts List of dependencies.
+     * @param theExcludes List of types or classifiers to exclude.
      * @return a set of filtered artifacts.
      */
     private Set<Artifact> filterExcludes( Set<Artifact> artifacts, List<String> theExcludes )
     {
-        Set<Artifact> result = new LinkedHashSet<Artifact>();
+        Set<Artifact> result = new LinkedHashSet<>();
 
         for ( Artifact artifact : artifacts )
         {
@@ -190,14 +190,13 @@ public abstract class AbstractArtifactFeatureFilter
 
     /**
      * Allows Feature comparison to be customized
-     * 
+     *
      * @param lhs String artifact's feature
      * @param rhs String feature from exclude or include list
      * @return boolean true if features match
      */
     protected boolean compareFeatures( String lhs, String rhs )
     {
-        // If lhs is null, check that rhs is null. Otherwise check if strings are equal.
-        return ( lhs == null ? rhs == null : lhs.equals( rhs ) );
+        return ( Objects.equals( lhs, rhs ) );
     }
 }

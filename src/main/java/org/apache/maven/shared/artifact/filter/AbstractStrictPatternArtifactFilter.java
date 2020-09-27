@@ -43,7 +43,6 @@ import java.util.List;
  * </p>
  * 
  * @author <a href="mailto:markhobson@gmail.com">Mark Hobson</a>
- * @version $Id$
  */
 public abstract class AbstractStrictPatternArtifactFilter implements ArtifactFilter
 {
@@ -157,9 +156,7 @@ public abstract class AbstractStrictPatternArtifactFilter implements ArtifactFil
         // support leading wildcard
         else if ( pattern.startsWith( "*" ) )
         {
-            String suffix = pattern.substring( 1, pattern.length() );
-
-            matches = token.endsWith( suffix );
+            matches = token.endsWith( pattern.substring( 1 ) );
         }
         // support trailing wildcard
         else if ( pattern.endsWith( "*" ) )

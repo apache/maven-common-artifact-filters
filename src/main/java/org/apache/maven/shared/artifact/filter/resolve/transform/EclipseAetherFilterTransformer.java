@@ -61,7 +61,7 @@ public class EclipseAetherFilterTransformer
     @Override
     public AndDependencyFilter transform( AndFilter andFilter )
     {
-        Collection<DependencyFilter> filters = new ArrayList<DependencyFilter>();
+        Collection<DependencyFilter> filters = new ArrayList<>();
         for ( TransformableFilter filter : andFilter.getFilters() )
         {
             filters.add( filter.transform( this ) );
@@ -78,7 +78,7 @@ public class EclipseAetherFilterTransformer
     @Override
     public OrDependencyFilter transform( OrFilter orFilter )
     {
-        Collection<DependencyFilter> filters = new ArrayList<DependencyFilter>();
+        Collection<DependencyFilter> filters = new ArrayList<>();
         for ( TransformableFilter filter : orFilter.getFilters() )
         {
             filters.add( filter.transform( this ) );
@@ -131,7 +131,7 @@ public class EclipseAetherFilterTransformer
 
     private DependencyFilter newAdvancedPatternInclusionFilter( Collection<String> includes )
     {
-        List<DependencyFilter> filters = new ArrayList<DependencyFilter>( includes.size() );
+        List<DependencyFilter> filters = new ArrayList<>( includes.size() );
 
         Pattern pattern = Pattern.compile( GAE_C_V );
         for ( String include : includes )

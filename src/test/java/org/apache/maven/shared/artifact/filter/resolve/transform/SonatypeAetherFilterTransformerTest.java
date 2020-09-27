@@ -52,13 +52,13 @@ import org.junit.Test;
 public class SonatypeAetherFilterTransformerTest
 {
 
-    private SonatypeAetherFilterTransformer transformer = new SonatypeAetherFilterTransformer();
+    private final SonatypeAetherFilterTransformer transformer = new SonatypeAetherFilterTransformer();
 
     @Test
     public void testTransformAndFilter()
     {
         AndFilter filter = new AndFilter(
-                  Arrays.<TransformableFilter>asList( ScopeFilter.including( "compile" ),
+                  Arrays.asList( ScopeFilter.including( "compile" ),
                                                       new ExclusionsFilter( Collections.singletonList( "x:a" ) ) ) );
 
         AndDependencyFilter dependencyFilter = (AndDependencyFilter) filter.transform( transformer );
@@ -158,7 +158,7 @@ public class SonatypeAetherFilterTransformerTest
     }
     
     @Test
-    public void testTransformAbstractFilter() throws Exception
+    public void testTransformAbstractFilter()
     {
         AbstractFilter snapshotFilter = new AbstractFilter()
         {

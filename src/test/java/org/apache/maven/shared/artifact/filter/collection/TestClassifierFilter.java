@@ -18,33 +18,33 @@ package org.apache.maven.shared.artifact.filter.collection;
  * specific language governing permissions and limitations
  * under the License.    
  */
-
-/**
- * 
- */
-
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.testing.ArtifactStubFactory;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test case for ClassifierFilter
  */
 public class TestClassifierFilter
-    extends AbstractArtifactFeatureFilterTestCase
+        extends AbstractArtifactFeatureFilterTest
 {
 
-    protected void setUp()
+    @Before
+    public void setUp()
         throws Exception
     {
-        super.setUp();
         filterClass = ClassifierFilter.class;
         ArtifactStubFactory factory = new ArtifactStubFactory( null, false );
         artifacts = factory.getClassifiedArtifacts();
 
     }
 
+    @Test
     public void testParsing()
         throws Exception
     {
@@ -52,6 +52,7 @@ public class TestClassifierFilter
 
     }
 
+    @Test
     public void testFiltering()
         throws Exception
     {
@@ -62,6 +63,7 @@ public class TestClassifierFilter
         }
     }
 
+    @Test
     public void testFiltering2()
         throws Exception
     {
@@ -72,6 +74,7 @@ public class TestClassifierFilter
         }
     }
 
+    @Test
     public void testFiltering3()
         throws Exception
     {

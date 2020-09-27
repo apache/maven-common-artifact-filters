@@ -26,7 +26,6 @@ import org.apache.maven.artifact.Artifact;
 
 /**
  * @author <a href="mailto:brianf@apache.org">Brian Fox</a>
- * @version $Id$
  */
 public class ProjectTransitivityFilter
     extends AbstractArtifactsFilter
@@ -34,7 +33,7 @@ public class ProjectTransitivityFilter
 
     private boolean excludeTransitive;
 
-    private Set<Artifact> directDependencies;
+    private final Set<Artifact> directDependencies;
 
     /**
      * @param directDependencies set of direct dependencies.
@@ -57,7 +56,7 @@ public class ProjectTransitivityFilter
 
         if ( excludeTransitive )
         {
-            result = new LinkedHashSet<Artifact>();
+            result = new LinkedHashSet<>();
             for ( Artifact artifact : artifacts )
             {
                 if ( artifactIsADirectDependency( artifact ) )

@@ -51,13 +51,13 @@ import org.junit.Test;
 
 public class EclipseAetherFilterTransformerTest
 {
-    private EclipseAetherFilterTransformer transformer = new EclipseAetherFilterTransformer();
+    private final EclipseAetherFilterTransformer transformer = new EclipseAetherFilterTransformer();
 
     @Test
     public void testTransformAndFilter()
     {
         AndFilter filter = new AndFilter(
-              Arrays.<TransformableFilter>asList( ScopeFilter.including( "compile" ),
+              Arrays.asList( ScopeFilter.including( "compile" ),
                                                    new ExclusionsFilter( Collections.singletonList( "x:a" ) ) ) );
 
         AndDependencyFilter dependencyFilter = (AndDependencyFilter) filter.transform( transformer );
@@ -156,7 +156,7 @@ public class EclipseAetherFilterTransformerTest
     }
 
     @Test
-    public void testTransformAbstractFilter() throws Exception
+    public void testTransformAbstractFilter()
     {
         AbstractFilter snapshotFilter = new AbstractFilter()
         {

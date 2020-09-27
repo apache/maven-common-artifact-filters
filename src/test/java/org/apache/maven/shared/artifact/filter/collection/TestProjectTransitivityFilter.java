@@ -18,22 +18,19 @@ package org.apache.maven.shared.artifact.filter.collection;
  * specific language governing permissions and limitations
  * under the License.    
  */
-/**
- * 
- */
-
 import java.util.Set;
-
-import junit.framework.TestCase;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.testing.ArtifactStubFactory;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * @author <a href="mailto:brianf@apache.org">Brian Fox</a>
  */
 public class TestProjectTransitivityFilter
-    extends TestCase
 {
     Set<Artifact> artifacts;
 
@@ -41,11 +38,9 @@ public class TestProjectTransitivityFilter
     
     Set<Artifact> classifiedArtifacts;
 
-    protected void setUp()
-        throws Exception
+    @Before
+    public void setUp() throws Exception
     {
-        super.setUp();
-
         ArtifactStubFactory fact = new ArtifactStubFactory( null, false );
         artifacts = fact.getScopedArtifacts();
         directArtifacts = fact.getReleaseAndSnapshotArtifacts();
@@ -54,15 +49,15 @@ public class TestProjectTransitivityFilter
         artifacts.addAll( classifiedArtifacts );
     }
 
+    @Test
     public void testAll()
     {
         ProjectTransitivityFilter filter = new ProjectTransitivityFilter( directArtifacts, false );
-
         Set<Artifact> result = filter.filter( artifacts );
-
         assertEquals( 11, result.size() );
     }
 
+    @Test
     public void testExclude()
     {
         ProjectTransitivityFilter filter = new ProjectTransitivityFilter( directArtifacts, false );
@@ -75,16 +70,16 @@ public class TestProjectTransitivityFilter
 
         for ( Artifact artifact : result )
         {
-            assertTrue( artifact.getArtifactId().equals( "release" ) || artifact.getArtifactId().equals( "snapshot" ) );
+            assertTrue(
+                    artifact.getArtifactId().equals( "release" ) || artifact.getArtifactId().equals( "snapshot" ) );
         }
     }
 
+    @Test
     public void testClassified()
     {
         ProjectTransitivityFilter filter = new ProjectTransitivityFilter( classifiedArtifacts, true );
-
         Set<Artifact> result = filter.filter( artifacts );
-
         assertEquals( 4, result.size() );
     }
 

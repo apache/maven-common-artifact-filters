@@ -26,7 +26,6 @@ import org.apache.maven.artifact.Artifact;
 
 /**
  * @author <a href="mailto:brianf@apache.org">Brian Fox</a>
- * @version $Id$
  */
 public abstract class AbstractArtifactsFilter
     implements ArtifactsFilter
@@ -39,7 +38,7 @@ public abstract class AbstractArtifactsFilter
     public boolean isArtifactIncluded( Artifact artifact )
         throws ArtifactFilterException
     {
-        Set<Artifact> set = new LinkedHashSet<Artifact>();
+        Set<Artifact> set = new LinkedHashSet<>();
         set.add( artifact );
 
         set = filter( set );

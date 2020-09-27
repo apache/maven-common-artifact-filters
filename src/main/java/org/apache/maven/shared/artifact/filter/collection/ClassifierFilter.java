@@ -23,8 +23,6 @@ import org.apache.maven.artifact.Artifact;
 
 /**
  * @author <a href="mailto:brianf@apache.org">Brian Fox</a>
- * @version $Id$
- * 
  */
 public class ClassifierFilter
     extends AbstractArtifactFeatureFilter

@@ -26,7 +26,6 @@ import java.util.List;
  * artifact pattern syntax.
  * 
  * @author <a href="mailto:markhobson@gmail.com">Mark Hobson</a>
- * @version $Id$
  * @see AbstractStrictPatternArtifactFilter
  * @see PatternExcludesArtifactFilter
  */

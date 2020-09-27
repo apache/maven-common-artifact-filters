@@ -19,17 +19,12 @@ package org.apache.maven.shared.artifact.filter.collection;
  * under the License.    
  */
 
-/**
- * 
- */
-
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
 
 /**
  * @author <a href="mailto:brianf@apache.org">Brian Fox</a>
- * @version $Id$
  */
 public interface ArtifactsFilter
 {

@@ -25,14 +25,11 @@ import java.util.List;
  * Tests <code>StrictPatternIncludesArtifactFilter</code>.
  * 
  * @author <a href="mailto:markhobson@gmail.com">Mark Hobson</a>
- * @version $Id$
  * @see StrictPatternIncludesArtifactFilter
  */
 public class StrictPatternIncludesArtifactFilterTest
     extends AbstractStrictPatternArtifactFilterTest
 {
-    // AbstractStrictPatternArtifactFilterTest methods ------------------------
-
     /*
      * @see org.apache.maven.shared.artifact.filter.AbstractStrictPatternArtifactFilterTest#createFilter(java.util.List)
      */

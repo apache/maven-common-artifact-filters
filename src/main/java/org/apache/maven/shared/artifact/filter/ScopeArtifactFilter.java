@@ -63,7 +63,7 @@ public class ScopeArtifactFilter
 
     private boolean systemScopeHit = false;
 
-    private List<String> filteredArtifactIds = new ArrayList<String>();
+    private final List<String> filteredArtifactIds = new ArrayList<>();
     
     /**
      * Constructor that is meant to be used with fine-grained manipulation to 

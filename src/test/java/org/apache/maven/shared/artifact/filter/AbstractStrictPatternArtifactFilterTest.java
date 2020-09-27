@@ -29,288 +29,334 @@ import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.apache.maven.artifact.versioning.VersionRange;
 
 import junit.framework.AssertionFailedError;
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Tests subclasses of <code>AbstractStrictPatternArtifactFilter</code>.
  * 
  * @author <a href="mailto:markhobson@gmail.com">Mark Hobson</a>
- * @version $Id$
  * @see AbstractStrictPatternArtifactFilter
  */
-public abstract class AbstractStrictPatternArtifactFilterTest extends TestCase
+public abstract class AbstractStrictPatternArtifactFilterTest
 {
-    // fields -----------------------------------------------------------------
-
     protected Artifact artifact;
 
-    // TestCase methods -------------------------------------------------------
-
-    /*
-     * @see junit.framework.TestCase#setUp()
-     */
-    protected void setUp() throws Exception
+    @Before
+    public void setUp()
     {
         artifact = createArtifact( "groupId", "artifactId", "type", "version" );
     }
 
-    // tests ------------------------------------------------------------------
-
+    @Test
     public void testExactIncluded()
     {
         assertIncluded( "groupId:artifactId" );
     }
 
+    @Test
     public void testExactExcluded()
     {
         assertExcluded( "differentGroupId:differentArtifactId" );
     }
 
+    @Test
     public void testGroupIdIncluded()
     {
         assertIncluded( "groupId" );
     }
 
+    @Test
     public void testGroupIdExcluded()
     {
         assertExcluded( "differentGroupId" );
     }
 
+    @Test
     public void testGroupIdWildcardIncluded()
     {
         assertIncluded( "*" );
     }
 
+    @Test
     public void testGroupIdImplicitWildcardIncluded()
     {
         assertIncluded( "" );
     }
 
+    @Test
     public void testGroupIdStartsWithWildcardIncluded()
     {
         assertIncluded( "groupId*" );
     }
 
+    @Test
     public void testGroupIdStartsWithPartialWildcardIncluded()
     {
         assertIncluded( "group*" );
     }
 
+    @Test
     public void testGroupIdStartsWithWildcardExcluded()
     {
         assertExcluded( "different*" );
     }
 
+    @Test
     public void testGroupIdEndsWithWildcardIncluded()
     {
         assertIncluded( "*groupId" );
     }
 
+    @Test
     public void testGroupIdEndsWithPartialWildcardIncluded()
     {
         assertIncluded( "*Id" );
     }
 
+    @Test
     public void testGroupIdEndsWithWildcardExcluded()
     {
         assertExcluded( "*different" );
     }
 
+    @Test
     public void testGroupIdContainsWildcardIncluded()
     {
         assertIncluded( "*oup*" );
     }
 
+    @Test
     public void testGroupIdContainsWildcardExcluded()
     {
         assertExcluded( "*different*" );
     }
 
+    @Test
     public void testArtifactIdIncluded()
     {
         assertIncluded( ":artifactId" );
     }
 
+    @Test
     public void testArtifactIdExcluded()
     {
         assertExcluded( ":differentArtifactId" );
     }
 
+    @Test
     public void testArtifactIdWildcardIncluded()
     {
         assertIncluded( ":*" );
     }
 
+    @Test
     public void testArtifactIdImplicitWildcardIncluded()
     {
         assertIncluded( ":" );
     }
 
+    @Test
     public void testArtifactIdStartsWithWildcardIncluded()
     {
         assertIncluded( ":artifactId*" );
     }
 
+    @Test
     public void testArtifactIdStartsWithPartialWildcardIncluded()
     {
         assertIncluded( ":artifact*" );
     }
 
+    @Test
     public void testArtifactIdStartsWithWildcardExcluded()
     {
         assertExcluded( ":different*" );
     }
 
+    @Test
     public void testArtifactIdEndsWithWildcardIncluded()
     {
         assertIncluded( ":*artifactId" );
     }
 
+    @Test
     public void testArtifactIdEndsWithPartialWildcardIncluded()
     {
         assertIncluded( ":*Id" );
     }
 
+    @Test
     public void testArtifactIdEndsWithWildcardExcluded()
     {
         assertExcluded( ":*different" );
     }
 
+    @Test
     public void testArtifactIdContainsWildcardIncluded()
     {
         assertIncluded( ":*fact*" );
     }
 
+    @Test
     public void testArtifactIdContainsWildcardExcluded()
     {
         assertExcluded( ":*different*" );
     }
 
+    @Test
     public void testTypeIncluded()
     {
         assertIncluded( "::type" );
     }
 
+    @Test
     public void testTypeExcluded()
     {
         assertExcluded( "::differentType" );
     }
 
+    @Test
     public void testTypeWildcardIncluded()
     {
         assertIncluded( "::*" );
     }
 
+    @Test
     public void testTypeImplicitWildcardIncluded()
     {
         assertIncluded( "::" );
     }
 
+    @Test
     public void testTypeStartsWithWildcardIncluded()
     {
         assertIncluded( "::type*" );
     }
 
+    @Test
     public void testTypeStartsWithPartialWildcardIncluded()
     {
         assertIncluded( "::t*" );
     }
 
+    @Test
     public void testTypeStartsWithWildcardExcluded()
     {
         assertExcluded( "::different*" );
     }
 
+    @Test
     public void testTypeEndsWithWildcardIncluded()
     {
         assertIncluded( "::*type" );
     }
 
+    @Test
     public void testTypeEndsWithPartialWildcardIncluded()
     {
         assertIncluded( "::*e" );
     }
 
+    @Test
     public void testTypeEndsWithWildcardExcluded()
     {
         assertExcluded( "::*different" );
     }
 
+    @Test
     public void testTypeContainsWildcardIncluded()
     {
         assertIncluded( "::*yp*" );
     }
 
+    @Test
     public void testTypeContainsWildcardExcluded()
     {
         assertExcluded( "::*different*" );
     }
 
+    @Test
     public void testVersionIncluded()
     {
         assertIncluded( ":::version" );
     }
 
+    @Test
     public void testVersionExcluded()
     {
         assertExcluded( ":::differentVersion" );
     }
 
+    @Test
     public void testVersionWildcardIncluded()
     {
         assertIncluded( ":::*" );
     }
 
+    @Test
     public void testVersionImplicitWildcardIncluded()
     {
         assertIncluded( ":::" );
     }
 
+    @Test
     public void testVersionStartsWithWildcardIncluded()
     {
         assertIncluded( ":::version*" );
     }
 
+    @Test
     public void testVersionStartsWithPartialWildcardIncluded()
     {
         assertIncluded( ":::ver*" );
     }
 
+    @Test
     public void testVersionStartsWithWildcardExcluded()
     {
         assertExcluded( ":::different*" );
     }
 
+    @Test
     public void testVersionEndsWithWildcardIncluded()
     {
         assertIncluded( ":::*version" );
     }
 
+    @Test
     public void testVersionEndsWithPartialWildcardIncluded()
     {
         assertIncluded( ":::*ion" );
     }
 
+    @Test
     public void testVersionEndsWithWildcardExcluded()
     {
         assertExcluded( ":::*different" );
     }
 
+    @Test
     public void testVersionContainsWildcardIncluded()
     {
         assertIncluded( ":::*si*" );
     }
 
+    @Test
     public void testVersionContainsWildcardExcluded()
     {
         assertExcluded( ":::*different*" );
     }
 
+    @Test
     public void testComplex()
     {
         assertIncluded( "group*:*Id:*:version" );
     }
 
+    @Test
     public void testSnapshotVersion()
     {
         artifact = createArtifact( "groupId", "artifactId", "type", "version-12345678.123456-1" );
@@ -318,6 +364,7 @@ public abstract class AbstractStrictPatternArtifactFilterTest extends TestCase
         assertIncluded( ":::*-SNAPSHOT" );
     }
     
+    @Test
     public void testRangeVersion()
     {
         artifact = createArtifact( "groupId", "artifactId", "type", "1.0.1" );
@@ -329,6 +376,7 @@ public abstract class AbstractStrictPatternArtifactFilterTest extends TestCase
         assertExcluded( "groupId:artifactId:type:(,1.0],[1.2,)");
     }
 
+    @Test
     public void testWildcardsWithRangeVersion()
     {
         artifact = createArtifact( "groupId", "artifactId", "type", "1.0.1" );
