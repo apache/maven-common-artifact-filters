@@ -29,7 +29,6 @@ import java.util.Collections;
  * @author Robert Scholte
  * @since 3.0
  * 
- * @see org.sonatype.aether.util.filter.ScopeDependencyFilter
  * @see org.eclipse.aether.util.filter.ScopeDependencyFilter
  */
 public class ScopeFilter implements TransformableFilter

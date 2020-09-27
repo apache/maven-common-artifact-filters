@@ -27,8 +27,8 @@ import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.project.ProjectBuildingResult;
+import org.eclipse.aether.graph.Dependency;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -79,76 +79,14 @@ public class ArtifactTransitivityFilter
         DependencyResolutionResult resolutionResult = buildingResult.getDependencyResolutionResult();
         if ( resolutionResult != null )
         {
-            if ( isMaven31() )
+            resolutionResult.getDependencies();
+            List<Dependency> dependencies = resolutionResult.getDependencies();
+
+            for ( Dependency dependency : dependencies )
             {
-                try
-                {
-                    @SuppressWarnings( "unchecked" ) List<org.eclipse.aether.graph.Dependency> dependencies =
-                        (List<org.eclipse.aether.graph.Dependency>) Invoker.invoke( resolutionResult,
-                                                                                    "getDependencies" );
-
-                    for ( org.eclipse.aether.graph.Dependency dependency : dependencies )
-                    {
-                        Artifact mavenArtifact = 
-                                        (Artifact) Invoker.invoke( RepositoryUtils.class, "toArtifact",
-                                                                    org.eclipse.aether.artifact.Artifact.class,
-                                                                    dependency.getArtifact() );
-
-                        transitiveArtifacts.add( mavenArtifact.getDependencyConflictId() );
-                    }
-                }
-                catch ( IllegalAccessException | InvocationTargetException | NoSuchMethodException e )
-                {
-                    // don't want to pollute method signature with ReflectionExceptions
-                    throw new RuntimeException( e.getMessage(), e );
-                }
+                Artifact mavenArtifact = RepositoryUtils.toArtifact( dependency.getArtifact() );
+                transitiveArtifacts.add( mavenArtifact.getDependencyConflictId() );
             }
-            else
-            {
-                try
-                {
-                    @SuppressWarnings( "unchecked" ) List<org.sonatype.aether.graph.Dependency> dependencies =
-                        (List<org.sonatype.aether.graph.Dependency>) Invoker.invoke( resolutionResult,
-                                                                                     "getDependencies" );
-
-                    for ( org.sonatype.aether.graph.Dependency dependency : dependencies )
-                    {
-                        Artifact mavenArtifact = 
-                                        (Artifact) Invoker.invoke( RepositoryUtils.class, "toArtifact",
-                                                                    org.sonatype.aether.artifact.Artifact.class,
-                                                                    dependency.getArtifact() );
-
-                        transitiveArtifacts.add( mavenArtifact.getDependencyConflictId() );
-                    }
-                }
-                catch ( IllegalAccessException | InvocationTargetException | NoSuchMethodException e )
-                {
-                    // don't want to pollute method signature with ReflectionExceptions
-                    throw new RuntimeException( e.getMessage(), e );
-                }
-            }
-        }
-    }
-
-    /**
-     * @return true if the current Maven version is Maven 3.1.
-     */
-    protected static boolean isMaven31()
-    {
-        return canFindCoreClass( "org.eclipse.aether.artifact.Artifact" ); // Maven 3.1 specific
-    }
-
-    private static boolean canFindCoreClass( String className )
-    {
-        try
-        {
-            Thread.currentThread().getContextClassLoader().loadClass( className );
-
-            return true;
-        }
-        catch ( ClassNotFoundException e )
-        {
-            return false;
         }
     }
 
@@ -157,7 +95,6 @@ public class ArtifactTransitivityFilter
      */
     public Set<Artifact> filter( Set<Artifact> artifacts )
     {
-
         Set<Artifact> result = new LinkedHashSet<>();
         for ( Artifact artifact : artifacts )
         {
