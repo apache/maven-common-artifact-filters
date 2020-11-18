@@ -22,6 +22,7 @@ package org.apache.maven.shared.artifact.filter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -42,9 +43,13 @@ import org.codehaus.plexus.logging.Logger;
 public class PatternIncludesArtifactFilter
     implements ArtifactFilter, StatisticsReportingArtifactFilter
 {
-    private final List<String> positivePatterns;
+    private final Set<String> simplePositivePatterns;
 
-    private final List<String> negativePatterns;
+    private final Set<String> positivePatterns;
+
+    private final Set<String> simpleNegativePatterns;
+
+    private final Set<String> negativePatterns;
 
     private final boolean actTransitively;
 
@@ -67,25 +72,43 @@ public class PatternIncludesArtifactFilter
     public PatternIncludesArtifactFilter( final Collection<String> patterns, final boolean actTransitively )
     {
         this.actTransitively = actTransitively;
-        final List<String> pos = new ArrayList<>();
-        final List<String> neg = new ArrayList<>();
+        final Set<String> pos = new LinkedHashSet<>();
+        final Set<String> spos = new LinkedHashSet<>();
+        final Set<String> neg = new LinkedHashSet<>();
+        final Set<String> sneg = new LinkedHashSet<>();
         if ( patterns != null && !patterns.isEmpty() )
         {
             for ( String pattern : patterns )
             {
                 if ( pattern.startsWith( "!" ) )
                 {
-                    neg.add( pattern.substring( 1 ) );
+                    if ( pattern.contains( "*" ) )
+                    {
+                        neg.add( pattern.substring( 1 ) );
+                    }
+                    else
+                    {
+                        sneg.add( pattern.substring( 1 ) );
+                    }
                 }
                 else
                 {
-                    pos.add( pattern );
+                    if ( pattern.contains( "*" ) )
+                    {
+                        pos.add( pattern );
+                    }
+                    else
+                    {
+                        spos.add( pattern );
+                    }
                 }
             }
         }
 
         positivePatterns = pos;
+        simplePositivePatterns = spos;
         negativePatterns = neg;
+        simpleNegativePatterns = sneg;
     }
 
     /** {@inheritDoc} */
@@ -120,6 +143,13 @@ public class PatternIncludesArtifactFilter
 
     private Boolean negativeMatch( final Artifact artifact )
     {
+        if ( simpleNegativePatterns != null && !simpleNegativePatterns.isEmpty() )
+        {
+            if ( simpleMatch( artifact, simpleNegativePatterns ) )
+            {
+                return true;
+            }
+        }
         if ( negativePatterns == null || negativePatterns.isEmpty() )
         {
             return null;
@@ -136,6 +166,13 @@ public class PatternIncludesArtifactFilter
      */
     protected Boolean positiveMatch( final Artifact artifact )
     {
+        if ( simplePositivePatterns != null && !simplePositivePatterns.isEmpty() )
+        {
+            if ( simpleMatch( artifact, simplePositivePatterns ) )
+            {
+                return true;
+            }
+        }
         if ( positivePatterns == null || positivePatterns.isEmpty() )
         {
             return null;
@@ -146,7 +183,33 @@ public class PatternIncludesArtifactFilter
         }
     }
 
-    private boolean match( final Artifact artifact, final List<String> patterns )
+    private boolean simpleMatch( final Artifact artifact, final Set<String> patterns )
+    {
+        final String shortId = ArtifactUtils.versionlessKey( artifact );
+        if ( patterns.contains( shortId ) )
+        {
+            patternsTriggered.add( shortId );
+            return true;
+        }
+
+        final String id = artifact.getDependencyConflictId();
+        if ( patterns.contains( id ) )
+        {
+            patternsTriggered.add( id );
+            return true;
+        }
+
+        final String wholeId = artifact.getId();
+        if ( patterns.contains( wholeId ) )
+        {
+            patternsTriggered.add( wholeId );
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean match( final Artifact artifact, final Iterable<String> patterns )
     {
         final String shortId = ArtifactUtils.versionlessKey( artifact );
         final String id = artifact.getDependencyConflictId();
@@ -186,7 +249,7 @@ public class PatternIncludesArtifactFilter
         return false;
     }
 
-    private boolean matchAgainst( final String value, final List<String> patterns, final boolean regionMatch )
+    private boolean matchAgainst( final String value, final Iterable<String> patterns, final boolean regionMatch )
     {
         final String[] tokens = value.split( ":" );
         for ( String pattern : patterns )
