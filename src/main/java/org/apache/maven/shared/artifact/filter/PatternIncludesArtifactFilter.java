@@ -397,11 +397,14 @@ public class PatternIncludesArtifactFilter
     public void reportMissedCriteria( final Logger logger )
     {
         // if there are no patterns, there is nothing to report.
-        if ( !positivePatterns.isEmpty() || !negativePatterns.isEmpty() )
+        if ( !positivePatterns.isEmpty() || !negativePatterns.isEmpty()
+                || !simplePositivePatterns.isEmpty() || !simpleNegativePatterns.isEmpty() )
         {
             final List<String> missed = new ArrayList<>();
             missed.addAll( positivePatterns );
+            missed.addAll( simplePositivePatterns );
             missed.addAll( negativePatterns );
+            missed.addAll( simpleNegativePatterns );
 
             missed.removeAll( patternsTriggered );
 
@@ -437,6 +440,10 @@ public class PatternIncludesArtifactFilter
     protected String getPatternsAsString()
     {
         final StringBuilder buffer = new StringBuilder();
+        for ( String pattern : simplePositivePatterns )
+        {
+            buffer.append( "\no '" ).append( pattern ).append( "'" );
+        }
         for ( String pattern : positivePatterns )
         {
             buffer.append( "\no '" ).append( pattern ).append( "'" );
