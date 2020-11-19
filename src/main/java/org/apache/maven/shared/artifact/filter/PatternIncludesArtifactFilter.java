@@ -20,14 +20,18 @@ package org.apache.maven.shared.artifact.filter;
  */
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
@@ -43,19 +47,20 @@ import org.codehaus.plexus.logging.Logger;
 public class PatternIncludesArtifactFilter
     implements ArtifactFilter, StatisticsReportingArtifactFilter
 {
-    private final Set<String> simplePositivePatterns;
+    /** Holds the set of compiled patterns */
+    private final Set<Pattern> patterns;
 
-    private final Set<String> positivePatterns;
+    /** Holds simple patterns: those that can use direct matching */
+    private final Map<Integer, Map<String, Pattern>> simplePatterns;
 
-    private final Set<String> simpleNegativePatterns;
-
-    private final Set<String> negativePatterns;
-
+    /** Wether the dependency trail should be checked */
     private final boolean actTransitively;
 
-    private final Set<String> patternsTriggered = new HashSet<>();
+    /** Set of patterns that have been triggered */
+    private final Set<Pattern> patternsTriggered = new HashSet<>();
 
-    private final List<String> filteredArtifactIds = new ArrayList<>();
+    /** Set of artifacts that have been filtered out */
+    private final List<Artifact> filteredArtifact = new ArrayList<>();
 
     /**
      * @param patterns The pattern to be used.
@@ -72,43 +77,55 @@ public class PatternIncludesArtifactFilter
     public PatternIncludesArtifactFilter( final Collection<String> patterns, final boolean actTransitively )
     {
         this.actTransitively = actTransitively;
-        final Set<String> pos = new LinkedHashSet<>();
-        final Set<String> spos = new LinkedHashSet<>();
-        final Set<String> neg = new LinkedHashSet<>();
-        final Set<String> sneg = new LinkedHashSet<>();
+        final Set<Pattern> pat = new LinkedHashSet<>();
+        Map<Integer, Map<String, Pattern>> simplePat = null;
+        boolean allPos = true;
         if ( patterns != null && !patterns.isEmpty() )
         {
             for ( String pattern : patterns )
             {
-                if ( pattern.startsWith( "!" ) )
+
+                Pattern p = compile( pattern );
+                allPos &= !( p instanceof NegativePattern );
+                pat.add( p );
+            }
+        }
+        // If all patterns are positive, we can check for simple patterns
+        // Simple patterns will match the first tokens and contain no wildcards,
+        // so we can put them in a map and check them using a simple map lookup.
+        if ( allPos )
+        {
+            for ( Iterator<Pattern> it = pat.iterator(); it.hasNext(); )
+            {
+                Pattern p = it.next();
+                String peq = p.translateEquals();
+                if ( peq != null )
                 {
-                    if ( pattern.contains( "*" ) )
+                    int nb = 0;
+                    for ( char ch : peq.toCharArray() )
                     {
-                        neg.add( pattern.substring( 1 ) );
+                        if ( ch == ':' )
+                        {
+                            nb++;
+                        }
                     }
-                    else
+                    if ( simplePat == null )
                     {
-                        sneg.add( pattern.substring( 1 ) );
+                        simplePat = new HashMap<>();
                     }
-                }
-                else
-                {
-                    if ( pattern.contains( "*" ) )
+                    Map<String, Pattern> peqm = simplePat.get( nb );
+                    if ( peqm == null )
                     {
-                        pos.add( pattern );
+                        peqm = new HashMap<>();
+                        simplePat.put( nb, peqm );
                     }
-                    else
-                    {
-                        spos.add( pattern );
-                    }
+                    peqm.put( peq, p );
+                    it.remove();
                 }
             }
         }
-
-        positivePatterns = pos;
-        simplePositivePatterns = spos;
-        negativePatterns = neg;
-        simpleNegativePatterns = sneg;
+        this.simplePatterns = simplePat;
+        this.patterns = pat;
     }
 
     /** {@inheritDoc} */
@@ -118,7 +135,7 @@ public class PatternIncludesArtifactFilter
 
         if ( !shouldInclude )
         {
-            addFilteredArtifactId( artifact.getId() );
+            addFilteredArtifactId( artifact );
         }
 
         return shouldInclude;
@@ -130,104 +147,17 @@ public class PatternIncludesArtifactFilter
      */
     protected boolean patternMatches( final Artifact artifact )
     {
-        return positiveMatch( artifact ) == Boolean.TRUE || negativeMatch( artifact ) == Boolean.FALSE;
-    }
-
-    /**
-     * @param artifactId add artifact to the filtered artifacts list.
-     */
-    protected void addFilteredArtifactId( final String artifactId )
-    {
-        filteredArtifactIds.add( artifactId );
-    }
-
-    private Boolean negativeMatch( final Artifact artifact )
-    {
-        if ( simpleNegativePatterns != null && !simpleNegativePatterns.isEmpty() )
+        // Check if the main artifact matches
+        char[][] tokens = new char[][] {
+                            emptyOrChars( artifact.getGroupId() ),
+                            emptyOrChars( artifact.getArtifactId() ),
+                            emptyOrChars( artifact.getType() ),
+                            emptyOrChars( artifact.getBaseVersion() )
+                    };
+        Boolean match = match( tokens );
+        if ( match != null )
         {
-            if ( simpleMatch( artifact, simpleNegativePatterns ) )
-            {
-                return true;
-            }
-        }
-        if ( negativePatterns == null || negativePatterns.isEmpty() )
-        {
-            return null;
-        }
-        else
-        {
-            return match( artifact, negativePatterns );
-        }
-    }
-
-    /**
-     * @param artifact check for positive match.
-     * @return true/false.
-     */
-    protected Boolean positiveMatch( final Artifact artifact )
-    {
-        if ( simplePositivePatterns != null && !simplePositivePatterns.isEmpty() )
-        {
-            if ( simpleMatch( artifact, simplePositivePatterns ) )
-            {
-                return true;
-            }
-        }
-        if ( positivePatterns == null || positivePatterns.isEmpty() )
-        {
-            return null;
-        }
-        else
-        {
-            return match( artifact, positivePatterns );
-        }
-    }
-
-    private boolean simpleMatch( final Artifact artifact, final Set<String> patterns )
-    {
-        final String shortId = ArtifactUtils.versionlessKey( artifact );
-        if ( patterns.contains( shortId ) )
-        {
-            patternsTriggered.add( shortId );
-            return true;
-        }
-
-        final String id = artifact.getDependencyConflictId();
-        if ( patterns.contains( id ) )
-        {
-            patternsTriggered.add( id );
-            return true;
-        }
-
-        final String wholeId = artifact.getId();
-        if ( patterns.contains( wholeId ) )
-        {
-            patternsTriggered.add( wholeId );
-            return true;
-        }
-
-        return false;
-    }
-
-    private boolean match( final Artifact artifact, final Iterable<String> patterns )
-    {
-        final String shortId = ArtifactUtils.versionlessKey( artifact );
-        final String id = artifact.getDependencyConflictId();
-        final String wholeId = artifact.getId();
-
-        if ( matchAgainst( wholeId, patterns, false ) )
-        {
-            return true;
-        }
-
-        if ( matchAgainst( id, patterns, false ) )
-        {
-            return true;
-        }
-
-        if ( matchAgainst( shortId, patterns, false ) )
-        {
-            return true;
+            return match;
         }
 
         if ( actTransitively )
@@ -238,9 +168,11 @@ public class PatternIncludesArtifactFilter
             {
                 for ( String trailItem : depTrail )
                 {
-                    if ( matchAgainst( trailItem, patterns, true ) )
+                    char[][] depTokens = tokenizeAndSplit( trailItem );
+                    match = match( depTokens );
+                    if ( match != null)
                     {
-                        return true;
+                        return match;
                     }
                 }
             }
@@ -249,163 +181,60 @@ public class PatternIncludesArtifactFilter
         return false;
     }
 
-    private boolean matchAgainst( final String value, final Iterable<String> patterns, final boolean regionMatch )
+    private Boolean match( char[][] tokens )
     {
-        final String[] tokens = value.split( ":" );
-        for ( String pattern : patterns )
+        if ( simplePatterns != null && simplePatterns.size() > 0 )
         {
-            String[] patternTokens = pattern.split( ":" );
-            
-            if ( patternTokens.length == 5 && tokens.length < 5 )
+            // We add the parts one by one to the builder
+            StringBuilder sb = new StringBuilder();
+            for ( int i = 0; i < 4; i++ )
             {
-                // 4th element is the classifier
-                if ( !"*".equals( patternTokens[3] ) )
+                if ( i > 0 )
                 {
-                    // classifier required, cannot be a match
-                    return false;
+                    sb.append( ":" );
                 }
-                patternTokens = new String[] { patternTokens[0], patternTokens[1], patternTokens[2], patternTokens[4] };
-            }
-
-            // fail immediately if pattern tokens outnumber tokens to match
-            boolean matched = patternTokens.length <= tokens.length;
-
-            for ( int i = 0; matched && i < patternTokens.length; i++ )
-            {
-                matched = matches( tokens[i], patternTokens[i] );
-            }
-
-            // case of starting '*' like '*:jar:*'
-            // This really only matches from the end instead.....
-            if ( !matched && patternTokens.length < tokens.length && isFirstPatternWildcard( patternTokens ) )
-            {
-                matched = true;
-                int tokenOffset = tokens.length - patternTokens.length;
-                for ( int i = 0; matched && i < patternTokens.length; i++ )
+                sb.append( tokens[i] );
+                Map<String, Pattern> map = simplePatterns.get( i );
+                if ( map != null )
                 {
-                    matched = matches( tokens[i + tokenOffset], patternTokens[i] );
+                    // Check if one of the pattern matches
+                    Pattern p = map.get( sb.toString() );
+                    if ( p != null )
+                    {
+                        patternsTriggered.add( p );
+                        return true;
+                    }
                 }
             }
-
-            if ( matched )
-            {
-                patternsTriggered.add( pattern );
-                return true;
-            }
-
-            if ( regionMatch && value.contains( pattern ) )
-            {
-                patternsTriggered.add( pattern );
-                return true;
-            }
-
         }
-        return false;
+        // Check all other patterns
+        for ( Pattern pattern : patterns )
+        {
+            if ( pattern.matches( tokens ) )
+            {
+                patternsTriggered.add( pattern );
+                return !(pattern instanceof NegativePattern);
+            }
+        }
 
-    }
-
-    private boolean isFirstPatternWildcard( String[] patternTokens )
-    {
-        return patternTokens.length > 0 && "*".equals( patternTokens[0] );
+        return null;
     }
 
     /**
-     * Gets whether the specified token matches the specified pattern segment.
-     * 
-     * @param token the token to check
-     * @param pattern the pattern segment to match, as defined above
-     * @return <code>true</code> if the specified token is matched by the specified pattern segment
+     * @param artifact add artifact to the filtered artifacts list.
      */
-    private boolean matches( final String token, final String pattern )
+    protected void addFilteredArtifactId( final Artifact artifact )
     {
-        boolean matches;
-
-        // support full wildcard and implied wildcard
-        if ( "*".equals( pattern ) || pattern.length() == 0 )
-        {
-            matches = true;
-        }
-        // support contains wildcard
-        else if ( pattern.startsWith( "*" ) && pattern.endsWith( "*" ) )
-        {
-            final String contains = pattern.substring( 1, pattern.length() - 1 );
-
-            matches = token.contains( contains );
-        }
-        // support leading wildcard
-        else if ( pattern.startsWith( "*" ) )
-        {
-            final String suffix = pattern.substring( 1 );
-
-            matches = token.endsWith( suffix );
-        }
-        // support trailing wildcard
-        else if ( pattern.endsWith( "*" ) )
-        {
-            final String prefix = pattern.substring( 0, pattern.length() - 1 );
-
-            matches = token.startsWith( prefix );
-        }
-        // support wildcards in the middle of a pattern segment
-        else if ( pattern.indexOf( '*' ) > -1 )
-        {
-            String[] parts = pattern.split( "\\*" );
-            int lastPartEnd = -1;
-            boolean match = true;
-
-            for ( String part : parts )
-            {
-                int idx = token.indexOf( part );
-                if ( idx <= lastPartEnd )
-                {
-                    match = false;
-                    break;
-                }
-
-                lastPartEnd = idx + part.length();
-            }
-
-            matches = match;
-        }
-        // support versions range
-        else if ( pattern.startsWith( "[" ) || pattern.startsWith( "(" ) )
-        {
-            matches = isVersionIncludedInRange( token, pattern );
-        }
-        // support exact match
-        else
-        {
-            matches = token.equals( pattern );
-        }
-
-        return matches;
-    }
-
-    private boolean isVersionIncludedInRange( final String version, final String range )
-    {
-        try
-        {
-            return VersionRange.createFromVersionSpec( range ).containsVersion( new DefaultArtifactVersion( version ) );
-        }
-        catch ( final InvalidVersionSpecificationException e )
-        {
-            return false;
-        }
+        filteredArtifact.add( artifact );
     }
 
     /** {@inheritDoc} */
     public void reportMissedCriteria( final Logger logger )
     {
         // if there are no patterns, there is nothing to report.
-        if ( !positivePatterns.isEmpty() || !negativePatterns.isEmpty()
-                || !simplePositivePatterns.isEmpty() || !simpleNegativePatterns.isEmpty() )
+        if ( !patterns.isEmpty() )
         {
-            final List<String> missed = new ArrayList<>();
-            missed.addAll( positivePatterns );
-            missed.addAll( simplePositivePatterns );
-            missed.addAll( negativePatterns );
-            missed.addAll( simpleNegativePatterns );
-
+            final List<Pattern> missed = new ArrayList<>( patterns );
             missed.removeAll( patternsTriggered );
 
             if ( !missed.isEmpty() && logger.isWarnEnabled() )
@@ -416,7 +245,7 @@ public class PatternIncludesArtifactFilter
                 buffer.append( getFilterDescription() );
                 buffer.append( ':' );
 
-                for ( String pattern : missed )
+                for ( Pattern pattern : missed )
                 {
                     buffer.append( "\no  '" ).append( pattern ).append( "'" );
                 }
@@ -440,11 +269,7 @@ public class PatternIncludesArtifactFilter
     protected String getPatternsAsString()
     {
         final StringBuilder buffer = new StringBuilder();
-        for ( String pattern : simplePositivePatterns )
-        {
-            buffer.append( "\no '" ).append( pattern ).append( "'" );
-        }
-        for ( String pattern : positivePatterns )
+        for ( Pattern pattern : patterns )
         {
             buffer.append( "\no '" ).append( pattern ).append( "'" );
         }
@@ -463,14 +288,14 @@ public class PatternIncludesArtifactFilter
     /** {@inheritDoc} */
     public void reportFilteredArtifacts( final Logger logger )
     {
-        if ( !filteredArtifactIds.isEmpty() && logger.isDebugEnabled() )
+        if ( !filteredArtifact.isEmpty() && logger.isDebugEnabled() )
         {
             final StringBuilder buffer =
                 new StringBuilder( "The following artifacts were removed by this " + getFilterDescription() + ": " );
 
-            for ( String artifactId : filteredArtifactIds )
+            for ( Artifact artifactId : filteredArtifact )
             {
-                buffer.append( '\n' ).append( artifactId );
+                buffer.append( '\n' ).append( artifactId.getId() );
             }
 
             logger.debug( buffer.toString() );
@@ -481,18 +306,624 @@ public class PatternIncludesArtifactFilter
     public boolean hasMissedCriteria()
     {
         // if there are no patterns, there is nothing to report.
-        if ( !positivePatterns.isEmpty() || !negativePatterns.isEmpty() )
+        if ( !patterns.isEmpty() )
         {
-            final List<String> missed = new ArrayList<>();
-            missed.addAll( positivePatterns );
-            missed.addAll( negativePatterns );
-
+            final List<Pattern> missed = new ArrayList<>( patterns );
             missed.removeAll( patternsTriggered );
 
             return !missed.isEmpty();
         }
 
         return false;
+    }
+
+    private static final char[] EMPTY = new char[0];
+
+    private static final char[] ANY = new char[] { '*' };
+
+    static char[] emptyOrChars( String str )
+    {
+        return str != null && str.length() > 0 ? str.toCharArray() : EMPTY;
+    }
+
+    static char[] anyOrChars( char[] str )
+    {
+        return str.length > 1 || ( str.length == 1 && str[0] != '*' ) ? str : ANY;
+    }
+
+    static char[][] tokenizeAndSplit( String pattern )
+    {
+        String[] stokens = pattern.split( ":" );
+        char[][] tokens = new char[ stokens.length ][];
+        for ( int i = 0; i < stokens.length; i++ )
+        {
+            tokens[i] = emptyOrChars( stokens[i] );
+        }
+        return tokens;
+    }
+
+    static boolean match( char[] patArr, char[] strArr, boolean isVersion )
+    {
+        int patIdxStart = 0;
+        int patIdxEnd = patArr.length - 1;
+        int strIdxStart = 0;
+        int strIdxEnd = strArr.length - 1;
+        char ch;
+
+        boolean containsStar = false;
+        for ( char aPatArr : patArr )
+        {
+            if ( aPatArr == '*' )
+            {
+                containsStar = true;
+                break;
+            }
+        }
+
+        if ( !containsStar )
+        {
+            if ( isVersion && ( patArr[0] == '[' || patArr[0] == '(' ) )
+            {
+                return isVersionIncludedInRange( String.valueOf( strArr ), String.valueOf( patArr ) );
+            }
+            // No '*'s, so we make a shortcut
+            if ( patIdxEnd != strIdxEnd )
+            {
+                return false; // Pattern and string do not have the same size
+            }
+            for ( int i = 0; i <= patIdxEnd; i++ )
+            {
+                ch = patArr[i];
+                if ( ch != '?' && ch != strArr[i] )
+                {
+                    return false; // Character mismatch
+                }
+            }
+            return true; // String matches against pattern
+        }
+
+        if ( patIdxEnd == 0 )
+        {
+            return true; // Pattern contains only '*', which matches anything
+        }
+
+        // Process characters before first star
+        while ( ( ch = patArr[patIdxStart] ) != '*' && strIdxStart <= strIdxEnd )
+        {
+            if ( ch != '?' && ch != strArr[strIdxStart] )
+            {
+                return false; // Character mismatch
+            }
+            patIdxStart++;
+            strIdxStart++;
+        }
+        if ( strIdxStart > strIdxEnd )
+        {
+            // All characters in the string are used. Check if only '*'s are
+            // left in the pattern. If so, we succeeded. Otherwise failure.
+            for ( int i = patIdxStart; i <= patIdxEnd; i++ )
+            {
+                if ( patArr[i] != '*' )
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // Process characters after last star
+        while ( ( ch = patArr[patIdxEnd] ) != '*' && strIdxStart <= strIdxEnd )
+        {
+            if ( ch != '?' && ch != strArr[strIdxEnd] )
+            {
+                return false; // Character mismatch
+            }
+            patIdxEnd--;
+            strIdxEnd--;
+        }
+        if ( strIdxStart > strIdxEnd )
+        {
+            // All characters in the string are used. Check if only '*'s are
+            // left in the pattern. If so, we succeeded. Otherwise failure.
+            for ( int i = patIdxStart; i <= patIdxEnd; i++ )
+            {
+                if ( patArr[i] != '*' )
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // process pattern between stars. padIdxStart and patIdxEnd point
+        // always to a '*'.
+        while ( patIdxStart != patIdxEnd && strIdxStart <= strIdxEnd )
+        {
+            int patIdxTmp = -1;
+            for ( int i = patIdxStart + 1; i <= patIdxEnd; i++ )
+            {
+                if ( patArr[i] == '*' )
+                {
+                    patIdxTmp = i;
+                    break;
+                }
+            }
+            if ( patIdxTmp == patIdxStart + 1 )
+            {
+                // Two stars next to each other, skip the first one.
+                patIdxStart++;
+                continue;
+            }
+            // Find the pattern between padIdxStart & padIdxTmp in str between
+            // strIdxStart & strIdxEnd
+            int patLength = ( patIdxTmp - patIdxStart - 1 );
+            int strLength = ( strIdxEnd - strIdxStart + 1 );
+            int foundIdx = -1;
+            strLoop: for ( int i = 0; i <= strLength - patLength; i++ )
+            {
+                for ( int j = 0; j < patLength; j++ )
+                {
+                    ch = patArr[patIdxStart + j + 1];
+                    if ( ch != '?' && ch != strArr[strIdxStart + i + j] )
+                    {
+                        continue strLoop;
+                    }
+                }
+
+                foundIdx = strIdxStart + i;
+                break;
+            }
+
+            if ( foundIdx == -1 )
+            {
+                return false;
+            }
+
+            patIdxStart = patIdxTmp;
+            strIdxStart = foundIdx + patLength;
+        }
+
+        // All characters in the string are used. Check if only '*'s are left
+        // in the pattern. If so, we succeeded. Otherwise failure.
+        for ( int i = patIdxStart; i <= patIdxEnd; i++ )
+        {
+            if ( patArr[i] != '*' )
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    static boolean isVersionIncludedInRange( final String version, final String range )
+    {
+        try
+        {
+            return VersionRange.createFromVersionSpec( range ).containsVersion( new DefaultArtifactVersion( version ) );
+        }
+        catch ( final InvalidVersionSpecificationException e )
+        {
+            return false;
+        }
+    }
+
+    static Pattern compile( String pattern )
+    {
+        if ( pattern.startsWith( "!" ) )
+        {
+            return new NegativePattern( pattern, compile( pattern.substring( 1 ) ) );
+        }
+        else
+        {
+            char[][] stokens = tokenizeAndSplit( pattern );
+            char[][] tokens = new char[ stokens.length ][];
+            for ( int i = 0; i < stokens.length; i++ )
+            {
+                tokens[i] = anyOrChars( stokens[i] );
+            }
+            if ( tokens.length > 5 )
+            {
+                throw new IllegalArgumentException( "Invalid pattern: " + pattern );
+            }
+            // we only accept 5 tokens if the classifier = '*'
+            if ( tokens.length == 5 )
+            {
+                if ( tokens[3] != ANY )
+                {
+                    throw new IllegalArgumentException( "Invalid pattern: " + pattern );
+                }
+                tokens = new char[][] { tokens[0], tokens[1], tokens[2], tokens[4] };
+            }
+            //
+            // Check the 4 tokens and build an appropriate Pattern
+            // Special care needs to be taken if the first or the last part is '*'
+            // because this allows the '*' to match multiple tokens
+            //
+            if ( tokens.length == 1 )
+            {
+                if ( tokens[0] == ANY )
+                {
+                    // *
+                    return all( pattern );
+                }
+                else
+                {
+                    // [pat0]
+                    return match( pattern, tokens[0], 0 );
+                }
+            }
+            if ( tokens.length == 2 )
+            {
+                if ( tokens[0] == ANY )
+                {
+                    if ( tokens[1] == ANY )
+                    {
+                        // *:*
+                        return all( pattern );
+                    }
+                    else
+                    {
+                        // *:[pat1]
+                        return match( pattern, tokens[1], 0, 3 );
+                    }
+                }
+                else
+                {
+                    if ( tokens[1] == ANY )
+                    {
+                        // [pat0]:*
+                        return match( pattern, tokens[0], 0 );
+                    }
+                    else
+                    {
+                        // [pat0]:[pat1]
+                        Pattern m00 = match( tokens[0], 0 );
+                        Pattern m11 = match( tokens[1], 1 );
+                        return and( pattern, m00, m11 );
+                    }
+                }
+            }
+            if ( tokens.length == 3 )
+            {
+                if ( tokens[0] == ANY )
+                {
+                    if ( tokens[1] == ANY )
+                    {
+                        if ( tokens[2] == ANY )
+                        {
+                            // *:*:*
+                            return all( pattern );
+                        }
+                        else
+                        {
+                            // *:*:[pat2]
+                            return match( pattern, tokens[2], 2, 3 );
+                        }
+                    }
+                    else
+                    {
+                        if ( tokens[2] == ANY )
+                        {
+                            // *:[pat1]:*
+                            return match( pattern, tokens[1], 1, 2 );
+                        }
+                        else
+                        {
+                            // *:[pat1]:[pat2]
+                            Pattern m11 = match( tokens[1], 1 );
+                            Pattern m12 = match( tokens[1], 2 );
+                            Pattern m22 = match( tokens[2], 2 );
+                            Pattern m23 = match( tokens[2], 3 );
+                            return or( pattern, and( m11, m22 ), and( m12, m23 ) );
+                        }
+                    }
+                }
+                else
+                {
+                    if ( tokens[1] == ANY )
+                    {
+                        if ( tokens[2] == ANY )
+                        {
+                            // [pat0]:*:*
+                            return match( pattern, tokens[0], 0, 1 );
+                        }
+                        else
+                        {
+                            // [pat0]:*:[pat2]
+                            Pattern m00 = match( tokens[0], 0 );
+                            Pattern m223 = match( tokens[2], 2, 3 );
+                            return and( pattern, m00, m223 );
+                        }
+                    }
+                    else
+                    {
+                        if ( tokens[2] == ANY )
+                        {
+                            // [pat0]:[pat1]:*
+                            Pattern m00 = match( tokens[0], 0 );
+                            Pattern m11 = match( tokens[1], 1 );
+                            return and( pattern, m00, m11 );
+                        }
+                        else
+                        {
+                            // [pat0]:[pat1]:[pat2]
+                            Pattern m00 = match( tokens[0], 0 );
+                            Pattern m11 = match( tokens[1], 1 );
+                            Pattern m22 = match( tokens[2], 2 );
+                            return and( pattern, m00, m11, m22 );
+                        }
+                    }
+                }
+            }
+            if ( tokens.length == 4 )
+            {
+                List<Pattern> patterns = new ArrayList<>();
+                for ( int i = 0; i < 4; i++ )
+                {
+                    if ( tokens[i] != ANY )
+                    {
+                        patterns.add( match( tokens[i], i ) );
+                    }
+                }
+                return and( pattern, patterns.toArray( new Pattern[0] ) );
+            }
+            throw new IllegalStateException();
+        }
+    }
+
+    private static Pattern match( String pattern, char[] token, int posVal )
+    {
+        return match( pattern, token, posVal, posVal );
+    }
+
+    private static Pattern match( char[] token, int posVal )
+    {
+        return match( "", token, posVal, posVal );
+    }
+
+    private static Pattern match( String pattern, char[] token, int posMin, int posMax )
+    {
+        boolean hasWildcard = false;
+        for ( char ch : token )
+        {
+            if ( ch == '*' || ch == '?' )
+            {
+                hasWildcard = true;
+                break;
+            }
+        }
+        if ( hasWildcard || posMax == 3 )
+        {
+            return new PosPattern( pattern, token, posMin, posMax );
+        }
+        else
+        {
+            return new EqPattern( pattern, token, posMin, posMax );
+        }
+    }
+
+    private static Pattern match( char[] token, int posMin, int posMax )
+    {
+        return new PosPattern( "", token, posMin, posMax );
+    }
+
+    private static Pattern and( String pattern, Pattern... patterns )
+    {
+        return new AndPattern( pattern, patterns );
+    }
+
+    private static Pattern and( Pattern... patterns )
+    {
+        return and( "", patterns );
+    }
+
+    private static Pattern or( String pattern, Pattern... patterns )
+    {
+        return new OrPattern( pattern, patterns );
+    }
+
+    private static Pattern or( Pattern... patterns )
+    {
+        return or( "", patterns );
+    }
+
+    private static Pattern all( String pattern )
+    {
+        return new MatchAllPattern( pattern );
+    }
+
+    static abstract class Pattern
+    {
+        private final String pattern;
+
+        public Pattern( String pattern )
+        {
+            this.pattern = Objects.requireNonNull( pattern );
+        }
+
+        public abstract boolean matches( char[][] parts );
+
+        public String translateEquals()
+        {
+            return null;
+        }
+
+        public String translateEquals( int pos )
+        {
+            return null;
+        }
+
+        @Override
+        public String toString() {
+            return pattern;
+        }
+    }
+
+    static class AndPattern extends Pattern
+    {
+        private final Pattern[] patterns;
+
+        public AndPattern( String pattern, Pattern[] patterns )
+        {
+            super( pattern );
+            this.patterns = patterns;
+        }
+
+        @Override
+        public boolean matches( char[][] parts )
+        {
+            for ( Pattern pattern : patterns )
+            {
+                if ( !pattern.matches( parts ) )
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        @Override
+        public String translateEquals()
+        {
+            String[] strings = new String[ patterns.length ];
+            for ( int i = 0; i < patterns.length; i++ )
+            {
+                strings[i] = patterns[i].translateEquals( i );
+                if ( strings[i] == null )
+                {
+                    return null;
+                }
+            }
+            StringBuilder sb = new StringBuilder();
+            for ( int i = 0; i < strings.length; i++ )
+            {
+                if ( i > 0 )
+                {
+                    sb.append( ":" );
+                }
+                sb.append( strings[i] );
+            }
+            return sb.toString();
+        }
+    }
+
+    static class OrPattern extends Pattern
+    {
+        private final Pattern[] patterns;
+
+        public OrPattern( String pattern, Pattern[] patterns )
+        {
+            super( pattern );
+            this.patterns = patterns;
+        }
+
+        @Override
+        public boolean matches( char[][] parts )
+        {
+            for ( Pattern pattern : patterns )
+            {
+                if ( pattern.matches( parts ) )
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    static class PosPattern extends Pattern
+    {
+        private final char[] token;
+        private final int posMin;
+        private final int posMax;
+
+        public PosPattern( String pattern, char[] token, int posMin, int posMax )
+        {
+            super( pattern );
+            this.token = token;
+            this.posMin = posMin;
+            this.posMax = posMax;
+        }
+
+        @Override
+        public boolean matches( char[][] parts )
+        {
+            for ( int i = posMin; i <= posMax; i++ )
+            {
+                if ( match( token, parts[i], i == 3 ) )
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    static class EqPattern extends Pattern
+    {
+        private final char[] token;
+        private final int posMin;
+        private final int posMax;
+
+        public EqPattern( String pattern, char[] token, int posMin, int posMax )
+        {
+            super( pattern );
+            this.token = token;
+            this.posMin = posMin;
+            this.posMax = posMax;
+        }
+
+        @Override
+        public boolean matches( char[][] parts )
+        {
+            for ( int i = posMin; i <= posMax; i++ )
+            {
+                if (Arrays.equals( token, parts[i] ) )
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public String translateEquals( int pos )
+        {
+            return posMin == pos && posMax == pos
+                && ( pos < 3 || ( token[0] != '[' && token[0] != '(' ) )
+                    ? String.valueOf( token ) : null;
+        }
+
+    }
+
+    static class MatchAllPattern extends Pattern
+    {
+        public MatchAllPattern( String pattern )
+        {
+            super( pattern );
+        }
+
+        @Override
+        public boolean matches( char[][] parts )
+        {
+            return true;
+        }
+    }
+
+    static class NegativePattern extends Pattern
+    {
+        private final Pattern inner;
+
+        NegativePattern( String pattern, Pattern inner )
+        {
+            super( pattern );
+            this.inner = inner;
+        }
+
+        @Override
+        public boolean matches( char[][] parts )
+        {
+            return inner.matches( parts );
+        }
     }
 
 }

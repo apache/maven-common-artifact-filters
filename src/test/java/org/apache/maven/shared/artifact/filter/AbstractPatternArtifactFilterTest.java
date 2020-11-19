@@ -52,16 +52,16 @@ public abstract class AbstractPatternArtifactFilterTest
         final String artifactId2 = "artifact2";
 
         Artifact artifact1 = mock( Artifact.class );
-        when( artifact1.getDependencyConflictId() ).thenReturn( groupId1 + ":" + artifactId1 + ":jar" );
         when( artifact1.getGroupId() ).thenReturn( groupId1 );
         when( artifact1.getArtifactId() ).thenReturn( artifactId1 );
-        when( artifact1.getId() ).thenReturn( groupId1 + ":" + artifactId1 + ":jar:version" );
+        when( artifact1.getType() ).thenReturn( "jar" );
+        when( artifact1.getBaseVersion() ).thenReturn( "version" );
         
         Artifact artifact2 = mock( Artifact.class );
-        when( artifact2.getDependencyConflictId() ).thenReturn( groupId2 + ":" + artifactId2 + ":jar" );
         when( artifact2.getGroupId() ).thenReturn( groupId2 );
         when( artifact2.getArtifactId() ).thenReturn( artifactId2 );
-        when( artifact2.getId() ).thenReturn( groupId2 + ":" + artifactId2 + ":jar:version" );
+        when( artifact2.getType() ).thenReturn( "jar" );
+        when( artifact2.getBaseVersion() ).thenReturn( "version" );
 
         final List<String> patterns = new ArrayList<>();
         patterns.add( groupId1 + ":" + artifactId1 + ":*" );
@@ -91,16 +91,16 @@ public abstract class AbstractPatternArtifactFilterTest
         final String artifactId2 = "artifact2";
 
         Artifact artifact1 = mock( Artifact.class );
-        when( artifact1.getDependencyConflictId() ).thenReturn( groupId1 + ":" + artifactId1 + ":jar" );
         when( artifact1.getGroupId() ).thenReturn( groupId1 );
         when( artifact1.getArtifactId() ).thenReturn( artifactId1 );
-        when( artifact1.getId() ).thenReturn( groupId1 + ":" + artifactId1 + ":jar:version" );
+        when( artifact1.getType() ).thenReturn( "jar" );
+        when( artifact1.getBaseVersion() ).thenReturn( "version" );
 
         Artifact artifact2 = mock( Artifact.class );
-        when( artifact2.getDependencyConflictId() ).thenReturn( groupId2 + ":" + artifactId2 + ":jar" );
         when( artifact2.getGroupId() ).thenReturn( groupId2 );
         when( artifact2.getArtifactId() ).thenReturn( artifactId2 );
-        when( artifact2.getId() ).thenReturn( groupId2 + ":" + artifactId2 + ":jar:version" );
+        when( artifact2.getType() ).thenReturn( "jar" );
+        when( artifact2.getBaseVersion() ).thenReturn( "version" );
 
         final List<String> patterns = new ArrayList<>();
         patterns.add( groupId1 + "*" );
@@ -127,10 +127,10 @@ public abstract class AbstractPatternArtifactFilterTest
         final String artifactId = "artifact";
 
         Artifact artifact = mock( Artifact.class );
-        when( artifact.getDependencyConflictId() ).thenReturn( groupId + ":" + artifactId + ":jar" );
         when( artifact.getGroupId() ).thenReturn( groupId );
         when( artifact.getArtifactId() ).thenReturn( artifactId );
-        when( artifact.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
+        when( artifact.getType() ).thenReturn( "jar" );
+        when( artifact.getBaseVersion() ).thenReturn( "version" );
 
         final ArtifactFilter filter = createFilter( Collections.singletonList( groupId + ":" + artifactId ) );
 
@@ -151,10 +151,10 @@ public abstract class AbstractPatternArtifactFilterTest
         final String artifactId = "artifact";
 
         Artifact artifact = mock( Artifact.class );
-        when( artifact.getDependencyConflictId() ).thenReturn( groupId + ":" + artifactId + ":jar" );
         when( artifact.getGroupId() ).thenReturn( groupId );
         when( artifact.getArtifactId() ).thenReturn( artifactId );
-        when( artifact.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
+        when( artifact.getType() ).thenReturn( "jar" );
+        when( artifact.getBaseVersion() ).thenReturn( "version" );
 
         final ArtifactFilter filter = createFilter( Collections.singletonList( groupId + ":" + artifactId + ":jar" ) );
 
@@ -175,10 +175,10 @@ public abstract class AbstractPatternArtifactFilterTest
         final String artifactId = "artifact";
 
         Artifact artifact = mock( Artifact.class );
-        when( artifact.getDependencyConflictId() ).thenReturn( groupId + ":" + artifactId + ":jar" );
         when( artifact.getGroupId() ).thenReturn( groupId );
         when( artifact.getArtifactId() ).thenReturn( artifactId );
-        when( artifact.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
+        when( artifact.getType() ).thenReturn( "jar" );
+        when( artifact.getBaseVersion() ).thenReturn( "version" );
 
         final List<String> patterns = new ArrayList<>();
         patterns.add( "otherGroup:" + artifactId + ":jar" );
@@ -203,10 +203,10 @@ public abstract class AbstractPatternArtifactFilterTest
         final String artifactId = "artifact";
 
         Artifact artifact = mock( Artifact.class );
-        when( artifact.getDependencyConflictId() ).thenReturn( groupId + ":" + artifactId + ":jar" );
         when( artifact.getGroupId() ).thenReturn( groupId );
         when( artifact.getArtifactId() ).thenReturn( artifactId );
-        when( artifact.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
+        when( artifact.getType() ).thenReturn( "jar" );
+        when( artifact.getBaseVersion() ).thenReturn( "version" );
 
         final List<String> patterns = new ArrayList<>();
         patterns.add( groupId + "otherArtifact:jar" );
@@ -231,10 +231,10 @@ public abstract class AbstractPatternArtifactFilterTest
         final String artifactId = "artifact";
 
         Artifact artifact = mock( Artifact.class );
-        when( artifact.getDependencyConflictId() ).thenReturn( groupId + ":" + artifactId + ":jar" );
         when( artifact.getGroupId() ).thenReturn( groupId );
         when( artifact.getArtifactId() ).thenReturn( artifactId );
-        when( artifact.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
+        when( artifact.getType() ).thenReturn( "jar" );
+        when( artifact.getBaseVersion() ).thenReturn( "version" );
 
         final List<String> patterns = new ArrayList<>();
         patterns.add( "otherGroup:otherArtifact:jar" );
@@ -265,10 +265,10 @@ public abstract class AbstractPatternArtifactFilterTest
         final List<String> patterns = Collections.singletonList( depTrailItem );
 
         Artifact artifact = mock( Artifact.class );
-        when( artifact.getDependencyConflictId() ).thenReturn( groupId + ":" + artifactId + ":jar" );
         when( artifact.getGroupId() ).thenReturn( groupId );
         when( artifact.getArtifactId() ).thenReturn( artifactId );
-        when( artifact.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
+        when( artifact.getType() ).thenReturn( "jar" );
+        when( artifact.getBaseVersion() ).thenReturn( "version" );
         when( artifact.getDependencyTrail() ).thenReturn( depTrail );
 
         final ArtifactFilter filter = createFilter( patterns, true );
@@ -296,10 +296,10 @@ public abstract class AbstractPatternArtifactFilterTest
         final List<String> patterns = Collections.singletonList( "otherGroup*" );
 
         Artifact artifact = mock( Artifact.class );
-        when( artifact.getDependencyConflictId() ).thenReturn( groupId + ":" + artifactId + ":jar" );
         when( artifact.getGroupId() ).thenReturn( groupId );
         when( artifact.getArtifactId() ).thenReturn( artifactId );
-        when( artifact.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
+        when( artifact.getType() ).thenReturn( "jar" );
+        when( artifact.getBaseVersion() ).thenReturn( "version" );
         when( artifact.getDependencyTrail() ).thenReturn( depTrail );
 
         final ArtifactFilter filter = createFilter( patterns, true );
@@ -321,10 +321,10 @@ public abstract class AbstractPatternArtifactFilterTest
         final String artifactId = "artifact";
 
         Artifact artifact = mock( Artifact.class );
-        when( artifact.getDependencyConflictId() ).thenReturn( groupId + ":" + artifactId + ":jar" );
         when( artifact.getGroupId() ).thenReturn( groupId );
         when( artifact.getArtifactId() ).thenReturn( artifactId );
-        when( artifact.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
+        when( artifact.getType() ).thenReturn( "jar" );
+        when( artifact.getBaseVersion() ).thenReturn( "version" );
 
         final List<String> patterns = new ArrayList<>();
         patterns.add( "!group:artifact:jar" );
@@ -348,10 +348,10 @@ public abstract class AbstractPatternArtifactFilterTest
         final String artifactId = "artifact";
 
         Artifact artifact = mock( Artifact.class );
-        when( artifact.getDependencyConflictId() ).thenReturn( groupId + ":" + artifactId + ":jar" );
         when( artifact.getGroupId() ).thenReturn( groupId );
         when( artifact.getArtifactId() ).thenReturn( artifactId );
-        when( artifact.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
+        when( artifact.getType() ).thenReturn( "jar" );
+        when( artifact.getBaseVersion() ).thenReturn( "version" );
 
         final List<String> patterns = new ArrayList<>();
         patterns.add( "group:*:jar" );
@@ -376,10 +376,10 @@ public abstract class AbstractPatternArtifactFilterTest
 
         Artifact artifact = mock( Artifact.class );
 
-        when( artifact.getDependencyConflictId() ).thenReturn( groupId + ":" + artifactId + ":jar" );
         when( artifact.getGroupId() ).thenReturn( groupId );
         when( artifact.getArtifactId() ).thenReturn( artifactId );
-        when( artifact.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
+        when( artifact.getType() ).thenReturn( "jar" );
+        when( artifact.getBaseVersion() ).thenReturn( "version" );
 
         final List<String> patterns = new ArrayList<>();
         patterns.add( "*:artifact:*" );
@@ -404,10 +404,10 @@ public abstract class AbstractPatternArtifactFilterTest
 
         Artifact artifact = mock( Artifact.class );
 
-        when( artifact.getDependencyConflictId() ).thenReturn( groupId + ":" + artifactId + ":jar" );
         when( artifact.getGroupId() ).thenReturn( groupId );
         when( artifact.getArtifactId() ).thenReturn( artifactId );
-        when( artifact.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
+        when( artifact.getType() ).thenReturn( "jar" );
+        when( artifact.getBaseVersion() ).thenReturn( "version" );
 
         final List<String> patterns = new ArrayList<>();
         patterns.add( "group:some-*-id" );
@@ -432,10 +432,10 @@ public abstract class AbstractPatternArtifactFilterTest
 
         Artifact artifact = mock( Artifact.class );
 
-        when( artifact.getDependencyConflictId() ).thenReturn( groupId + ":" + artifactId + ":jar" );
         when( artifact.getGroupId() ).thenReturn( groupId );
         when( artifact.getArtifactId() ).thenReturn( artifactId );
-        when( artifact.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
+        when( artifact.getType() ).thenReturn( "jar" );
+        when( artifact.getBaseVersion() ).thenReturn( "version" );
 
         final List<String> patterns = new ArrayList<>();
         patterns.add( "some.group*" );
@@ -465,16 +465,16 @@ public abstract class AbstractPatternArtifactFilterTest
         final List<String> patterns = Collections.singletonList( "*:jar:*" );
 
         Artifact artifact1 = mock( Artifact.class );
-        when( artifact1.getDependencyConflictId() ).thenReturn( groupId + ":" + artifactId + ":jar" );
         when( artifact1.getGroupId() ).thenReturn( groupId );
         when( artifact1.getArtifactId() ).thenReturn( artifactId );
-        when( artifact1.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
-        
+        when( artifact1.getType() ).thenReturn( "jar" );
+        when( artifact1.getBaseVersion() ).thenReturn( "version" );
+
         Artifact artifact2 = mock( Artifact.class );
-        when( artifact2.getDependencyConflictId() ).thenReturn( otherGroup + ":" + otherArtifact + ":" + otherType );
         when( artifact2.getGroupId() ).thenReturn( otherGroup );
         when( artifact2.getArtifactId() ).thenReturn( otherArtifact );
-        when( artifact2.getId() ).thenReturn( otherGroup + ":" + otherArtifact + ":" + otherType + ":version" );
+        when( artifact2.getType() ).thenReturn( otherType );
+        when( artifact2.getBaseVersion() ).thenReturn( "version" );
         when( artifact2.getDependencyTrail() ).thenReturn( Collections.<String> emptyList() );
 
         final ArtifactFilter filter = createFilter( patterns, true );
@@ -498,13 +498,40 @@ public abstract class AbstractPatternArtifactFilterTest
         final String artifactId = "some-artifact-id";
 
         Artifact artifact = mock( Artifact.class );
-        when( artifact.getDependencyConflictId() ).thenReturn( groupId + ":" + artifactId + ":jar" );
         when( artifact.getGroupId() ).thenReturn( groupId );
         when( artifact.getArtifactId() ).thenReturn( artifactId );
-        when( artifact.getId() ).thenReturn( groupId + ":" + artifactId + ":jar:version" );
+        when( artifact.getType() ).thenReturn( "jar" );
+        when( artifact.getBaseVersion() ).thenReturn( "version" );
 
         final List<String> patterns = new ArrayList<>();
         patterns.add( "com.mycompany.*:*:jar:*:*" );
+
+        final ArtifactFilter filter = createFilter( patterns );
+
+        if ( isInclusionNotExpected() )
+        {
+            assertFalse( filter.include( artifact ) );
+        }
+        else
+        {
+            assertTrue( filter.include( artifact ) );
+        }
+    }
+
+    @Test
+    public void testWithVersionRange()
+    {
+        final String groupId = "com.mycompany.myproject";
+        final String artifactId = "some-artifact-id";
+
+        Artifact artifact = mock( Artifact.class );
+        when( artifact.getGroupId() ).thenReturn( groupId );
+        when( artifact.getArtifactId() ).thenReturn( artifactId );
+        when( artifact.getType() ).thenReturn( "jar" );
+        when( artifact.getBaseVersion() ).thenReturn( "1.1" );
+
+        final List<String> patterns = new ArrayList<>();
+        patterns.add( "com.mycompany.myproject:some-artifact-id:jar:*:[1.0,2.0)" );
 
         final ArtifactFilter filter = createFilter( patterns );
 
