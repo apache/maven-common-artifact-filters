@@ -148,13 +148,13 @@ public class PatternIncludesArtifactFilter
     protected boolean patternMatches( final Artifact artifact )
     {
         // Check if the main artifact matches
-        char[][] tokens = new char[][] {
+        char[][] artifactGatvCharArray = new char[][] {
                             emptyOrChars( artifact.getGroupId() ),
                             emptyOrChars( artifact.getArtifactId() ),
                             emptyOrChars( artifact.getType() ),
                             emptyOrChars( artifact.getBaseVersion() )
                     };
-        Boolean match = match( tokens );
+        Boolean match = match( artifactGatvCharArray );
         if ( match != null )
         {
             return match;
@@ -168,8 +168,8 @@ public class PatternIncludesArtifactFilter
             {
                 for ( String trailItem : depTrail )
                 {
-                    char[][] depTokens = tokenizeAndSplit( trailItem );
-                    match = match( depTokens );
+                    char[][] depGatvCharArray = tokenizeAndSplit( trailItem );
+                    match = match( depGatvCharArray );
                     if ( match != null)
                     {
                         return match;
@@ -181,7 +181,7 @@ public class PatternIncludesArtifactFilter
         return false;
     }
 
-    private Boolean match( char[][] tokens )
+    private Boolean match( char[][] gatvCharArray )
     {
         if ( simplePatterns != null && simplePatterns.size() > 0 )
         {
@@ -193,7 +193,7 @@ public class PatternIncludesArtifactFilter
                 {
                     sb.append( ":" );
                 }
-                sb.append( tokens[i] );
+                sb.append( gatvCharArray[i] );
                 Map<String, Pattern> map = simplePatterns.get( i );
                 if ( map != null )
                 {
@@ -210,7 +210,7 @@ public class PatternIncludesArtifactFilter
         // Check all other patterns
         for ( Pattern pattern : patterns )
         {
-            if ( pattern.matches( tokens ) )
+            if ( pattern.matches( gatvCharArray ) )
             {
                 patternsTriggered.add( pattern );
                 return !(pattern instanceof NegativePattern);
@@ -671,16 +671,19 @@ public class PatternIncludesArtifactFilter
         }
     }
 
+    /** Creates a positional matching pattern */
     private static Pattern match( String pattern, char[] token, int posVal )
     {
         return match( pattern, token, posVal, posVal );
     }
 
+    /** Creates a positional matching pattern */
     private static Pattern match( char[] token, int posVal )
     {
         return match( "", token, posVal, posVal );
     }
 
+    /** Creates a positional matching pattern */
     private static Pattern match( String pattern, char[] token, int posMin, int posMax )
     {
         boolean hasWildcard = false;
@@ -702,36 +705,45 @@ public class PatternIncludesArtifactFilter
         }
     }
 
+    /** Creates a positional matching pattern */
     private static Pattern match( char[] token, int posMin, int posMax )
     {
         return new PosPattern( "", token, posMin, posMax );
     }
 
+    /** Creates an AND pattern */
     private static Pattern and( String pattern, Pattern... patterns )
     {
         return new AndPattern( pattern, patterns );
     }
 
+    /** Creates an AND pattern */
     private static Pattern and( Pattern... patterns )
     {
         return and( "", patterns );
     }
 
+    /** Creates an OR pattern */
     private static Pattern or( String pattern, Pattern... patterns )
     {
         return new OrPattern( pattern, patterns );
     }
 
+    /** Creates an OR pattern */
     private static Pattern or( Pattern... patterns )
     {
         return or( "", patterns );
     }
 
+    /** Creates a match-all pattern */
     private static Pattern all( String pattern )
     {
         return new MatchAllPattern( pattern );
     }
 
+    /**
+     * Abstract class for patterns
+     */
     static abstract class Pattern
     {
         private final String pattern;
@@ -743,12 +755,19 @@ public class PatternIncludesArtifactFilter
 
         public abstract boolean matches( char[][] parts );
 
+        /**
+         * Returns a string containing a fixed artifact gatv coordinates
+         * or null if the pattern can not be translated.
+         */
         public String translateEquals()
         {
             return null;
         }
 
-        public String translateEquals( int pos )
+        /**
+         * Check if the this pattern is a fixed pattern on the specified pos.
+         */
+        protected String translateEquals( int pos )
         {
             return null;
         }
@@ -759,6 +778,9 @@ public class PatternIncludesArtifactFilter
         }
     }
 
+    /**
+     * Simple pattern which performs a logical AND between one or more patterns.
+     */
     static class AndPattern extends Pattern
     {
         private final Pattern[] patterns;
@@ -807,6 +829,9 @@ public class PatternIncludesArtifactFilter
         }
     }
 
+    /**
+     * Simple pattern which performs a logical OR between one or more patterns.
+     */
     static class OrPattern extends Pattern
     {
         private final Pattern[] patterns;
@@ -831,16 +856,21 @@ public class PatternIncludesArtifactFilter
         }
     }
 
+    /**
+     * A positional matching pattern, to check if a token in the gatv coordinates
+     * having a position between posMin and posMax (both inclusives) can match
+     * the pattern.
+     */
     static class PosPattern extends Pattern
     {
-        private final char[] token;
+        private final char[] patternCharArray;
         private final int posMin;
         private final int posMax;
 
-        public PosPattern( String pattern, char[] token, int posMin, int posMax )
+        public PosPattern( String pattern, char[] patternCharArray, int posMin, int posMax )
         {
             super( pattern );
-            this.token = token;
+            this.patternCharArray = patternCharArray;
             this.posMin = posMin;
             this.posMax = posMax;
         }
@@ -850,7 +880,7 @@ public class PatternIncludesArtifactFilter
         {
             for ( int i = posMin; i <= posMax; i++ )
             {
-                if ( match( token, parts[i], i == 3 ) )
+                if ( match( patternCharArray, parts[i], i == 3 ) )
                 {
                     return true;
                 }
@@ -859,16 +889,20 @@ public class PatternIncludesArtifactFilter
         }
     }
 
+    /**
+     * Looks for an exact match in the gatv coordinates between
+     * posMin and posMax (both inclusives)
+     */
     static class EqPattern extends Pattern
     {
         private final char[] token;
         private final int posMin;
         private final int posMax;
 
-        public EqPattern( String pattern, char[] token, int posMin, int posMax )
+        public EqPattern( String pattern, char[] patternCharArray, int posMin, int posMax )
         {
             super( pattern );
-            this.token = token;
+            this.token = patternCharArray;
             this.posMin = posMin;
             this.posMax = posMax;
         }
@@ -886,6 +920,12 @@ public class PatternIncludesArtifactFilter
             return false;
         }
 
+        @Override
+        public String translateEquals()
+        {
+            return translateEquals( 0 );
+        }
+
         public String translateEquals( int pos )
         {
             return posMin == pos && posMax == pos
@@ -895,6 +935,9 @@ public class PatternIncludesArtifactFilter
 
     }
 
+    /**
+     * Matches all input
+     */
     static class MatchAllPattern extends Pattern
     {
         public MatchAllPattern( String pattern )
@@ -909,6 +952,9 @@ public class PatternIncludesArtifactFilter
         }
     }
 
+    /**
+     * Negative pattern
+     */
     static class NegativePattern extends Pattern
     {
         private final Pattern inner;
