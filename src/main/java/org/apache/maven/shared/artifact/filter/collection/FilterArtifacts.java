@@ -67,7 +67,7 @@ public class FilterArtifacts
      * 
      * @param index at which index the specified filter is to be inserted.
      * @param filter the filter to be inserted.
-     * @throws IndexOutOfBoundsException if index is out of range <tt>(index &lt; 0 || index &gt; size())</tt>.
+     * @throws IndexOutOfBoundsException if index is out of range <code>(index &lt; 0 || index &gt; size())</code>.
      */
     public void addFilter( int index, ArtifactsFilter filter )
     {
