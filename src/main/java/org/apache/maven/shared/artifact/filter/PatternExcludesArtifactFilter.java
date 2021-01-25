@@ -56,7 +56,7 @@ public class PatternExcludesArtifactFilter
 
         if ( !shouldInclude )
         {
-            addFilteredArtifactId( artifact );
+            addFilteredArtifact( artifact );
         }
 
         return shouldInclude;

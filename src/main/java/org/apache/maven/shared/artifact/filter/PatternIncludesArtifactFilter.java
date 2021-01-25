@@ -135,7 +135,7 @@ public class PatternIncludesArtifactFilter
 
         if ( !shouldInclude )
         {
-            addFilteredArtifactId( artifact );
+            addFilteredArtifact( artifact );
         }
 
         return shouldInclude;
@@ -223,7 +223,7 @@ public class PatternIncludesArtifactFilter
     /**
      * @param artifact add artifact to the filtered artifacts list.
      */
-    protected void addFilteredArtifactId( final Artifact artifact )
+    protected void addFilteredArtifact( final Artifact artifact )
     {
         filteredArtifact.add( artifact );
     }
