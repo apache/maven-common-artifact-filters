@@ -170,7 +170,7 @@ public class PatternIncludesArtifactFilter
                 {
                     char[][] depGatvCharArray = tokenizeAndSplit( trailItem );
                     match = match( depGatvCharArray );
-                    if ( match != null)
+                    if ( match != null )
                     {
                         return match;
                     }
@@ -213,7 +213,7 @@ public class PatternIncludesArtifactFilter
             if ( pattern.matches( gatvCharArray ) )
             {
                 patternsTriggered.add( pattern );
-                return !(pattern instanceof NegativePattern);
+                return !( pattern instanceof NegativePattern );
             }
         }
 
@@ -342,6 +342,7 @@ public class PatternIncludesArtifactFilter
         return tokens;
     }
 
+    @SuppressWarnings( "InnerAssignment" )
     static boolean match( char[] patArr, char[] strArr, boolean isVersion )
     {
         int patIdxStart = 0;
@@ -744,11 +745,11 @@ public class PatternIncludesArtifactFilter
     /**
      * Abstract class for patterns
      */
-    static abstract class Pattern
+    abstract static class Pattern
     {
         private final String pattern;
 
-        public Pattern( String pattern )
+        Pattern( String pattern )
         {
             this.pattern = Objects.requireNonNull( pattern );
         }
@@ -773,7 +774,8 @@ public class PatternIncludesArtifactFilter
         }
 
         @Override
-        public String toString() {
+        public String toString()
+        {
             return pattern;
         }
     }
@@ -785,7 +787,7 @@ public class PatternIncludesArtifactFilter
     {
         private final Pattern[] patterns;
 
-        public AndPattern( String pattern, Pattern[] patterns )
+        AndPattern( String pattern, Pattern[] patterns )
         {
             super( pattern );
             this.patterns = patterns;
@@ -836,7 +838,7 @@ public class PatternIncludesArtifactFilter
     {
         private final Pattern[] patterns;
 
-        public OrPattern( String pattern, Pattern[] patterns )
+        OrPattern( String pattern, Pattern[] patterns )
         {
             super( pattern );
             this.patterns = patterns;
@@ -867,7 +869,7 @@ public class PatternIncludesArtifactFilter
         private final int posMin;
         private final int posMax;
 
-        public PosPattern( String pattern, char[] patternCharArray, int posMin, int posMax )
+        PosPattern( String pattern, char[] patternCharArray, int posMin, int posMax )
         {
             super( pattern );
             this.patternCharArray = patternCharArray;
@@ -899,7 +901,7 @@ public class PatternIncludesArtifactFilter
         private final int posMin;
         private final int posMax;
 
-        public EqPattern( String pattern, char[] patternCharArray, int posMin, int posMax )
+        EqPattern( String pattern, char[] patternCharArray, int posMin, int posMax )
         {
             super( pattern );
             this.token = patternCharArray;
@@ -912,7 +914,7 @@ public class PatternIncludesArtifactFilter
         {
             for ( int i = posMin; i <= posMax; i++ )
             {
-                if (Arrays.equals( token, parts[i] ) )
+                if ( Arrays.equals( token, parts[i] ) )
                 {
                     return true;
                 }
@@ -940,7 +942,7 @@ public class PatternIncludesArtifactFilter
      */
     static class MatchAllPattern extends Pattern
     {
-        public MatchAllPattern( String pattern )
+        MatchAllPattern( String pattern )
         {
             super( pattern );
         }
