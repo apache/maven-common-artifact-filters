@@ -53,7 +53,7 @@ public class PatternIncludesArtifactFilter
     /** Holds simple patterns: those that can use direct matching */
     private final Map<Integer, Map<String, Pattern>> simplePatterns;
 
-    /** Wether the dependency trail should be checked */
+    /** Whether the dependency trail should be checked */
     private final boolean actTransitively;
 
     /** Set of patterns that have been triggered */
