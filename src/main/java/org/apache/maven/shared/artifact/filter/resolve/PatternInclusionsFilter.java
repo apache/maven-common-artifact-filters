@@ -41,9 +41,7 @@ import java.util.Collections;
  * @author Robert Scholte
  * @since 3.0
  * 
- * @see org.sonatype.aether.util.filter.PatternInclusionsDependencyFilter
  * @see org.eclipse.aether.util.filter.PatternInclusionsDependencyFilter
- * @see org.sonatype.aether.version.VersionScheme
  * @see org.eclipse.aether.version.VersionScheme
  */
 public class PatternInclusionsFilter implements TransformableFilter

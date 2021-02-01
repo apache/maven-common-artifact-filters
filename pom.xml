@@ -55,7 +55,7 @@
   </distributionManagement>
 
   <properties>
-    <maven.version>3.1.0</maven.version>
+    <maven.version>3.1.1</maven.version>
     <javaVersion>7</javaVersion>
     <project.build.outputTimestamp>2021-01-23T01:12:59Z</project.build.outputTimestamp>
   </properties>
@@ -105,18 +105,6 @@
       <version>2.6</version>
     </dependency>
 
-    <dependency>
-      <groupId>org.sonatype.aether</groupId>
-      <artifactId>aether-api</artifactId>
-      <version>1.7</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.sonatype.aether</groupId>
-      <artifactId>aether-util</artifactId>
-      <version>1.7</version>
-      <scope>provided</scope>
-    </dependency>
     <dependency>
       <groupId>org.apache.maven.resolver</groupId>
       <artifactId>maven-resolver-api</artifactId>

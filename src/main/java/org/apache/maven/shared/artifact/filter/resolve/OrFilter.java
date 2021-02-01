@@ -28,7 +28,6 @@ import java.util.Collections;
  * @author Robert Scholte
  * @since 3.0
  * 
- * @see org.sonatype.aether.util.filter.OrDependencyFilter
  * @see org.eclipse.aether.util.filter.OrDependencyFilter
  */
 public class OrFilter implements TransformableFilter
