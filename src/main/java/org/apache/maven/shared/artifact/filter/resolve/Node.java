@@ -21,13 +21,15 @@ package org.apache.maven.shared.artifact.filter.resolve;
 
 /**
  * Represents a node of a dependency graph
- * 
+ *
  * @author Robert Scholte
  * @since 3.0
  */
 public interface Node
 {
     /**
+     * <p>getDependency.</p>
+     *
      * @return {@link org.apache.maven.model.Dependency}
      */
     org.apache.maven.model.Dependency getDependency();

@@ -20,6 +20,8 @@ package org.apache.maven.shared.artifact.filter.collection;
  */
 
 /**
+ * <p>ArtifactFilterException class.</p>
+ *
  * @author <a href="mailto:brianf@apache.org">Brian Fox</a>
  */
 public class ArtifactFilterException
@@ -39,6 +41,8 @@ public class ArtifactFilterException
     }
 
     /**
+     * <p>Constructor for ArtifactFilterException.</p>
+     *
      * @param theMessage The message which describes what happends.
      * @param theCause The cause.
      */
@@ -48,6 +52,8 @@ public class ArtifactFilterException
     }
 
     /**
+     * <p>Constructor for ArtifactFilterException.</p>
+     *
      * @param theMessage The message which describes what happends.
      */
     public ArtifactFilterException( String theMessage )
@@ -56,7 +62,9 @@ public class ArtifactFilterException
     }
 
     /**
-     * @param theCause {@link Throwable} cause of the problem.
+     * <p>Constructor for ArtifactFilterException.</p>
+     *
+     * @param theCause {@link java.lang.Throwable} cause of the problem.
      */
     public ArtifactFilterException( Throwable theCause )
     {

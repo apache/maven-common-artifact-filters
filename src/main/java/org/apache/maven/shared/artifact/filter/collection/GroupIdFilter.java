@@ -23,7 +23,7 @@ import org.apache.maven.artifact.Artifact;
 
 /**
  * Filter on GroupId Name.
- * 
+ *
  * @author clove
  * @since 2.0
  */
@@ -33,7 +33,7 @@ public class GroupIdFilter
 
     /**
      * Construction will setup the super call with a filtertype of 'GroupId'
-     * 
+     *
      * @param include comma separated list of groupIds to include, may be {@code null}
      * @param exclude comma separated list of groupIds to exclude, may be {@code null}
      */
@@ -42,12 +42,14 @@ public class GroupIdFilter
         super( include, exclude );
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getArtifactFeature( Artifact artifact )
     {
         return artifact.getGroupId();
     }
 
+    /** {@inheritDoc} */
     @Override
     protected boolean compareFeatures( String lhs, String rhs )
     {

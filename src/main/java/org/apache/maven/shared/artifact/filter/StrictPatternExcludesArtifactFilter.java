@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * Filter to exclude artifacts from a list of patterns. <code>AbstractStrictPatternArtifactFilter</code> describes the
  * artifact pattern syntax.
- * 
+ *
  * @author <a href="mailto:markhobson@gmail.com">Mark Hobson</a>
  * @see AbstractStrictPatternArtifactFilter
  * @see PatternExcludesArtifactFilter
@@ -34,7 +34,7 @@ public class StrictPatternExcludesArtifactFilter
 {
     /**
      * Creates a new filter that excludes artifacts that match the specified patterns.
-     * 
+     *
      * @param patterns
      *            the list of artifact patterns to match, as described above
      */

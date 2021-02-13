@@ -24,7 +24,7 @@ import java.util.Collections;
 
 /**
  * A simple filter to exclude artifacts from a list of patterns. The artifact pattern syntax is of the form:
- * 
+ *
  * <pre>
  * [groupId]:[artifactId]:[extension]:[version]
  * </pre>
@@ -36,10 +36,9 @@ import java.util.Collections;
  * For example, <code>org.apache.*</code> would match all artifacts whose group id started with
  * <code>org.apache.</code> , and <code>:::*-SNAPSHOT</code> would match all snapshot artifacts.
  * </p>
- * 
+ *
  * @author Robert Scholte
  * @since 3.0
- * 
  * @see org.eclipse.aether.util.filter.PatternExclusionsDependencyFilter
  * @see org.eclipse.aether.version.VersionScheme
  */
@@ -50,7 +49,7 @@ public class PatternExclusionsFilter implements TransformableFilter
     
     /**
      * The default constructor specifying a collection of pattern based keys which must be excluded.
-     * 
+     *
      * @param excludes the excludes, must not be {@code null}
      */
     public PatternExclusionsFilter( Collection<String> excludes )
@@ -60,7 +59,7 @@ public class PatternExclusionsFilter implements TransformableFilter
     
     /**
      * Get the excludes
-     * 
+     *
      * @return the excluded keys, never {@code null}
      */
     public final Collection<String> getExcludes()
@@ -69,9 +68,9 @@ public class PatternExclusionsFilter implements TransformableFilter
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Transform this filter to a tool specific implementation
-     * 
-     * @param transformer the transformer, must not be {@code null}
      */
     @Override
     public <T> T transform( FilterTransformer<T> transformer )

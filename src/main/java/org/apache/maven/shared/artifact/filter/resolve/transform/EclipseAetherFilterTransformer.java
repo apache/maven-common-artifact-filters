@@ -45,7 +45,7 @@ import org.eclipse.aether.util.filter.ScopeDependencyFilter;
 
 /**
  * FilterTransformer implementation for Eclipse Aether.
- * 
+ *
  * @author Robert Scholte
  * @since 3.0
  */
@@ -58,6 +58,7 @@ public class EclipseAetherFilterTransformer
      */
     private static final String GAE_C_V = "(.*:.*:.*):(.+)(:.*)";
     
+    /** {@inheritDoc} */
     @Override
     public AndDependencyFilter transform( AndFilter andFilter )
     {
@@ -69,12 +70,14 @@ public class EclipseAetherFilterTransformer
         return new AndDependencyFilter( filters );
     }
 
+    /** {@inheritDoc} */
     @Override
     public ExclusionsDependencyFilter transform( ExclusionsFilter filter )
     {
         return new ExclusionsDependencyFilter( filter.getExcludes() );
     }
 
+    /** {@inheritDoc} */
     @Override
     public OrDependencyFilter transform( OrFilter orFilter )
     {
@@ -86,18 +89,21 @@ public class EclipseAetherFilterTransformer
         return new OrDependencyFilter( filters );
     }
 
+    /** {@inheritDoc} */
     @Override
     public ScopeDependencyFilter transform( ScopeFilter filter )
     {
         return new ScopeDependencyFilter( filter.getIncluded(), filter.getExcluded() );
     }
     
+    /** {@inheritDoc} */
     @Override
     public DependencyFilter transform( PatternExclusionsFilter filter )
     {
         return new PatternExclusionsDependencyFilter( filter.getExcludes() );
     } 
 
+    /** {@inheritDoc} */
     @Override
     public DependencyFilter transform( PatternInclusionsFilter filter )
     {
@@ -116,6 +122,7 @@ public class EclipseAetherFilterTransformer
         return new PatternInclusionsDependencyFilter( filter.getIncludes() );
     }
     
+    /** {@inheritDoc} */
     @Override
     public DependencyFilter transform( final AbstractFilter filter )
     {

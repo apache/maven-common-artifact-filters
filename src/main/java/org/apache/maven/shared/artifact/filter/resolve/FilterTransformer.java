@@ -21,10 +21,9 @@ package org.apache.maven.shared.artifact.filter.resolve;
 
 /**
  * Provide a mechanism to transform a Filter to a tool specific equivalent using the visitor pattern.
- * For example: Aether has its own set of filters.  
- * 
- * @author Robert Scholte
+ * For example: Aether has its own set of filters.
  *
+ * @author Robert Scholte
  * @param <T> the tool specific filter
  * @since 3.0
  */
@@ -32,15 +31,15 @@ public interface FilterTransformer<T>
 {
     /**
      * Transform the scopeFilter to T specific implementation
-     * 
-     * @param scopeFilter the filter 
+     *
+     * @param scopeFilter the filter
      * @return the transformed filter, never {@code null}
      */
     T transform( ScopeFilter scopeFilter );
 
     /**
      * Transform the andFilter to T specific implementation
-     * 
+     *
      * @param andFilter the filter
      * @return the transformed filter, never {@code null}
      */
@@ -48,7 +47,7 @@ public interface FilterTransformer<T>
 
     /**
      * Transform the exclusionsFilter to T specific implementation
-     * 
+     *
      * @param exclusionsFilter the filter
      * @return the transformed filter, never {@code null}
      */
@@ -56,7 +55,7 @@ public interface FilterTransformer<T>
 
     /**
      * Transform the orFilter to T specific implementation
-     * 
+     *
      * @param orFilter the filter
      * @return the transformed filter, never {@code null}
      */
@@ -64,7 +63,7 @@ public interface FilterTransformer<T>
 
     /**
      * Transform the patternExclusionsFilter to T specific implementation
-     * 
+     *
      * @param patternExclusionsFilter the filter
      * @return the transformed filter, never {@code null}
      */
@@ -72,15 +71,15 @@ public interface FilterTransformer<T>
 
     /**
      * Transform the paternInclusionsFilter to T specific implementation
-     * 
+     *
      * @param patternInclusionsFilter the filter
      * @return the transformed filter, never {@code null}
      */
     T transform( PatternInclusionsFilter patternInclusionsFilter );
 
     /**
-     * Transform a custom filter to T specific implementation 
-     * 
+     * Transform a custom filter to T specific implementation
+     *
      * @param abstractFilter the filter
      * @return the transformed filter, never {@code null}
      */

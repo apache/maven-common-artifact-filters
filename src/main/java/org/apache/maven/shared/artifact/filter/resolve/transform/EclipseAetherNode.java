@@ -44,6 +44,7 @@ class EclipseAetherNode implements Node
         this.node = node;
     }
 
+    /** {@inheritDoc} */
     @Override
     public org.apache.maven.model.Dependency getDependency()
     {

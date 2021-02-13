@@ -26,6 +26,8 @@ import java.util.Set;
 import org.apache.maven.artifact.Artifact;
 
 /**
+ * <p>FilterArtifacts class.</p>
+ *
  * @author <a href="mailto:brianf@apache.org">Brian Fox</a>
  */
 public class FilterArtifacts
@@ -50,7 +52,7 @@ public class FilterArtifacts
 
     /**
      * Appends the specified element to the end of this list.
-     * 
+     *
      * @param filter element to be appended to this list.
      */
     public void addFilter( ArtifactsFilter filter )
@@ -64,7 +66,7 @@ public class FilterArtifacts
     /**
      * Inserts the specified element at the specified position in this list. Shifts the element currently at that
      * position (if any) and any subsequent elements to the right (adds one to their indices).
-     * 
+     *
      * @param index at which index the specified filter is to be inserted.
      * @param filter the filter to be inserted.
      * @throws IndexOutOfBoundsException if index is out of range <code>(index &lt; 0 || index &gt; size())</code>.
@@ -78,9 +80,11 @@ public class FilterArtifacts
     }
 
     /**
-     * @param artifacts The {@link Artifact}s to filter. 
+     * <p>filter.</p>
+     *
+     * @param artifacts The {@link org.apache.maven.artifact.Artifact}s to filter.
      * @return The resulting artifacts set.
-     * @throws ArtifactFilterException in case of a failure.
+     * @throws org.apache.maven.shared.artifact.filter.collection.ArtifactFilterException in case of a failure.
      */
     public Set<Artifact> filter( Set<Artifact> artifacts )
         throws ArtifactFilterException
@@ -103,6 +107,8 @@ public class FilterArtifacts
     }
 
     /**
+     * <p>Getter for the field <code>filters</code>.</p>
+     *
      * @return the filters.
      */
     public List<ArtifactsFilter> getFilters()
@@ -111,6 +117,8 @@ public class FilterArtifacts
     }
 
     /**
+     * <p>Setter for the field <code>filters</code>.</p>
+     *
      * @param filters The filters to set.
      */
     public void setFilters( List<ArtifactsFilter> filters )

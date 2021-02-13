@@ -33,6 +33,8 @@ public class PatternExcludesArtifactFilter
     extends PatternIncludesArtifactFilter
 {
     /**
+     * <p>Constructor for PatternExcludesArtifactFilter.</p>
+     *
      * @param patterns The pattern to be used.
      */
     public PatternExcludesArtifactFilter( Collection<String> patterns )
@@ -41,6 +43,8 @@ public class PatternExcludesArtifactFilter
     }
 
     /**
+     * <p>Constructor for PatternExcludesArtifactFilter.</p>
+     *
      * @param patterns The pattern which will be used.
      * @param actTransitively yes/no.
      */
@@ -62,13 +66,21 @@ public class PatternExcludesArtifactFilter
         return shouldInclude;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @return a {@link java.lang.String} object.
+     */
     protected String getFilterDescription()
     {
         return "artifact exclusion filter";
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString()
     {
         return "Excludes filter:" + getPatternsAsString();

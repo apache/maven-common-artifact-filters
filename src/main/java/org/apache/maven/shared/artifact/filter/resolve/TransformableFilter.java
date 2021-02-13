@@ -20,8 +20,8 @@ package org.apache.maven.shared.artifact.filter.resolve;
  */
 
 /**
- * The element interface of the visitor pattern for transforming filters. 
- * 
+ * The element interface of the visitor pattern for transforming filters.
+ *
  * @author Robert Scholte
  * @since 3.0
  */
@@ -36,7 +36,7 @@ public interface TransformableFilter
      *       return transformer.transform( this );
      *   }
      * </pre>
-     * 
+     *
      * @param <T> the interface of the tool specific filter
      * @param transformer the tool specific transformer, may not be {@code null}
      * @return the transformed value, never {@code null}

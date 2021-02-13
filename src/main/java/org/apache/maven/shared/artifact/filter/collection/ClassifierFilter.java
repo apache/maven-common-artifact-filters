@@ -22,12 +22,16 @@ package org.apache.maven.shared.artifact.filter.collection;
 import org.apache.maven.artifact.Artifact;
 
 /**
+ * <p>ClassifierFilter class.</p>
+ *
  * @author <a href="mailto:brianf@apache.org">Brian Fox</a>
  */
 public class ClassifierFilter
     extends AbstractArtifactFeatureFilter
 {
     /**
+     * <p>Constructor for ClassifierFilter.</p>
+     *
      * @param include comma separated list with includes.
      * @param exclude comma separated list with excludes.
      */

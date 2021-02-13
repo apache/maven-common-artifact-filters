@@ -25,10 +25,9 @@ import java.util.Collections;
 
 /**
  * Filter based on scope. <strong>Note:</strong> There's no logic for inherited scoped
- * 
+ *
  * @author Robert Scholte
  * @since 3.0
- * 
  * @see org.eclipse.aether.util.filter.ScopeDependencyFilter
  */
 public class ScopeFilter implements TransformableFilter
@@ -38,7 +37,8 @@ public class ScopeFilter implements TransformableFilter
     private final Collection<String> included;
 
     /**
-     * 
+     * <p>Constructor for ScopeFilter.</p>
+     *
      * @param included specific scopes to include or {@code null} to include all
      * @param excluded specific scopes to exclude or {@code null} to exclude none
      */
@@ -49,8 +49,8 @@ public class ScopeFilter implements TransformableFilter
     }
     
     /**
-     * Construct a ScopeFilter based on included scopes  
-     * 
+     * Construct a ScopeFilter based on included scopes
+     *
      * @param included the scopes to include, may be {@code null}
      * @return the filter, never {@code null}
      */
@@ -60,8 +60,8 @@ public class ScopeFilter implements TransformableFilter
     }
 
     /**
-     * Construct a ScopeFilter based on included scopes  
-     * 
+     * Construct a ScopeFilter based on included scopes
+     *
      * @param included the scopes to include, must not be {@code null}
      * @return the filter, never {@code null}
      */
@@ -72,7 +72,7 @@ public class ScopeFilter implements TransformableFilter
 
     /**
      * Construct a ScopeFilter based on excluded scopes
-     * 
+     *
      * @param excluded the scopes to exclude, may be {@code null}
      * @return the filter, never {@code null}
      */
@@ -83,7 +83,7 @@ public class ScopeFilter implements TransformableFilter
 
     /**
      * Construct a ScopeFilter based on excluded scopes
-     * 
+     *
      * @param excluded the scopes to exclude, must not be {@code null}
      * @return the filter, never {@code null}
      */
@@ -94,7 +94,7 @@ public class ScopeFilter implements TransformableFilter
 
     /**
      * Get the excluded scopes
-     * 
+     *
      * @return the scopes to exclude, may be {@code null}
      */
     public final Collection<String> getExcluded()
@@ -104,7 +104,7 @@ public class ScopeFilter implements TransformableFilter
     
     /**
      * Get the included scopes
-     * 
+     *
      * @return the scopes to include, may be {@code null}
      */
     public final Collection<String> getIncluded()
@@ -113,11 +113,9 @@ public class ScopeFilter implements TransformableFilter
     }
     
     /**
+     * {@inheritDoc}
+     *
      * Transform this filter to a tool specific implementation
-     * 
-     * @param <T> The type to be used.
-     * @param transformer the transformer, must not be {@code null}
-     * @return T.
      */
     public <T> T transform ( FilterTransformer<T> transformer )
     {

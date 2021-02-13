@@ -86,9 +86,7 @@ public class ArtifactTransitivityFilter
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     public Set<Artifact> filter( Set<Artifact> artifacts )
     {
         Set<Artifact> result = new LinkedHashSet<>();

@@ -24,7 +24,7 @@ import java.util.Collections;
 
 /**
  * A simple filter to include artifacts from a list of patterns. The artifact pattern syntax is of the form:
- * 
+ *
  * <pre>
  * [groupId]:[artifactId]:[extension]:[version]
  * [groupId]:[artifactId]:[extension]:[classifier]:[version]
@@ -37,10 +37,9 @@ import java.util.Collections;
  * For example, <code>org.apache.*</code> would match all artifacts whose group id started with
  * <code>org.apache.</code> , and <code>:::*-SNAPSHOT</code> would match all snapshot artifacts.
  * </p>
- * 
+ *
  * @author Robert Scholte
  * @since 3.0
- * 
  * @see org.eclipse.aether.util.filter.PatternInclusionsDependencyFilter
  * @see org.eclipse.aether.version.VersionScheme
  */
@@ -51,7 +50,7 @@ public class PatternInclusionsFilter implements TransformableFilter
     
     /**
      * The default constructor specifying a collection of pattern based keys which must be included.
-     * 
+     *
      * @param includes the includes
      */
     public PatternInclusionsFilter( Collection<String> includes )
@@ -61,8 +60,8 @@ public class PatternInclusionsFilter implements TransformableFilter
     
     /**
      * Get the includes
-     * 
-     * @return the includes, 
+     *
+     * @return the includes,
      */
     public final Collection<String> getIncludes()
     {
@@ -70,9 +69,9 @@ public class PatternInclusionsFilter implements TransformableFilter
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Transform this filter to a tool specific implementation
-     * 
-     * @param transformer the transformer, must not be {@code null}
      */
     @Override
     public <T> T transform( FilterTransformer<T> transformer )

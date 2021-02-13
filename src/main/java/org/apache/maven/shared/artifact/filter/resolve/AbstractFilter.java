@@ -23,15 +23,14 @@ import java.util.List;
 
 /**
  * Abstract filter for custom implementations
- * 
+ *
  * @author Robert Scholte
  * @since 3.0
  */
 public abstract class AbstractFilter implements TransformableFilter
 {
 
-    /** {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
     public final <T> T transform( FilterTransformer<T> transformer )
     {
@@ -39,8 +38,10 @@ public abstract class AbstractFilter implements TransformableFilter
     }
 
     /**
-     * @param node {@link Node}
-     * @param parents {@link Node}s.
+     * <p>accept.</p>
+     *
+     * @param node {@link org.apache.maven.shared.artifact.filter.resolve.Node}
+     * @param parents {@link org.apache.maven.shared.artifact.filter.resolve.Node}s.
      * @return {@code true} / {@code false}
      */
     public abstract boolean accept( Node node, List<Node> parents );

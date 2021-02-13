@@ -24,22 +24,28 @@ import java.util.Set;
 import org.apache.maven.artifact.Artifact;
 
 /**
+ * <p>ArtifactsFilter interface.</p>
+ *
  * @author <a href="mailto:brianf@apache.org">Brian Fox</a>
  */
 public interface ArtifactsFilter
 {
     /**
-     * @param artifacts {@link Artifact}
+     * <p>filter.</p>
+     *
+     * @param artifacts {@link org.apache.maven.artifact.Artifact}
      * @return Set of artifacts.
-     * @throws ArtifactFilterException in case of a failure.
+     * @throws org.apache.maven.shared.artifact.filter.collection.ArtifactFilterException in case of a failure.
      */
     Set<Artifact> filter( Set<Artifact> artifacts )
         throws ArtifactFilterException;
 
     /**
-     * @param artifact {@link Artifact}
+     * <p>isArtifactIncluded.</p>
+     *
+     * @param artifact {@link org.apache.maven.artifact.Artifact}
      * @return {@code true} if artifact is included {@code false} otherwise.
-     * @throws ArtifactFilterException in case of a failure.
+     * @throws org.apache.maven.shared.artifact.filter.collection.ArtifactFilterException in case of a failure.
      */
     boolean isArtifactIncluded( Artifact artifact )
         throws ArtifactFilterException;

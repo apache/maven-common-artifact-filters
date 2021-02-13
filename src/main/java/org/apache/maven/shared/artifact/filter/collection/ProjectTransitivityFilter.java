@@ -25,6 +25,8 @@ import java.util.Set;
 import org.apache.maven.artifact.Artifact;
 
 /**
+ * <p>ProjectTransitivityFilter class.</p>
+ *
  * @author <a href="mailto:brianf@apache.org">Brian Fox</a>
  */
 public class ProjectTransitivityFilter
@@ -36,6 +38,8 @@ public class ProjectTransitivityFilter
     private final Set<Artifact> directDependencies;
 
     /**
+     * <p>Constructor for ProjectTransitivityFilter.</p>
+     *
      * @param directDependencies set of direct dependencies.
      * @param excludeTransitive {@code true} exclude transitive deps {@code false} otherwise.
      */
@@ -45,8 +49,7 @@ public class ProjectTransitivityFilter
         this.directDependencies = directDependencies;
     }
 
-    /** {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     public Set<Artifact> filter( Set<Artifact> artifacts )
     {
         // why not just take the directDependencies here?
@@ -70,7 +73,7 @@ public class ProjectTransitivityFilter
 
     /**
      * Compares the artifact to the list of dependencies to see if it is directly included by this project
-     * 
+     *
      * @param artifact representing the item to compare.
      * @return true if artifact is a direct dependency
      */
@@ -87,6 +90,8 @@ public class ProjectTransitivityFilter
     }
 
     /**
+     * <p>isExcludeTransitive.</p>
+     *
      * @return Returns the excludeTransitive.
      */
     public boolean isExcludeTransitive()
@@ -95,6 +100,8 @@ public class ProjectTransitivityFilter
     }
 
     /**
+     * <p>Setter for the field <code>excludeTransitive</code>.</p>
+     *
      * @param excludeTransitive The excludeTransitive to set.
      */
     public void setExcludeTransitive( boolean excludeTransitive )

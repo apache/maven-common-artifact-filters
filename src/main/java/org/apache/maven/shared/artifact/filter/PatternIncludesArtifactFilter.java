@@ -40,7 +40,7 @@ import org.codehaus.plexus.logging.Logger;
 
 /**
  * TODO: include in maven-artifact in future
- * 
+ *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  * @see StrictPatternIncludesArtifactFilter
  */
@@ -63,6 +63,8 @@ public class PatternIncludesArtifactFilter
     private final List<Artifact> filteredArtifact = new ArrayList<>();
 
     /**
+     * <p>Constructor for PatternIncludesArtifactFilter.</p>
+     *
      * @param patterns The pattern to be used.
      */
     public PatternIncludesArtifactFilter( final Collection<String> patterns )
@@ -71,6 +73,8 @@ public class PatternIncludesArtifactFilter
     }
 
     /**
+     * <p>Constructor for PatternIncludesArtifactFilter.</p>
+     *
      * @param patterns The pattern to be used.
      * @param actTransitively transitive yes/no.
      */
@@ -142,6 +146,8 @@ public class PatternIncludesArtifactFilter
     }
 
     /**
+     * <p>patternMatches.</p>
+     *
      * @param artifact to check for.
      * @return true if the match is true false otherwise.
      */
@@ -221,6 +227,8 @@ public class PatternIncludesArtifactFilter
     }
 
     /**
+     * <p>addFilteredArtifact.</p>
+     *
      * @param artifact add artifact to the filtered artifacts list.
      */
     protected void addFilteredArtifact( final Artifact artifact )
@@ -257,6 +265,7 @@ public class PatternIncludesArtifactFilter
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString()
     {
@@ -264,6 +273,8 @@ public class PatternIncludesArtifactFilter
     }
 
     /**
+     * <p>getPatternsAsString.</p>
+     *
      * @return pattern as a string.
      */
     protected String getPatternsAsString()
@@ -278,6 +289,8 @@ public class PatternIncludesArtifactFilter
     }
 
     /**
+     * <p>getFilterDescription.</p>
+     *
      * @return description.
      */
     protected String getFilterDescription()
@@ -302,7 +315,11 @@ public class PatternIncludesArtifactFilter
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @return a boolean.
+     */
     public boolean hasMissedCriteria()
     {
         // if there are no patterns, there is nothing to report.

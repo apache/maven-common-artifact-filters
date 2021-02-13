@@ -24,10 +24,9 @@ import java.util.Collections;
 
 /**
  * A filter that combines zero or more other filters using a logical {@code OR}.
- * 
+ *
  * @author Robert Scholte
  * @since 3.0
- * 
  * @see org.eclipse.aether.util.filter.OrDependencyFilter
  */
 public class OrFilter implements TransformableFilter
@@ -36,8 +35,8 @@ public class OrFilter implements TransformableFilter
     private final Collection<TransformableFilter> filters;
 
     /**
-     * The default constructor specifying a collection of filters of which at least one must match. 
-     * 
+     * The default constructor specifying a collection of filters of which at least one must match.
+     *
      * @param filters the filters, may not be {@code null}
      */
     public OrFilter( Collection<TransformableFilter> filters )
@@ -47,8 +46,8 @@ public class OrFilter implements TransformableFilter
     
     /**
      * Get the filters
-     * 
-     * @return the filters, never {@code null} 
+     *
+     * @return the filters, never {@code null}
      */
     public Collection<TransformableFilter> getFilters()
     {
@@ -56,9 +55,9 @@ public class OrFilter implements TransformableFilter
     }
     
     /**
+     * {@inheritDoc}
+     *
      * Transform this filter to a tool specific implementation
-     * 
-     * @param transformer the transformer, may not be {@code null}
      */
     @Override
     public <T> T transform( FilterTransformer<T> transformer )

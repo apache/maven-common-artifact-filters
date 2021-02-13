@@ -29,19 +29,19 @@ import java.util.List;
 
 /**
  * Filter to include or exclude artifacts from a list of patterns. The artifact pattern syntax is of the form:
- * 
+ *
  * <pre>[groupId]:[artifactId]:[type]:[version]</pre>
- * 
+ *
  * <p>
  * Where each pattern segment is optional and supports full and partial <code>*</code> wildcards. An empty pattern
  * segment is treated as an implicit wildcard.
  * </p>
- * 
+ *
  * <p>
  * For example, <code>org.apache.*</code> would match all artifacts whose group id started with
  * <code>org.apache.</code>, and <code>:::*-SNAPSHOT</code> would match all snapshot artifacts.
  * </p>
- * 
+ *
  * @author <a href="mailto:markhobson@gmail.com">Mark Hobson</a>
  */
 public abstract class AbstractStrictPatternArtifactFilter implements ArtifactFilter
@@ -63,7 +63,7 @@ public abstract class AbstractStrictPatternArtifactFilter implements ArtifactFil
     /**
      * Creates a new filter that matches the specified artifact patterns and includes or excludes them according to the
      * specified flag.
-     * 
+     *
      * @param patterns
      *            the list of artifact patterns to match, as described above
      * @param include

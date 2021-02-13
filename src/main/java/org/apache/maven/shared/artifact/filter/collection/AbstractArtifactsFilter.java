@@ -25,16 +25,14 @@ import java.util.Set;
 import org.apache.maven.artifact.Artifact;
 
 /**
+ * <p>Abstract AbstractArtifactsFilter class.</p>
+ *
  * @author <a href="mailto:brianf@apache.org">Brian Fox</a>
  */
 public abstract class AbstractArtifactsFilter
     implements ArtifactsFilter
 {
-    /**
-     * @param artifact {@link Artifact}
-     * @return {@code true} if artifact is includes {@code false} otherwise.
-     * @throws ArtifactFilterException when filtering fails
-     */
+    /** {@inheritDoc} */
     public boolean isArtifactIncluded( Artifact artifact )
         throws ArtifactFilterException
     {

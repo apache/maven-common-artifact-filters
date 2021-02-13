@@ -24,10 +24,9 @@ import java.util.Collections;
 
 /**
  * A simple filter to exclude artifacts based on either artifact id or group id and artifact id.
- * 
+ *
  * @author Robert Scholte
  * @since 3.0
- * 
  * @see org.eclipse.aether.util.filter.ExclusionsDependencyFilter
  */
 public class ExclusionsFilter
@@ -36,8 +35,8 @@ public class ExclusionsFilter
     private final Collection<String> excludes;
 
     /**
-     * The default constructor specifying a collection of keys which must be excluded. 
-     * 
+     * The default constructor specifying a collection of keys which must be excluded.
+     *
      * @param excludes the keys to exclude, may not be {@code null}
      * @see org.apache.maven.artifact.Artifact#getDependencyConflictId()
      */
@@ -47,6 +46,8 @@ public class ExclusionsFilter
     }
 
     /**
+     * <p>Getter for the field <code>excludes</code>.</p>
+     *
      * @return The list of excludes.
      */
     public final Collection<String> getExcludes()
@@ -55,9 +56,9 @@ public class ExclusionsFilter
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Transform this filter to a tool specific implementation
-     * 
-     * @param transformer the transformer, may not be {@code null}
      */
     @Override
     public <T> T transform( FilterTransformer<T> transformer )

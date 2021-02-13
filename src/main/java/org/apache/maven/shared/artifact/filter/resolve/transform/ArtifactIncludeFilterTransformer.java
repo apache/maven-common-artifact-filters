@@ -39,11 +39,11 @@ import org.apache.maven.shared.artifact.filter.resolve.ScopeFilter;
 import org.apache.maven.shared.artifact.filter.resolve.TransformableFilter;
 
 /**
- * Makes it possible to use the TransformableFilters for Aether and as classic Maven ArtifactFilter. 
- * 
+ * Makes it possible to use the TransformableFilters for Aether and as classic Maven ArtifactFilter.
+ *
  * <strong>Note:</strong> the {@link AndFilter} and {@link ExclusionsFilter} are transformed to {@link ArtifactFilter}
  * implementations of Maven Core
- * 
+ *
  * @author Robert Scholte
  * @since 3.0
  */
@@ -56,10 +56,10 @@ public class ArtifactIncludeFilterTransformer implements FilterTransformer<Artif
     
     /**
      * Used by {@link #transform(ScopeFilter)}
-     * 
+     *
      * When filtering on artifacts it is possible that the scope is unknown.
      * Decide if artifact should be included if its scope is {@code null}, default is {@code true}
-     * 
+     *
      * @param includeNullScope set to {@code false} if {@code null}-scoped Artifacts should not be included
      */
     public void setIncludeNullScope( boolean includeNullScope )
@@ -73,7 +73,7 @@ public class ArtifactIncludeFilterTransformer implements FilterTransformer<Artif
      * and the current artifact is a transitive dependency brought in by another artifact which matches an inclusion or
      * exclusion pattern, then the current artifact has the same inclusion/exclusion logic applied to it as well.
      * Default is {@code false}
-     * 
+     *
      * @param actTransitivelyPattern set to {@code true} if this artifact should be included/excluded just like one of
      *            its ancestors.
      */
@@ -82,6 +82,7 @@ public class ArtifactIncludeFilterTransformer implements FilterTransformer<Artif
         this.actTransitivelyPattern = actTransitivelyPattern;
     }
 
+    /** {@inheritDoc} */
     @Override
     public ArtifactFilter transform( final ScopeFilter scopeFilter )
     {
@@ -122,6 +123,7 @@ public class ArtifactIncludeFilterTransformer implements FilterTransformer<Artif
         };
     }
 
+    /** {@inheritDoc} */
     @Override
     public AndArtifactFilter transform( AndFilter andFilter )
     {
@@ -135,12 +137,14 @@ public class ArtifactIncludeFilterTransformer implements FilterTransformer<Artif
         return filter;
     }
 
+    /** {@inheritDoc} */
     @Override
     public ArtifactFilter transform( final ExclusionsFilter exclusionsFilter )
     {
         return new ExcludesArtifactFilter( new ArrayList<>( exclusionsFilter.getExcludes() ) );
     }
 
+    /** {@inheritDoc} */
     @Override
     public ArtifactFilter transform( OrFilter orFilter )
     {
@@ -168,18 +172,21 @@ public class ArtifactIncludeFilterTransformer implements FilterTransformer<Artif
         };
     }
 
+    /** {@inheritDoc} */
     @Override
     public ArtifactFilter transform( PatternExclusionsFilter patternExclusionsFilter )
     {
         return new PatternExcludesArtifactFilter( patternExclusionsFilter.getExcludes(), actTransitivelyPattern );
     }
 
+    /** {@inheritDoc} */
     @Override
     public ArtifactFilter transform( PatternInclusionsFilter patternInclusionsFilter )
     {
         return new PatternIncludesArtifactFilter( patternInclusionsFilter.getIncludes(), actTransitivelyPattern );
     }
 
+    /** {@inheritDoc} */
     @Override
     public ArtifactFilter transform( final AbstractFilter filter )
     {

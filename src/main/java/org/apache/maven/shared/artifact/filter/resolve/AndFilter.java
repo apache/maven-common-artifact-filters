@@ -24,10 +24,9 @@ import java.util.Collections;
 
 /**
  * A filter that combines zero or more other filters using a logical {@code AND}.
- * 
+ *
  * @author Robert Scholte
  * @since 3.0
- * 
  * @see org.eclipse.aether.util.filter.AndDependencyFilter
  */
 public class AndFilter
@@ -36,8 +35,8 @@ public class AndFilter
     private final Collection<TransformableFilter> filters;
 
     /**
-     * The default constructor specifying a collection of filters which all must be matched. 
-     * 
+     * The default constructor specifying a collection of filters which all must be matched.
+     *
      * @param filters the filters, may not be {@code null}
      */
     public AndFilter( Collection<TransformableFilter> filters )
@@ -47,8 +46,8 @@ public class AndFilter
 
     /**
      * Get the filters
-     * 
-     * @return the filters, never {@code null} 
+     *
+     * @return the filters, never {@code null}
      */
     public Collection<TransformableFilter> getFilters()
     {
@@ -56,9 +55,9 @@ public class AndFilter
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Transform this filter to a tool specific implementation
-     * 
-     * @param transformer the transformer, may not be {@code null}
      */
     @Override
     public <T> T transform( FilterTransformer<T> transformer )

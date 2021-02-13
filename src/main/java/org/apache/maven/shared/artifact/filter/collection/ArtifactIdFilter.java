@@ -23,7 +23,7 @@ import org.apache.maven.artifact.Artifact;
 
 /**
  * Filter on ArtifactId name
- * 
+ *
  * @author clove
  * @since 2.0-alpha-2
  */
@@ -32,7 +32,7 @@ public class ArtifactIdFilter
 {
     /**
      * Will setup super with 'ArtifactId' as the filterType
-     * 
+     *
      * @param include comma separated list of artifactIds to include, may be {@code null}
      * @param exclude comma separated list of artifactIds to exclude, may be {@code null}
      */
@@ -41,6 +41,7 @@ public class ArtifactIdFilter
         super( include, exclude );
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getArtifactFeature( Artifact artifact )
     {
