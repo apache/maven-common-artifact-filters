@@ -57,7 +57,7 @@
   <properties>
     <maven.version>3.1.1</maven.version>
     <javaVersion>7</javaVersion>
-    <aether.version>0.9.0.M2</aether.version>
+    <resolver.version>1.4.2</resolver.version>
     <surefire.version>2.22.2</surefire.version>
     <checkstyle.violation.ignore>MethodLength</checkstyle.violation.ignore>
     <project.build.outputTimestamp>2021-02-14T00:03:59Z</project.build.outputTimestamp>
@@ -126,30 +126,15 @@
       <version>2.6</version>
     </dependency>
     <dependency>
-      <groupId>org.eclipse.aether</groupId>
-      <artifactId>aether-api</artifactId>
-      <version>${aether.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.aether</groupId>
-      <artifactId>aether-util</artifactId>
-      <version>${aether.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.sisu</groupId>
-      <artifactId>org.eclipse.sisu.plexus</artifactId>
-      <version>0.0.0.M5</version>
-    </dependency>
-    <dependency>
       <groupId>org.apache.maven.resolver</groupId>
       <artifactId>maven-resolver-api</artifactId>
-      <version>1.4.2</version>
+      <version>${resolver.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.resolver</groupId>
       <artifactId>maven-resolver-util</artifactId>
-      <version>1.4.2</version>
+      <version>${resolver.version}</version>
       <scope>provided</scope>
     </dependency>
 
