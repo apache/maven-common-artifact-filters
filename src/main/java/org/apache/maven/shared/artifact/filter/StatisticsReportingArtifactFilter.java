@@ -19,7 +19,7 @@ package org.apache.maven.shared.artifact.filter;
  * under the License.
  */
 
-import org.codehaus.plexus.logging.Logger;
+import org.slf4j.Logger;
 
 /**
  * StatisticsReportingArtifactFilter interface.
