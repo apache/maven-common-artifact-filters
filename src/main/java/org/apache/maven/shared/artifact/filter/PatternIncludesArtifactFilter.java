@@ -36,7 +36,7 @@ import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
 import org.apache.maven.artifact.versioning.VersionRange;
-import org.codehaus.plexus.logging.Logger;
+import org.slf4j.Logger;
 
 /**
  * TODO: include in maven-artifact in future
