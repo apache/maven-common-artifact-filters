@@ -120,6 +120,11 @@
       <version>2.6</version>
     </dependency>
     <dependency>
+      <groupId>org.eclipse.sisu</groupId>
+      <artifactId>org.eclipse.sisu.plexus</artifactId>
+      <version>0.0.0.M5</version>
+    </dependency>
+    <dependency>
       <groupId>org.apache.maven.resolver</groupId>
       <artifactId>maven-resolver-api</artifactId>
       <version>${resolver.version}</version>
