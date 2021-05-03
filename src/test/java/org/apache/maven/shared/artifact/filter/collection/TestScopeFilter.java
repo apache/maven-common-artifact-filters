@@ -21,9 +21,7 @@ package org.apache.maven.shared.artifact.filter.collection;
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugin.testing.ArtifactStubFactory;
-import org.apache.maven.plugin.testing.SilentLog;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,8 +34,6 @@ import static org.junit.Assert.*;
 public class TestScopeFilter
 {
     Set<Artifact> artifacts;
-
-    Log log = new SilentLog();
 
     @Before
     public void setUp()
