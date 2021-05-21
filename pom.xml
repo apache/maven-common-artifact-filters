@@ -57,7 +57,7 @@
   <properties>
     <maven.version>3.1.1</maven.version>
     <javaVersion>7</javaVersion>
-    <resolver.version>1.4.2</resolver.version>
+    <resolver.version>1.6.3</resolver.version>
     <surefire.version>2.22.2</surefire.version>
     <checkstyle.violation.ignore>MethodLength</checkstyle.violation.ignore>
     <project.build.outputTimestamp>2021-02-14T00:03:59Z</project.build.outputTimestamp>
