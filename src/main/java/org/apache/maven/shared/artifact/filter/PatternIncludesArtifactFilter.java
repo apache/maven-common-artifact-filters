@@ -199,7 +199,7 @@ public class PatternIncludesArtifactFilter
                 if ( !"*".equals( patternTokens[3] ) )
                 {
                     // classifier required, cannot be a match
-                    return false;
+                    continue;
                 }
                 patternTokens = new String[] { patternTokens[0], patternTokens[1], patternTokens[2], patternTokens[4] };
             }
