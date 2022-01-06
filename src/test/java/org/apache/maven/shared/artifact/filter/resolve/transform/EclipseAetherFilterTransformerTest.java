@@ -61,14 +61,14 @@ public class EclipseAetherFilterTransformerTest
                                                    new ExclusionsFilter( Collections.singletonList( "x:a" ) ) ) );
 
         AndDependencyFilter dependencyFilter = (AndDependencyFilter) filter.transform( transformer );
-        
-        assertTrue( dependencyFilter.accept( newDependencyNode( "g:a:v", "compile" ), null ) );
 
-        assertFalse( dependencyFilter.accept( newDependencyNode( "x:a:v", "compile" ), null ) );
+        assertTrue( dependencyFilter.accept( newDependencyNode( "g:a:v", "compile" ), Collections.<DependencyNode>emptyList() ) );
 
-        assertFalse( dependencyFilter.accept( newDependencyNode( "g:a:v", "test" ), null ) );
+        assertFalse( dependencyFilter.accept( newDependencyNode( "x:a:v", "compile" ), Collections.<DependencyNode>emptyList() ) );
 
-        assertFalse( dependencyFilter.accept( newDependencyNode( "x:a:v", "test" ), null ) );
+        assertFalse( dependencyFilter.accept( newDependencyNode( "g:a:v", "test" ), Collections.<DependencyNode>emptyList() ) );
+
+        assertFalse( dependencyFilter.accept( newDependencyNode( "x:a:v", "test" ), Collections.<DependencyNode>emptyList() ) );
     }
 
     @Test
@@ -78,24 +78,24 @@ public class EclipseAetherFilterTransformerTest
 
         ExclusionsDependencyFilter dependencyFilter = (ExclusionsDependencyFilter) filter.transform( transformer );
 
-        assertTrue( dependencyFilter.accept( newDependencyNode( "g:a:v", "compile" ), null ) );
+        assertTrue( dependencyFilter.accept( newDependencyNode( "g:a:v", "compile" ), Collections.<DependencyNode>emptyList() ) );
 
-        assertFalse( dependencyFilter.accept( newDependencyNode( "x:a:v", "compile" ), null ) );
+        assertFalse( dependencyFilter.accept( newDependencyNode( "x:a:v", "compile" ), Collections.<DependencyNode>emptyList() ) );
     }
 
     @Test
     public void testTransformOrFilter()
     {
-        OrFilter filter = new OrFilter( Arrays.<TransformableFilter>asList( ScopeFilter.including( "compile" ), 
+        OrFilter filter = new OrFilter( Arrays.<TransformableFilter>asList( ScopeFilter.including( "compile" ),
                                                                             ScopeFilter.including( "test" ) ) );
 
         OrDependencyFilter dependencyFilter = (OrDependencyFilter) filter.transform( transformer );
 
-        assertTrue( dependencyFilter.accept( newDependencyNode( "g:a:v", "compile" ), null ) );
+        assertTrue( dependencyFilter.accept( newDependencyNode( "g:a:v", "compile" ), Collections.<DependencyNode>emptyList() ) );
 
-        assertTrue( dependencyFilter.accept( newDependencyNode( "g:a:v", "test" ), null ) );
-        
-        assertFalse( dependencyFilter.accept( newDependencyNode( "g:a:v", "runtime" ), null ) );
+        assertTrue( dependencyFilter.accept( newDependencyNode( "g:a:v", "test" ), Collections.<DependencyNode>emptyList() ) );
+
+        assertFalse( dependencyFilter.accept( newDependencyNode( "g:a:v", "runtime" ), Collections.<DependencyNode>emptyList() ) );
     }
 
     @Test
@@ -104,12 +104,12 @@ public class EclipseAetherFilterTransformerTest
         ScopeFilter filter = ScopeFilter.including( Collections.singletonList( "runtime" ) );
 
         ScopeDependencyFilter dependencyFilter = (ScopeDependencyFilter) filter.transform( transformer );
-        
-        assertTrue( dependencyFilter.accept( newDependencyNode( "g:a:v", "runtime" ), null ) );
 
-        assertFalse( dependencyFilter.accept( newDependencyNode( "g:a:v", "compile" ), null ) );
+        assertTrue( dependencyFilter.accept( newDependencyNode( "g:a:v", "runtime" ), Collections.<DependencyNode>emptyList() ) );
 
-        assertFalse( dependencyFilter.accept( newDependencyNode( "g:a:v", "test" ), null ) );
+        assertFalse( dependencyFilter.accept( newDependencyNode( "g:a:v", "compile" ), Collections.<DependencyNode>emptyList() ) );
+
+        assertFalse( dependencyFilter.accept( newDependencyNode( "g:a:v", "test" ), Collections.<DependencyNode>emptyList() ) );
     }
 
     @Test
@@ -121,9 +121,9 @@ public class EclipseAetherFilterTransformerTest
         PatternExclusionsDependencyFilter dependencyFilter =
             (PatternExclusionsDependencyFilter) filter.transform( transformer );
 
-        assertTrue( dependencyFilter.accept( newDependencyNode( "g:a:v", "runtime" ), null ) );
+        assertTrue( dependencyFilter.accept( newDependencyNode( "g:a:v", "runtime" ), Collections.<DependencyNode>emptyList() ) );
 
-        assertFalse( dependencyFilter.accept( newDependencyNode( "x:a:v", "runtime" ), null ) );
+        assertFalse( dependencyFilter.accept( newDependencyNode( "x:a:v", "runtime" ), Collections.<DependencyNode>emptyList() ) );
     }
 
     @Test
@@ -135,9 +135,9 @@ public class EclipseAetherFilterTransformerTest
         PatternInclusionsDependencyFilter dependencyFilter =
             (PatternInclusionsDependencyFilter) filter.transform( transformer );
 
-        assertTrue( dependencyFilter.accept( newDependencyNode( "g:a:v", "runtime" ), null ) );
+        assertTrue( dependencyFilter.accept( newDependencyNode( "g:a:v", "runtime" ), Collections.<DependencyNode>emptyList() ) );
 
-        assertFalse( dependencyFilter.accept( newDependencyNode( "x:a:v", "runtime" ), null ) );
+        assertFalse( dependencyFilter.accept( newDependencyNode( "x:a:v", "runtime" ), Collections.<DependencyNode>emptyList() ) );
     }
 
     @Test
@@ -148,11 +148,11 @@ public class EclipseAetherFilterTransformerTest
 
         DependencyFilter dependencyFilter = filter.transform( transformer );
 
-        assertTrue( dependencyFilter.accept( newDependencyNode( "g:a:v:c:*", "runtime" ), null ) );
+        assertTrue( dependencyFilter.accept( newDependencyNode( "g:a:v:c:*", "runtime" ), Collections.<DependencyNode>emptyList() ) );
 
-        assertFalse( dependencyFilter.accept( newDependencyNode( "g:a:v", "runtime" ), null ) );
-        
-        assertFalse( dependencyFilter.accept( newDependencyNode( "x:a:v:c:*", "runtime" ), null ) );
+        assertFalse( dependencyFilter.accept( newDependencyNode( "g:a:v", "runtime" ), Collections.<DependencyNode>emptyList() ) );
+
+        assertFalse( dependencyFilter.accept( newDependencyNode( "x:a:v:c:*", "runtime" ), Collections.<DependencyNode>emptyList() ) );
     }
 
     @Test
@@ -166,14 +166,14 @@ public class EclipseAetherFilterTransformerTest
                 return ArtifactUtils.isSnapshot( node.getDependency().getVersion() );
             }
         };
-        
-        DependencyFilter dependencyFilter = snapshotFilter.transform( transformer );
-        
-        assertTrue( dependencyFilter.accept( newDependencyNode( "g:a:1.0-SNAPSHOT", "compile" ), null ) );
 
-        assertFalse( dependencyFilter.accept( newDependencyNode( "g:a:1.0", "compile" ), null ) );
+        DependencyFilter dependencyFilter = snapshotFilter.transform( transformer );
+
+        assertTrue( dependencyFilter.accept( newDependencyNode( "g:a:1.0-SNAPSHOT", "compile" ), Collections.<DependencyNode>emptyList() ) );
+
+        assertFalse( dependencyFilter.accept( newDependencyNode( "g:a:1.0", "compile" ), Collections.<DependencyNode>emptyList() ) );
     }
-    
+
     private DependencyNode newDependencyNode( String string, String scope )
     {
         return new DefaultDependencyNode( new Dependency( new DefaultArtifact( string ), scope ) );

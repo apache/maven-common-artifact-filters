@@ -49,11 +49,11 @@ import org.apache.maven.shared.artifact.filter.resolve.TransformableFilter;
  */
 public class ArtifactIncludeFilterTransformer implements FilterTransformer<ArtifactFilter>
 {
-    
+
     private boolean includeNullScope = true;
-    
-    private boolean actTransitivelyPattern = false; 
-    
+
+    private boolean actTransitivelyPattern = false;
+
     /**
      * Used by {@link #transform(ScopeFilter)}
      *
@@ -66,7 +66,7 @@ public class ArtifactIncludeFilterTransformer implements FilterTransformer<Artif
     {
         this.includeNullScope = includeNullScope;
     }
-    
+
     /**
      * Used by {@link #transform(PatternExclusionsFilter)} and {@link #transform(PatternInclusionsFilter)} Determines
      * whether the include/exclude patterns will be applied to the transitive path of a given artifact. If {@code true},
@@ -95,9 +95,9 @@ public class ArtifactIncludeFilterTransformer implements FilterTransformer<Artif
                 {
                     return includeNullScope;
                 }
-                
+
                 boolean isIncluded;
-                
+
                 if ( scopeFilter.getIncluded() != null )
                 {
                     isIncluded = scopeFilter.getIncluded().contains( artifact.getScope() );
@@ -106,12 +106,12 @@ public class ArtifactIncludeFilterTransformer implements FilterTransformer<Artif
                 {
                     isIncluded = true;
                 }
-                
+
                 boolean isExcluded;
 
                 if ( scopeFilter.getExcluded() != null )
                 {
-                    isExcluded = scopeFilter.getExcluded().contains( artifact.getScope() ); 
+                    isExcluded = scopeFilter.getExcluded().contains( artifact.getScope() );
                 }
                 else
                 {
