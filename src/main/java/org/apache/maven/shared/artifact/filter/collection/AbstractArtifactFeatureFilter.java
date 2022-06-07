@@ -26,7 +26,8 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.shared.utils.StringUtils;
+
+import static org.apache.maven.shared.artifact.filter.internal.Utils.isNotEmpty;
 
 /**
  * This is the common base class of ClassifierFilter and TypeFilter
@@ -158,9 +159,9 @@ public abstract class AbstractArtifactFeatureFilter
      */
     public void setExcludes( String excludeString )
     {
-        if ( StringUtils.isNotEmpty( excludeString ) )
+        if ( isNotEmpty( excludeString ) )
         {
-            this.excludes = Arrays.asList( StringUtils.split( excludeString, "," ) );
+            this.excludes = Arrays.asList( excludeString.split( "," ) );
         }
     }
 
@@ -171,9 +172,9 @@ public abstract class AbstractArtifactFeatureFilter
      */
     public void setIncludes( String includeString )
     {
-        if ( StringUtils.isNotEmpty( includeString ) )
+        if ( isNotEmpty( includeString ) )
         {
-            this.includes = Arrays.asList( StringUtils.split( includeString, "," ) );
+            this.includes = Arrays.asList( includeString.split( "," ) );
         }
     }
 

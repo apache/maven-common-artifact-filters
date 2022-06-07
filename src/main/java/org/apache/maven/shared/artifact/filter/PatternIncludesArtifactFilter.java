@@ -158,6 +158,7 @@ public class PatternIncludesArtifactFilter
                             emptyOrChars( artifact.getGroupId() ),
                             emptyOrChars( artifact.getArtifactId() ),
                             emptyOrChars( artifact.getType() ),
+                            emptyOrChars( artifact.getClassifier() ),
                             emptyOrChars( artifact.getBaseVersion() )
                     };
         Boolean match = match( artifactGatvCharArray );
@@ -543,15 +544,15 @@ public class PatternIncludesArtifactFilter
             {
                 throw new IllegalArgumentException( "Invalid pattern: " + pattern );
             }
-            // we only accept 5 tokens if the classifier = '*'
-            if ( tokens.length == 5 )
-            {
-                if ( tokens[3] != ANY )
-                {
-                    throw new IllegalArgumentException( "Invalid pattern: " + pattern );
-                }
-                tokens = new char[][] { tokens[0], tokens[1], tokens[2], tokens[4] };
-            }
+//            // we only accept 5 tokens if the classifier = '*'
+//            if ( tokens.length == 5 )
+//            {
+//                if ( tokens[3] != ANY )
+//                {
+//                    throw new IllegalArgumentException( "Invalid pattern: " + pattern );
+//                }
+//                tokens = new char[][] { tokens[0], tokens[1], tokens[2], tokens[4] };
+//            }
             //
             // Check the 4 tokens and build an appropriate Pattern
             // Special care needs to be taken if the first or the last part is '*'
@@ -673,10 +674,10 @@ public class PatternIncludesArtifactFilter
                     }
                 }
             }
-            if ( tokens.length == 4 )
+            if ( tokens.length >= 4 )
             {
                 List<Pattern> patterns = new ArrayList<>();
-                for ( int i = 0; i < 4; i++ )
+                for ( int i = 0; i < tokens.length; i++ )
                 {
                     if ( tokens[i] != ANY )
                     {
@@ -713,7 +714,7 @@ public class PatternIncludesArtifactFilter
                 break;
             }
         }
-        if ( hasWildcard || posMax == 3 )
+        if ( hasWildcard || posMax == 4 )
         {
             return new PosPattern( pattern, token, posMin, posMax );
         }
@@ -899,7 +900,7 @@ public class PatternIncludesArtifactFilter
         {
             for ( int i = posMin; i <= posMax; i++ )
             {
-                if ( match( patternCharArray, parts[i], i == 3 ) )
+                if ( match( patternCharArray, parts[i], i == 4 ) )
                 {
                     return true;
                 }
