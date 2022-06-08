@@ -21,6 +21,7 @@ package org.apache.maven.shared.artifact.filter;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -349,50 +350,73 @@ public class PatternIncludesArtifactFilter
                 throw new IllegalArgumentException( "Invalid pattern: " + pattern );
             }
 
-            // groupId:[artifactId:[[type[:classifier]]:version]]
             ArrayList<Pattern> patterns = new ArrayList<>( 5 );
-            Pattern groupIdPattern = toPatternOrNullIfAny( tokens[0], Coordinate.GROUP_ID );
-            if ( groupIdPattern != null )
+
+            if ( tokens.length == 5 )
             {
-                patterns.add( groupIdPattern );
+                // trivial, full pattern w/ classifier: G:A:T:C:V
+                addIfNonNull( patterns, tokens[0], Coordinate.GROUP_ID );
+                addIfNonNull( patterns, tokens[1], Coordinate.ARTIFACT_ID );
+                addIfNonNull( patterns, tokens[2], Coordinate.TYPE );
+                addIfNonNull( patterns, tokens[3], Coordinate.CLASSIFIER );
+                addIfNonNull( patterns, tokens[4], Coordinate.BASE_VERSION );
             }
-            if ( tokens.length > 1 )
+            else if ( tokens.length == 4 )
             {
-                Pattern artifactIdPattern = toPatternOrNullIfAny( tokens[1], Coordinate.ARTIFACT_ID );
-                if ( artifactIdPattern != null )
+                // trivial, full pattern w/p classifier: G:A:T:V
+                addIfNonNull( patterns, tokens[0], Coordinate.GROUP_ID );
+                addIfNonNull( patterns, tokens[1], Coordinate.ARTIFACT_ID );
+                addIfNonNull( patterns, tokens[2], Coordinate.TYPE );
+                addIfNonNull( patterns, tokens[3], Coordinate.BASE_VERSION );
+            }
+            else if ( tokens.length == 3 )
+            {
+                // tricky: may be "*:artifact:*" but also "*:war:*"
+            }
+            else if ( tokens.length == 2 )
+            {
+                // tricky: may be "*:artifact" but also "*:war"
+                CoordinateMatchingPattern cmp0 = toPatternOrNullIfAny( tokens[0], Coordinate.GROUP_ID );
+                if ( cmp0 != null )
                 {
-                    patterns.add( artifactIdPattern );
-                }
-                if ( tokens.length > 2 )
-                {
-                    Pattern typePattern = toPatternOrNullIfAny( tokens[2], Coordinate.TYPE );
-                    if ( typePattern != null )
+                    if ( cmp0.containsAsterisk )
                     {
-                        patterns.add( typePattern );
+                        orThem( patterns, cmp0, EnumSet.of( Coordinate.GROUP_ID, Coordinate.ARTIFACT_ID,
+                                Coordinate.TYPE, Coordinate.BASE_VERSION ) );
                     }
-                    if ( tokens.length > 3 )
+                    else
                     {
-                        if ( tokens.length > 4 )
-                        {
-                            Pattern classifierPattern = toPatternOrNullIfAny( tokens[3], Coordinate.CLASSIFIER );
-                            if ( classifierPattern != null )
-                            {
-                                patterns.add( classifierPattern );
-                            }
-                            Pattern versionPattern = toPatternOrNullIfAny( tokens[4], Coordinate.BASE_VERSION );
-                            if ( versionPattern != null )
-                            {
-                                patterns.add( versionPattern );
-                            }
-                        }
-                        else
-                        {
-                            Pattern versionPattern = toPatternOrNullIfAny( tokens[3], Coordinate.BASE_VERSION );
-                            if ( versionPattern != null )
-                            {
-                                patterns.add( versionPattern );
-                            }
-                        }
+                        patterns.add( cmp0 );
+                    }
+                }
+                CoordinateMatchingPattern cmp1 = toPatternOrNullIfAny( tokens[1], Coordinate.ARTIFACT_ID );
+                if ( cmp1 != null )
+                {
+                    if ( cmp1.containsAsterisk )
+                    {
+                        orThem( patterns, cmp1, EnumSet.of( Coordinate.GROUP_ID, Coordinate.ARTIFACT_ID,
+                                Coordinate.TYPE, Coordinate.BASE_VERSION ) );
+                    }
+                    else
+                    {
+                        patterns.add( cmp1 );
+                    }
+                }
+            }
+            else
+            {
+                // trivial or not
+                CoordinateMatchingPattern cmp = toPatternOrNullIfAny( tokens[0], Coordinate.GROUP_ID );
+                if ( cmp != null )
+                {
+                    if ( cmp.containsAsterisk )
+                    {
+                        orThem( patterns, cmp, EnumSet.of( Coordinate.GROUP_ID, Coordinate.ARTIFACT_ID,
+                                Coordinate.TYPE, Coordinate.BASE_VERSION ) );
+                    }
+                    else
+                    {
+                        patterns.add( cmp );
                     }
                 }
             }
@@ -411,7 +435,7 @@ public class PatternIncludesArtifactFilter
     /**
      * Returns {@code null} if token is {@link #ANY} or corresponding pattern.
      */
-    private static Pattern toPatternOrNullIfAny( String token, Coordinate coordinate )
+    private static CoordinateMatchingPattern toPatternOrNullIfAny( String token, Coordinate coordinate )
     {
         if ( ANY.equals( token ) )
         {
@@ -424,13 +448,44 @@ public class PatternIncludesArtifactFilter
     }
 
     /**
+     * Adds {@link #toPatternOrNullIfAny(String, Coordinate)} if result is non-{@code null}.
+     */
+    private static void addIfNonNull( List<Pattern> patterns, String token, Coordinate coordinate )
+    {
+        CoordinateMatchingPattern cmp = toPatternOrNullIfAny( token, coordinate );
+        if ( cmp != null )
+        {
+            patterns.add( cmp );
+        }
+    }
+
+    /**
+     * Creates new {@link CoordinateMatchingPattern}s using {@link CoordinateMatchingPattern#toCoordinate(Coordinate)}
+     * and passed in set of {@link Coordinate} set, makes one {@link OrPattern} out of them and adds that one to passed
+     * in list.
+     */
+    private static void orThem( final List<Pattern> patterns, final CoordinateMatchingPattern cmp,
+                                final EnumSet<Coordinate> coordinates )
+    {
+        ArrayList<CoordinateMatchingPattern> cmps = new ArrayList<>();
+        for ( Coordinate coordinate : coordinates )
+        {
+            cmps.add( cmp.toCoordinate( coordinate ) );
+        }
+        if ( !cmps.isEmpty() )
+        {
+            patterns.add( new OrPattern( cmp.pattern, cmps.toArray( new Pattern[0] ) ) );
+        }
+    }
+
+    /**
      * Abstract class for patterns
      */
-    abstract static class Pattern
+    private abstract static class Pattern
     {
-        private final String pattern;
+        protected final String pattern;
 
-        Pattern( String pattern )
+        private Pattern( String pattern )
         {
             this.pattern = requireNonNull( pattern );
         }
@@ -447,11 +502,11 @@ public class PatternIncludesArtifactFilter
     /**
      * Simple pattern which performs a logical AND between one or more patterns.
      */
-    static class AndPattern extends Pattern
+    private static class AndPattern extends Pattern
     {
         private final Pattern[] patterns;
 
-        AndPattern( String pattern, Pattern[] patterns )
+        private AndPattern( String pattern, Pattern[] patterns )
         {
             super( pattern );
             this.patterns = patterns;
@@ -474,11 +529,11 @@ public class PatternIncludesArtifactFilter
     /**
      * Simple pattern which performs a logical OR between one or more patterns.
      */
-    static class OrPattern extends Pattern
+    private static class OrPattern extends Pattern
     {
         private final Pattern[] patterns;
 
-        OrPattern( String pattern, Pattern[] patterns )
+        private OrPattern( String pattern, Pattern[] patterns )
         {
             super( pattern );
             this.patterns = patterns;
@@ -498,7 +553,7 @@ public class PatternIncludesArtifactFilter
         }
     }
 
-    static class CoordinateMatchingPattern extends Pattern
+    private static class CoordinateMatchingPattern extends Pattern
     {
         private final String token;
 
@@ -510,7 +565,7 @@ public class PatternIncludesArtifactFilter
 
         private final VersionRange optionalVersionRange;
 
-        CoordinateMatchingPattern( String pattern, String token, Coordinate coordinate )
+        private CoordinateMatchingPattern( String pattern, String token, Coordinate coordinate )
         {
             super( pattern );
             this.token = token;
@@ -554,14 +609,32 @@ public class PatternIncludesArtifactFilter
             }
             return matched;
         }
+
+        /**
+         * Returns instance that matches same pattern as this one for passed in coordinate.
+         */
+        public CoordinateMatchingPattern toCoordinate( final Coordinate coordinate )
+        {
+            requireNonNull( coordinate );
+            if ( this.coordinate == coordinate )
+            {
+                return this;
+            }
+            else
+            {
+                return new CoordinateMatchingPattern( pattern, token, coordinate );
+            }
+        }
     }
+
+    private static final MatchAllPattern MATCH_ALL_PATTERN = new MatchAllPattern( ANY );
 
     /**
      * Matches all input
      */
-    static class MatchAllPattern extends Pattern
+    private static class MatchAllPattern extends Pattern
     {
-        MatchAllPattern( String pattern )
+        private MatchAllPattern( String pattern )
         {
             super( pattern );
         }
@@ -576,11 +649,11 @@ public class PatternIncludesArtifactFilter
     /**
      * Negative pattern
      */
-    static class NegativePattern extends Pattern
+    private static class NegativePattern extends Pattern
     {
         private final Pattern inner;
 
-        NegativePattern( String pattern, Pattern inner )
+        private NegativePattern( String pattern, Pattern inner )
         {
             super( pattern );
             this.inner = inner;
@@ -596,7 +669,7 @@ public class PatternIncludesArtifactFilter
     // this beauty below must be salvaged
 
     @SuppressWarnings( "InnerAssignment" )
-    static boolean match( final String pattern, final boolean containsAsterisk, final String value )
+    private static boolean match( final String pattern, final boolean containsAsterisk, final String value )
     {
         char[] patArr = pattern.toCharArray();
         char[] strArr = value.toCharArray();
