@@ -450,10 +450,18 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
                 patterns.add( toPattern( tokens[0], Coordinate.GROUP_ID ) );
             }
 
-            // build result if needed
+            // build result if needed and retains pattern string
             if ( patterns.size() == 1 )
             {
-                return patterns.get( 0 );
+                Pattern pat = patterns.get( 0 );
+                if ( pat == MATCH_ALL_PATTERN )
+                {
+                    return new MatchAllPattern( pattern );
+                }
+                else
+                {
+                    return pat;
+                }
             }
             else
             {
