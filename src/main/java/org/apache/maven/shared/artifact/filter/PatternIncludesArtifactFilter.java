@@ -20,12 +20,12 @@ package org.apache.maven.shared.artifact.filter;
  */
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
@@ -35,6 +35,8 @@ import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException
 import org.apache.maven.artifact.versioning.VersionRange;
 import org.slf4j.Logger;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * TODO: include in maven-artifact in future
  *
@@ -42,18 +44,26 @@ import org.slf4j.Logger;
  * @see StrictPatternIncludesArtifactFilter
  */
 public class PatternIncludesArtifactFilter
-    implements ArtifactFilter, StatisticsReportingArtifactFilter
+        implements ArtifactFilter, StatisticsReportingArtifactFilter
 {
-    /** Holds the set of compiled patterns */
+    /**
+     * Holds the set of compiled patterns
+     */
     private final Set<Pattern> patterns;
 
-    /** Whether the dependency trail should be checked */
+    /**
+     * Whether the dependency trail should be checked
+     */
     private final boolean actTransitively;
 
-    /** Set of patterns that have been triggered */
+    /**
+     * Set of patterns that have been triggered
+     */
     private final Set<Pattern> patternsTriggered = new HashSet<>();
 
-    /** Set of artifacts that have been filtered out */
+    /**
+     * Set of artifacts that have been filtered out
+     */
     private final List<Artifact> filteredArtifact = new ArrayList<>();
 
     /**
@@ -69,7 +79,7 @@ public class PatternIncludesArtifactFilter
     /**
      * <p>Constructor for PatternIncludesArtifactFilter.</p>
      *
-     * @param patterns The pattern to be used.
+     * @param patterns        The pattern to be used.
      * @param actTransitively transitive yes/no.
      */
     public PatternIncludesArtifactFilter( final Collection<String> patterns, final boolean actTransitively )
@@ -80,7 +90,6 @@ public class PatternIncludesArtifactFilter
         {
             for ( String pattern : patterns )
             {
-
                 Pattern p = compile( pattern );
                 pat.add( p );
             }
@@ -88,7 +97,7 @@ public class PatternIncludesArtifactFilter
         this.patterns = pat;
     }
 
-    /** {@inheritDoc} */
+    @Override
     public boolean include( final Artifact artifact )
     {
         final boolean shouldInclude = patternMatches( artifact );
@@ -101,23 +110,9 @@ public class PatternIncludesArtifactFilter
         return shouldInclude;
     }
 
-    /**
-     * <p>patternMatches.</p>
-     *
-     * @param artifact to check for.
-     * @return true if the match is true false otherwise.
-     */
     protected boolean patternMatches( final Artifact artifact )
     {
-        // Check if the main artifact matches
-        char[][] artifactGatvCharArray = new char[][] {
-                            emptyOrChars( artifact.getGroupId() ),
-                            emptyOrChars( artifact.getArtifactId() ),
-                            emptyOrChars( artifact.getType() ),
-                            emptyOrChars( artifact.getClassifier() ),
-                            emptyOrChars( artifact.getBaseVersion() )
-                    };
-        Boolean match = match( artifactGatvCharArray );
+        Boolean match = match( adapt( artifact ) );
         if ( match != null )
         {
             return match;
@@ -131,8 +126,8 @@ public class PatternIncludesArtifactFilter
             {
                 for ( String trailItem : depTrail )
                 {
-                    char[][] depGatvCharArray = tokenizeAndSplit( trailItem );
-                    match = match( depGatvCharArray );
+                    Artifactoid artifactoid = adapt( trailItem );
+                    match = match( artifactoid );
                     if ( match != null )
                     {
                         return match;
@@ -144,11 +139,11 @@ public class PatternIncludesArtifactFilter
         return false;
     }
 
-    private Boolean match( char[][] gatvCharArray )
+    private Boolean match( Artifactoid artifactoid )
     {
         for ( Pattern pattern : patterns )
         {
-            if ( pattern.matches( gatvCharArray ) )
+            if ( pattern.matches( artifactoid ) )
             {
                 patternsTriggered.add( pattern );
                 return !( pattern instanceof NegativePattern );
@@ -168,7 +163,7 @@ public class PatternIncludesArtifactFilter
         filteredArtifact.add( artifact );
     }
 
-    /** {@inheritDoc} */
+    @Override
     public void reportMissedCriteria( final Logger logger )
     {
         // if there are no patterns, there is nothing to report.
@@ -197,18 +192,12 @@ public class PatternIncludesArtifactFilter
         }
     }
 
-    /** {@inheritDoc} */
     @Override
     public String toString()
     {
         return "Includes filter:" + getPatternsAsString();
     }
 
-    /**
-     * <p>getPatternsAsString.</p>
-     *
-     * @return pattern as a string.
-     */
     protected String getPatternsAsString()
     {
         final StringBuilder buffer = new StringBuilder();
@@ -220,23 +209,19 @@ public class PatternIncludesArtifactFilter
         return buffer.toString();
     }
 
-    /**
-     * <p>getFilterDescription.</p>
-     *
-     * @return description.
-     */
     protected String getFilterDescription()
     {
         return "artifact inclusion filter";
     }
 
-    /** {@inheritDoc} */
+    @Override
     public void reportFilteredArtifacts( final Logger logger )
     {
         if ( !filteredArtifact.isEmpty() && logger.isDebugEnabled() )
         {
             final StringBuilder buffer =
-                new StringBuilder( "The following artifacts were removed by this " + getFilterDescription() + ": " );
+                    new StringBuilder(
+                            "The following artifacts were removed by this " + getFilterDescription() + ": " );
 
             for ( Artifact artifactId : filteredArtifact )
             {
@@ -247,11 +232,7 @@ public class PatternIncludesArtifactFilter
         }
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return a boolean.
-     */
+    @Override
     public boolean hasMissedCriteria()
     {
         // if there are no patterns, there is nothing to report.
@@ -259,63 +240,373 @@ public class PatternIncludesArtifactFilter
         {
             final List<Pattern> missed = new ArrayList<>( patterns );
             missed.removeAll( patternsTriggered );
-
             return !missed.isEmpty();
         }
 
         return false;
     }
 
-    private static final char[] EMPTY = new char[0];
-
-    private static final char[] ANY = new char[] { '*' };
-
-    static char[] emptyOrChars( String str )
+    private enum Coordinate
     {
-        return str != null && str.length() > 0 ? str.toCharArray() : EMPTY;
+        GROUP_ID, ARTIFACT_ID, TYPE, CLASSIFIER, BASE_VERSION
     }
 
-    static char[] anyOrChars( char[] str )
+    private interface Artifactoid
     {
-        return str.length > 1 || ( str.length == 1 && str[0] != '*' ) ? str : ANY;
+        String getCoordinate( Coordinate coordinate );
     }
 
-    static char[][] tokenizeAndSplit( String pattern )
+    private static Artifactoid adapt( final Artifact artifact )
+    {
+        requireNonNull( artifact );
+        return new Artifactoid()
+        {
+            @Override
+            public String getCoordinate( Coordinate coordinate )
+            {
+                requireNonNull( coordinate );
+                switch ( coordinate )
+                {
+                    case GROUP_ID:
+                        return artifact.getGroupId();
+                    case ARTIFACT_ID:
+                        return artifact.getArtifactId();
+                    case BASE_VERSION:
+                        return artifact.getBaseVersion();
+                    case CLASSIFIER:
+                        return artifact.hasClassifier() ? artifact.getClassifier() : null;
+                    case TYPE:
+                        return artifact.getType();
+                }
+                throw new IllegalArgumentException( "unknown coordinate: " + coordinate );
+            }
+        };
+    }
+
+    private static Artifactoid adapt( final String depTrailString )
+    {
+        requireNonNull( depTrailString );
+        // G:A:T:C:V
+        String[] coordinates = depTrailString.split( ":" );
+        if ( coordinates.length != 4 && coordinates.length != 5 )
+        {
+            throw new IllegalArgumentException( "Bad dep trail string: " + depTrailString );
+        }
+        final HashMap<Coordinate, String> map = new HashMap<>();
+        map.put( Coordinate.GROUP_ID, coordinates[0] );
+        map.put( Coordinate.ARTIFACT_ID, coordinates[1] );
+        map.put( Coordinate.TYPE, coordinates[2] );
+        if ( coordinates.length == 5 )
+        {
+            map.put( Coordinate.CLASSIFIER, coordinates[3] );
+            map.put( Coordinate.BASE_VERSION, coordinates[4] );
+        }
+        else
+        {
+            map.put( Coordinate.BASE_VERSION, coordinates[3] );
+        }
+
+        return new Artifactoid()
+        {
+            @Override
+            public String getCoordinate( Coordinate coordinate )
+            {
+                requireNonNull( coordinate );
+                return map.get( coordinate );
+            }
+        };
+    }
+
+    private static final String ANY = "*";
+
+    /**
+     * Splits the pattern string into tokens, replacing empty tokens with {@link #ANY} for patterns like {@code ::val}
+     * so it retains the position of token.
+     */
+    private static String[] splitAndTokenize( String pattern )
     {
         String[] stokens = pattern.split( ":" );
-        char[][] tokens = new char[ stokens.length ][];
+        String[] tokens = new String[stokens.length];
         for ( int i = 0; i < stokens.length; i++ )
         {
-            tokens[i] = emptyOrChars( stokens[i] );
+            String str = stokens[i];
+            tokens[i] = str != null && !str.isEmpty() ? str : ANY;
         }
         return tokens;
     }
 
-    @SuppressWarnings( "InnerAssignment" )
-    static boolean match( char[] patArr, char[] strArr, boolean isVersion )
+    private static Pattern compile( String pattern )
     {
+        if ( pattern.startsWith( "!" ) )
+        {
+            return new NegativePattern( pattern, compile( pattern.substring( 1 ) ) );
+        }
+        else
+        {
+            String[] tokens = splitAndTokenize( pattern );
+            if ( tokens.length < 1 || tokens.length > 5 )
+            {
+                throw new IllegalArgumentException( "Invalid pattern: " + pattern );
+            }
+
+            // groupId:[artifactId:[[type[:classifier]]:version]]
+            ArrayList<Pattern> patterns = new ArrayList<>( 5 );
+            Pattern groupIdPattern = toPatternOrNullIfAny( tokens[0], Coordinate.GROUP_ID );
+            if ( groupIdPattern != null )
+            {
+                patterns.add( groupIdPattern );
+            }
+            if ( tokens.length > 1 )
+            {
+                Pattern artifactIdPattern = toPatternOrNullIfAny( tokens[1], Coordinate.ARTIFACT_ID );
+                if ( artifactIdPattern != null )
+                {
+                    patterns.add( artifactIdPattern );
+                }
+                if ( tokens.length > 2 )
+                {
+                    Pattern typePattern = toPatternOrNullIfAny( tokens[2], Coordinate.TYPE );
+                    if ( typePattern != null )
+                    {
+                        patterns.add( typePattern );
+                    }
+                    if ( tokens.length > 3 )
+                    {
+                        if (tokens.length > 4)
+                        {
+                            Pattern classifierPattern = toPatternOrNullIfAny( tokens[3], Coordinate.CLASSIFIER );
+                            if (classifierPattern != null)
+                            {
+                                patterns.add( classifierPattern );
+                            }
+                            Pattern versionPattern = toPatternOrNullIfAny( tokens[4], Coordinate.BASE_VERSION );
+                            if (versionPattern != null)
+                            {
+                                patterns.add( versionPattern );
+                            }
+                        }
+                        else
+                        {
+                            Pattern versionPattern = toPatternOrNullIfAny( tokens[3], Coordinate.BASE_VERSION );
+                            if (versionPattern != null)
+                            {
+                                patterns.add( versionPattern );
+                            }
+                        }
+                    }
+                }
+            }
+
+            if ( patterns.isEmpty() )
+            {
+                return new MatchAllPattern( pattern );
+            }
+            else
+            {
+                return new AndPattern( pattern, patterns.toArray( new Pattern[0] ) );
+            }
+        }
+    }
+
+    /**
+     * Returns {@code null} if token is {@link #ANY} or corresponding pattern.
+     */
+    private static Pattern toPatternOrNullIfAny( String token, Coordinate coordinate )
+    {
+        if ( ANY.equals( token ) )
+        {
+            return null;
+        }
+        else
+        {
+            return new CoordinateMatchingPattern( token, token, coordinate );
+        }
+    }
+
+    /**
+     * Abstract class for patterns
+     */
+    abstract static class Pattern
+    {
+        private final String pattern;
+
+        Pattern( String pattern )
+        {
+            this.pattern = requireNonNull( pattern );
+        }
+
+        public abstract boolean matches( Artifactoid artifact );
+
+        @Override
+        public String toString()
+        {
+            return pattern;
+        }
+    }
+
+    /**
+     * Simple pattern which performs a logical AND between one or more patterns.
+     */
+    static class AndPattern extends Pattern
+    {
+        private final Pattern[] patterns;
+
+        AndPattern( String pattern, Pattern[] patterns )
+        {
+            super( pattern );
+            this.patterns = patterns;
+        }
+
+        @Override
+        public boolean matches( Artifactoid artifactoid )
+        {
+            for ( Pattern pattern : patterns )
+            {
+                if ( !pattern.matches( artifactoid ) )
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+
+    /**
+     * Simple pattern which performs a logical OR between one or more patterns.
+     */
+    static class OrPattern extends Pattern
+    {
+        private final Pattern[] patterns;
+
+        OrPattern( String pattern, Pattern[] patterns )
+        {
+            super( pattern );
+            this.patterns = patterns;
+        }
+
+        @Override
+        public boolean matches( Artifactoid artifactoid )
+        {
+            for ( Pattern pattern : patterns )
+            {
+                if ( pattern.matches( artifactoid ) )
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    static class CoordinateMatchingPattern extends Pattern
+    {
+        private final String token;
+
+        private final Coordinate coordinate;
+
+        private final boolean containsWildcard;
+
+        private final boolean containsAsterisk;
+
+        private final VersionRange optionalVersionRange;
+
+        CoordinateMatchingPattern( String pattern, String token, Coordinate coordinate )
+        {
+            super( pattern );
+            this.token = token;
+            this.coordinate = coordinate;
+            this.containsAsterisk = token.contains( "*" );
+            this.containsWildcard = this.containsAsterisk || token.contains( "?" );
+            if ( !this.containsWildcard && Coordinate.BASE_VERSION == coordinate
+                    && ( token.startsWith( "[" ) || token.startsWith( "(" ) ) )
+            {
+                try
+                {
+                    this.optionalVersionRange = VersionRange.createFromVersionSpec( token );
+                }
+                catch ( InvalidVersionSpecificationException e )
+                {
+                    throw new IllegalArgumentException( "Wrong version spec: " + token, e );
+                }
+            }
+            else
+            {
+                this.optionalVersionRange = null;
+            }
+        }
+
+        @Override
+        public boolean matches( Artifactoid artifactoid )
+        {
+            boolean matched;
+            String value = artifactoid.getCoordinate( coordinate );
+            if ( Coordinate.BASE_VERSION == coordinate && optionalVersionRange != null )
+            {
+                return optionalVersionRange.containsVersion( new DefaultArtifactVersion( value ) );
+            }
+            else if ( containsWildcard )
+            {
+                matched = match( token, containsAsterisk, value );
+            }
+            else
+            {
+                matched = token.equals( value );
+            }
+            return matched;
+        }
+    }
+
+    /**
+     * Matches all input
+     */
+    static class MatchAllPattern extends Pattern
+    {
+        MatchAllPattern( String pattern )
+        {
+            super( pattern );
+        }
+
+        @Override
+        public boolean matches( Artifactoid artifactoid )
+        {
+            return true;
+        }
+    }
+
+    /**
+     * Negative pattern
+     */
+    static class NegativePattern extends Pattern
+    {
+        private final Pattern inner;
+
+        NegativePattern( String pattern, Pattern inner )
+        {
+            super( pattern );
+            this.inner = inner;
+        }
+
+        @Override
+        public boolean matches( Artifactoid artifactoid )
+        {
+            return inner.matches( artifactoid );
+        }
+    }
+
+    // this beauty below must be salvaged
+
+    static boolean match( final String pattern, final boolean containsAsterisk, final String value )
+    {
+        char[] patArr = pattern.toCharArray();
+        char[] strArr = value.toCharArray();
         int patIdxStart = 0;
         int patIdxEnd = patArr.length - 1;
         int strIdxStart = 0;
         int strIdxEnd = strArr.length - 1;
         char ch;
 
-        boolean containsStar = false;
-        for ( char aPatArr : patArr )
+        if ( !containsAsterisk )
         {
-            if ( aPatArr == '*' )
-            {
-                containsStar = true;
-                break;
-            }
-        }
-
-        if ( !containsStar )
-        {
-            if ( isVersion && ( patArr[0] == '[' || patArr[0] == '(' ) )
-            {
-                return isVersionIncludedInRange( String.valueOf( strArr ), String.valueOf( patArr ) );
-            }
             // No '*'s, so we make a shortcut
             if ( patIdxEnd != strIdxEnd )
             {
@@ -409,7 +700,8 @@ public class PatternIncludesArtifactFilter
             int patLength = ( patIdxTmp - patIdxStart - 1 );
             int strLength = ( strIdxEnd - strIdxStart + 1 );
             int foundIdx = -1;
-            strLoop: for ( int i = 0; i <= strLength - patLength; i++ )
+            strLoop:
+            for ( int i = 0; i <= strLength - patLength; i++ )
             {
                 for ( int j = 0; j < patLength; j++ )
                 {
@@ -444,474 +736,4 @@ public class PatternIncludesArtifactFilter
         }
         return true;
     }
-
-    static boolean isVersionIncludedInRange( final String version, final String range )
-    {
-        try
-        {
-            return VersionRange.createFromVersionSpec( range ).containsVersion( new DefaultArtifactVersion( version ) );
-        }
-        catch ( final InvalidVersionSpecificationException e )
-        {
-            return false;
-        }
-    }
-
-    static Pattern compile( String pattern )
-    {
-        if ( pattern.startsWith( "!" ) )
-        {
-            return new NegativePattern( pattern, compile( pattern.substring( 1 ) ) );
-        }
-        else
-        {
-            char[][] stokens = tokenizeAndSplit( pattern );
-            char[][] tokens = new char[ stokens.length ][];
-            for ( int i = 0; i < stokens.length; i++ )
-            {
-                tokens[i] = anyOrChars( stokens[i] );
-            }
-            if ( tokens.length > 5 )
-            {
-                throw new IllegalArgumentException( "Invalid pattern: " + pattern );
-            }
-            //
-            // Check the tokens and build an appropriate Pattern
-            // Special care needs to be taken if the first or the last part is '*'
-            // because this allows the '*' to match multiple tokens
-            //
-            if ( tokens.length == 1 )
-            {
-                if ( tokens[0] == ANY )
-                {
-                    // *
-                    return all( pattern );
-                }
-                else
-                {
-                    // [pat0]
-                    return match( pattern, tokens[0], 0 );
-                }
-            }
-            if ( tokens.length == 2 )
-            {
-                if ( tokens[0] == ANY )
-                {
-                    if ( tokens[1] == ANY )
-                    {
-                        // *:*
-                        return all( pattern );
-                    }
-                    else
-                    {
-                        // *:[pat1]
-                        return match( pattern, tokens[1], 0, 3 );
-                    }
-                }
-                else
-                {
-                    if ( tokens[1] == ANY )
-                    {
-                        // [pat0]:*
-                        return match( pattern, tokens[0], 0 );
-                    }
-                    else
-                    {
-                        // [pat0]:[pat1]
-                        Pattern m00 = match( tokens[0], 0 );
-                        Pattern m11 = match( tokens[1], 1 );
-                        return and( pattern, m00, m11 );
-                    }
-                }
-            }
-            if ( tokens.length == 3 )
-            {
-                if ( tokens[0] == ANY )
-                {
-                    if ( tokens[1] == ANY )
-                    {
-                        if ( tokens[2] == ANY )
-                        {
-                            // *:*:*
-                            return all( pattern );
-                        }
-                        else
-                        {
-                            // *:*:[pat2]
-                            return match( pattern, tokens[2], 2, 3 );
-                        }
-                    }
-                    else
-                    {
-                        if ( tokens[2] == ANY )
-                        {
-                            // *:[pat1]:*
-                            return match( pattern, tokens[1], 1, 2 );
-                        }
-                        else
-                        {
-                            // *:[pat1]:[pat2]
-                            Pattern m11 = match( tokens[1], 1 );
-                            Pattern m12 = match( tokens[1], 2 );
-                            Pattern m22 = match( tokens[2], 2 );
-                            Pattern m23 = match( tokens[2], 3 );
-                            return or( pattern, and( m11, m22 ), and( m12, m23 ) );
-                        }
-                    }
-                }
-                else
-                {
-                    if ( tokens[1] == ANY )
-                    {
-                        if ( tokens[2] == ANY )
-                        {
-                            // [pat0]:*:*
-                            return match( pattern, tokens[0], 0, 1 );
-                        }
-                        else
-                        {
-                            // [pat0]:*:[pat2]
-                            Pattern m00 = match( tokens[0], 0 );
-                            Pattern m223 = match( tokens[2], 2, 3 );
-                            return and( pattern, m00, m223 );
-                        }
-                    }
-                    else
-                    {
-                        if ( tokens[2] == ANY )
-                        {
-                            // [pat0]:[pat1]:*
-                            Pattern m00 = match( tokens[0], 0 );
-                            Pattern m11 = match( tokens[1], 1 );
-                            return and( pattern, m00, m11 );
-                        }
-                        else
-                        {
-                            // [pat0]:[pat1]:[pat2]
-                            Pattern m00 = match( tokens[0], 0 );
-                            Pattern m11 = match( tokens[1], 1 );
-                            Pattern m22 = match( tokens[2], 2 );
-                            return and( pattern, m00, m11, m22 );
-                        }
-                    }
-                }
-            }
-            if ( tokens.length >= 4 )
-            {
-                List<Pattern> patterns = new ArrayList<>();
-                for ( int i = 0; i < tokens.length; i++ )
-                {
-                    if ( tokens[i] != ANY )
-                    {
-                        patterns.add( match( tokens[i], i ) );
-                    }
-                }
-                return and( pattern, patterns.toArray( new Pattern[0] ) );
-            }
-            throw new IllegalStateException();
-        }
-    }
-
-    /** Creates a positional matching pattern */
-    private static Pattern match( String pattern, char[] token, int posVal )
-    {
-        return match( pattern, token, posVal, posVal );
-    }
-
-    /** Creates a positional matching pattern */
-    private static Pattern match( char[] token, int posVal )
-    {
-        return match( "", token, posVal, posVal );
-    }
-
-    /** Creates a positional matching pattern */
-    private static Pattern match( String pattern, char[] token, int posMin, int posMax )
-    {
-        boolean hasWildcard = false;
-        for ( char ch : token )
-        {
-            if ( ch == '*' || ch == '?' )
-            {
-                hasWildcard = true;
-                break;
-            }
-        }
-        if ( hasWildcard || posMax == 4 )
-        {
-            return new PosPattern( pattern, token, posMin, posMax );
-        }
-        else
-        {
-            return new EqPattern( pattern, token, posMin, posMax );
-        }
-    }
-
-    /** Creates a positional matching pattern */
-    private static Pattern match( char[] token, int posMin, int posMax )
-    {
-        return new PosPattern( "", token, posMin, posMax );
-    }
-
-    /** Creates an AND pattern */
-    private static Pattern and( String pattern, Pattern... patterns )
-    {
-        return new AndPattern( pattern, patterns );
-    }
-
-    /** Creates an AND pattern */
-    private static Pattern and( Pattern... patterns )
-    {
-        return and( "", patterns );
-    }
-
-    /** Creates an OR pattern */
-    private static Pattern or( String pattern, Pattern... patterns )
-    {
-        return new OrPattern( pattern, patterns );
-    }
-
-    /** Creates an OR pattern */
-    private static Pattern or( Pattern... patterns )
-    {
-        return or( "", patterns );
-    }
-
-    /** Creates a match-all pattern */
-    private static Pattern all( String pattern )
-    {
-        return new MatchAllPattern( pattern );
-    }
-
-    /**
-     * Abstract class for patterns
-     */
-    abstract static class Pattern
-    {
-        private final String pattern;
-
-        Pattern( String pattern )
-        {
-            this.pattern = Objects.requireNonNull( pattern );
-        }
-
-        public abstract boolean matches( char[][] parts );
-
-        /**
-         * Returns a string containing a fixed artifact gatv coordinates
-         * or null if the pattern can not be translated.
-         */
-        public String translateEquals()
-        {
-            return null;
-        }
-
-        /**
-         * Check if the this pattern is a fixed pattern on the specified pos.
-         */
-        protected String translateEquals( int pos )
-        {
-            return null;
-        }
-
-        @Override
-        public String toString()
-        {
-            return pattern;
-        }
-    }
-
-    /**
-     * Simple pattern which performs a logical AND between one or more patterns.
-     */
-    static class AndPattern extends Pattern
-    {
-        private final Pattern[] patterns;
-
-        AndPattern( String pattern, Pattern[] patterns )
-        {
-            super( pattern );
-            this.patterns = patterns;
-        }
-
-        @Override
-        public boolean matches( char[][] parts )
-        {
-            for ( Pattern pattern : patterns )
-            {
-                if ( !pattern.matches( parts ) )
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        @Override
-        public String translateEquals()
-        {
-            String[] strings = new String[ patterns.length ];
-            for ( int i = 0; i < patterns.length; i++ )
-            {
-                strings[i] = patterns[i].translateEquals( i );
-                if ( strings[i] == null )
-                {
-                    return null;
-                }
-            }
-            StringBuilder sb = new StringBuilder();
-            for ( int i = 0; i < strings.length; i++ )
-            {
-                if ( i > 0 )
-                {
-                    sb.append( ":" );
-                }
-                sb.append( strings[i] );
-            }
-            return sb.toString();
-        }
-    }
-
-    /**
-     * Simple pattern which performs a logical OR between one or more patterns.
-     */
-    static class OrPattern extends Pattern
-    {
-        private final Pattern[] patterns;
-
-        OrPattern( String pattern, Pattern[] patterns )
-        {
-            super( pattern );
-            this.patterns = patterns;
-        }
-
-        @Override
-        public boolean matches( char[][] parts )
-        {
-            for ( Pattern pattern : patterns )
-            {
-                if ( pattern.matches( parts ) )
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
-
-    /**
-     * A positional matching pattern, to check if a token in the gatv coordinates
-     * having a position between posMin and posMax (both inclusives) can match
-     * the pattern.
-     */
-    static class PosPattern extends Pattern
-    {
-        private final char[] patternCharArray;
-        private final int posMin;
-        private final int posMax;
-
-        PosPattern( String pattern, char[] patternCharArray, int posMin, int posMax )
-        {
-            super( pattern );
-            this.patternCharArray = patternCharArray;
-            this.posMin = posMin;
-            this.posMax = posMax;
-        }
-
-        @Override
-        public boolean matches( char[][] parts )
-        {
-            for ( int i = posMin; i <= posMax; i++ )
-            {
-                if ( match( patternCharArray, parts[i], i == 4 ) )
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
-
-    /**
-     * Looks for an exact match in the gatv coordinates between
-     * posMin and posMax (both inclusives)
-     */
-    static class EqPattern extends Pattern
-    {
-        private final char[] token;
-        private final int posMin;
-        private final int posMax;
-
-        EqPattern( String pattern, char[] patternCharArray, int posMin, int posMax )
-        {
-            super( pattern );
-            this.token = patternCharArray;
-            this.posMin = posMin;
-            this.posMax = posMax;
-        }
-
-        @Override
-        public boolean matches( char[][] parts )
-        {
-            for ( int i = posMin; i <= posMax; i++ )
-            {
-                if ( Arrays.equals( token, parts[i] ) )
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        @Override
-        public String translateEquals()
-        {
-            return translateEquals( 0 );
-        }
-
-        public String translateEquals( int pos )
-        {
-            return posMin == pos && posMax == pos
-                && ( pos < 3 || ( token[0] != '[' && token[0] != '(' ) )
-                    ? String.valueOf( token ) : null;
-        }
-
-    }
-
-    /**
-     * Matches all input
-     */
-    static class MatchAllPattern extends Pattern
-    {
-        MatchAllPattern( String pattern )
-        {
-            super( pattern );
-        }
-
-        @Override
-        public boolean matches( char[][] parts )
-        {
-            return true;
-        }
-    }
-
-    /**
-     * Negative pattern
-     */
-    static class NegativePattern extends Pattern
-    {
-        private final Pattern inner;
-
-        NegativePattern( String pattern, Pattern inner )
-        {
-            super( pattern );
-            this.inner = inner;
-        }
-
-        @Override
-        public boolean matches( char[][] parts )
-        {
-            return inner.matches( parts );
-        }
-    }
-
 }
