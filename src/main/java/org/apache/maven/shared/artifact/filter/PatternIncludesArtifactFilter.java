@@ -22,12 +22,9 @@ package org.apache.maven.shared.artifact.filter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -49,9 +46,6 @@ public class PatternIncludesArtifactFilter
 {
     /** Holds the set of compiled patterns */
     private final Set<Pattern> patterns;
-
-    /** Holds simple patterns: those that can use direct matching */
-    private final Map<Integer, Map<String, Pattern>> simplePatterns;
 
     /** Whether the dependency trail should be checked */
     private final boolean actTransitively;
@@ -82,53 +76,15 @@ public class PatternIncludesArtifactFilter
     {
         this.actTransitively = actTransitively;
         final Set<Pattern> pat = new LinkedHashSet<>();
-        Map<Integer, Map<String, Pattern>> simplePat = null;
-        boolean allPos = true;
         if ( patterns != null && !patterns.isEmpty() )
         {
             for ( String pattern : patterns )
             {
 
                 Pattern p = compile( pattern );
-                allPos &= !( p instanceof NegativePattern );
                 pat.add( p );
             }
         }
-        // If all patterns are positive, we can check for simple patterns
-        // Simple patterns will match the first tokens and contain no wildcards,
-        // so we can put them in a map and check them using a simple map lookup.
-        if ( allPos )
-        {
-            for ( Iterator<Pattern> it = pat.iterator(); it.hasNext(); )
-            {
-                Pattern p = it.next();
-                String peq = p.translateEquals();
-                if ( peq != null )
-                {
-                    int nb = 0;
-                    for ( char ch : peq.toCharArray() )
-                    {
-                        if ( ch == ':' )
-                        {
-                            nb++;
-                        }
-                    }
-                    if ( simplePat == null )
-                    {
-                        simplePat = new HashMap<>();
-                    }
-                    Map<String, Pattern> peqm = simplePat.get( nb );
-                    if ( peqm == null )
-                    {
-                        peqm = new HashMap<>();
-                        simplePat.put( nb, peqm );
-                    }
-                    peqm.put( peq, p );
-                    it.remove();
-                }
-            }
-        }
-        this.simplePatterns = simplePat;
         this.patterns = pat;
     }
 
@@ -190,31 +146,6 @@ public class PatternIncludesArtifactFilter
 
     private Boolean match( char[][] gatvCharArray )
     {
-        if ( simplePatterns != null && simplePatterns.size() > 0 )
-        {
-            // We add the parts one by one to the builder
-            StringBuilder sb = new StringBuilder();
-            for ( int i = 0; i < 4; i++ )
-            {
-                if ( i > 0 )
-                {
-                    sb.append( ":" );
-                }
-                sb.append( gatvCharArray[i] );
-                Map<String, Pattern> map = simplePatterns.get( i );
-                if ( map != null )
-                {
-                    // Check if one of the pattern matches
-                    Pattern p = map.get( sb.toString() );
-                    if ( p != null )
-                    {
-                        patternsTriggered.add( p );
-                        return true;
-                    }
-                }
-            }
-        }
-        // Check all other patterns
         for ( Pattern pattern : patterns )
         {
             if ( pattern.matches( gatvCharArray ) )
