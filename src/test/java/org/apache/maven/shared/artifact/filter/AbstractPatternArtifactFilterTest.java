@@ -462,7 +462,7 @@ public abstract class AbstractPatternArtifactFilterTest
         final String otherArtifact = "otherArtifact";
         final String otherType = "ejb";
 
-        final List<String> patterns = Collections.singletonList( "*:jar:*" );
+        final List<String> patterns = Collections.singletonList( "::jar" );
 
         Artifact artifact1 = mock( Artifact.class );
         when( artifact1.getGroupId() ).thenReturn( groupId );
