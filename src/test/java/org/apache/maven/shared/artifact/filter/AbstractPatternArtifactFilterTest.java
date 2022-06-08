@@ -558,6 +558,7 @@ public abstract class AbstractPatternArtifactFilterTest
         when( artifact2.getGroupId() ).thenReturn( "org.teiid" );
         when( artifact2.getArtifactId() ).thenReturn( "teiid" );
         when( artifact2.getType() ).thenReturn( "jar" );
+        when( artifact2.hasClassifier() ).thenReturn( true );
         when( artifact2.getClassifier() ).thenReturn( "jdbc" );
         when( artifact2.getBaseVersion() ).thenReturn( "1.0" );
 
