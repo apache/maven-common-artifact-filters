@@ -276,6 +276,7 @@ public class PatternIncludesArtifactFilter
                         return artifact.hasClassifier() ? artifact.getClassifier() : null;
                     case TYPE:
                         return artifact.getType();
+                    default:
                 }
                 throw new IllegalArgumentException( "unknown coordinate: " + coordinate );
             }
@@ -371,15 +372,15 @@ public class PatternIncludesArtifactFilter
                     }
                     if ( tokens.length > 3 )
                     {
-                        if (tokens.length > 4)
+                        if ( tokens.length > 4 )
                         {
                             Pattern classifierPattern = toPatternOrNullIfAny( tokens[3], Coordinate.CLASSIFIER );
-                            if (classifierPattern != null)
+                            if ( classifierPattern != null )
                             {
                                 patterns.add( classifierPattern );
                             }
                             Pattern versionPattern = toPatternOrNullIfAny( tokens[4], Coordinate.BASE_VERSION );
-                            if (versionPattern != null)
+                            if ( versionPattern != null )
                             {
                                 patterns.add( versionPattern );
                             }
@@ -387,7 +388,7 @@ public class PatternIncludesArtifactFilter
                         else
                         {
                             Pattern versionPattern = toPatternOrNullIfAny( tokens[3], Coordinate.BASE_VERSION );
-                            if (versionPattern != null)
+                            if ( versionPattern != null )
                             {
                                 patterns.add( versionPattern );
                             }
@@ -594,6 +595,7 @@ public class PatternIncludesArtifactFilter
 
     // this beauty below must be salvaged
 
+    @SuppressWarnings( "InnerAssignment" )
     static boolean match( final String pattern, final boolean containsAsterisk, final String value )
     {
         char[] patArr = pattern.toCharArray();
