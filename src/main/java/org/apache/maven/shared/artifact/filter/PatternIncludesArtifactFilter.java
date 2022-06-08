@@ -355,132 +355,141 @@ public class PatternIncludesArtifactFilter
             if ( tokens.length == 5 )
             {
                 // trivial, full pattern w/ classifier: G:A:T:C:V
-                addIfNonNull( patterns, tokens[0], Coordinate.GROUP_ID );
-                addIfNonNull( patterns, tokens[1], Coordinate.ARTIFACT_ID );
-                addIfNonNull( patterns, tokens[2], Coordinate.TYPE );
-                addIfNonNull( patterns, tokens[3], Coordinate.CLASSIFIER );
-                addIfNonNull( patterns, tokens[4], Coordinate.BASE_VERSION );
+                patterns.add( toPattern( tokens[0], Coordinate.GROUP_ID ) );
+                patterns.add( toPattern( tokens[1], Coordinate.ARTIFACT_ID ) );
+                patterns.add( toPattern( tokens[2], Coordinate.TYPE ) );
+                patterns.add( toPattern( tokens[3], Coordinate.CLASSIFIER ) );
+                patterns.add( toPattern( tokens[4], Coordinate.BASE_VERSION ) );
             }
             else if ( tokens.length == 4 )
             {
                 // trivial, full pattern w/p classifier: G:A:T:V
-                addIfNonNull( patterns, tokens[0], Coordinate.GROUP_ID );
-                addIfNonNull( patterns, tokens[1], Coordinate.ARTIFACT_ID );
-                addIfNonNull( patterns, tokens[2], Coordinate.TYPE );
-                addIfNonNull( patterns, tokens[3], Coordinate.BASE_VERSION );
+                patterns.add( toPattern( tokens[0], Coordinate.GROUP_ID ) );
+                patterns.add( toPattern( tokens[1], Coordinate.ARTIFACT_ID ) );
+                patterns.add( toPattern( tokens[2], Coordinate.TYPE ) );
+                patterns.add( toPattern( tokens[3], Coordinate.BASE_VERSION ) );
             }
             else if ( tokens.length == 3 )
             {
                 // tricky: may be "*:artifact:*" but also "*:war:*"
+
+                // *:*:* -> ALL
+                // *:*:xxx -> TC(xxx)
+                // *:xxx:* -> AT(xxx)
+                // *:xxx:yyy -> GA(xxx) + TC(XXX)
+                // xxx:*:* -> GA(xxx)
+                // xxx:*:yyy -> G(xxx) + TC(yyy)
+                // xxx:yyy:* -> G(xxx)+A(yyy)
+                // xxx:yyy:zzz -> G(xxx)+A(yyy)+T(zzz)
+                if ( ANY.equals( tokens[0] ) && ANY.equals( tokens[1] ) && ANY.equals( tokens[2] ) )
+                {
+                    patterns.add( MATCH_ALL_PATTERN );
+                }
+                else if ( ANY.equals( tokens[0] ) && ANY.equals( tokens[1] ) && !ANY.equals( tokens[2] ) )
+                {
+                    patterns.add( new CoordinateMatchingPattern( pattern, tokens[2], EnumSet.of(
+                            Coordinate.TYPE, Coordinate.CLASSIFIER ) ) );
+                }
+                else if ( ANY.equals( tokens[0] ) && !ANY.equals( tokens[1] ) && ANY.equals( tokens[2] ) )
+                {
+                    patterns.add( new CoordinateMatchingPattern( pattern, tokens[1], EnumSet.of(
+                            Coordinate.ARTIFACT_ID, Coordinate.TYPE ) ) );
+                }
+                else if ( ANY.equals( tokens[0] ) && !ANY.equals( tokens[1] ) && !ANY.equals( tokens[2] ) )
+                {
+                    patterns.add( new CoordinateMatchingPattern( pattern, tokens[1], EnumSet.of(
+                            Coordinate.GROUP_ID, Coordinate.ARTIFACT_ID ) ) );
+                    patterns.add( new CoordinateMatchingPattern( pattern, tokens[2], EnumSet.of(
+                            Coordinate.TYPE, Coordinate.CLASSIFIER ) ) );
+                }
+                else if ( !ANY.equals( tokens[0] ) && ANY.equals( tokens[1] ) && ANY.equals( tokens[2] ) )
+                {
+                    patterns.add( new CoordinateMatchingPattern( pattern, tokens[0], EnumSet.of(
+                            Coordinate.GROUP_ID, Coordinate.ARTIFACT_ID ) ) );
+                }
+                else if ( !ANY.equals( tokens[0] ) && ANY.equals( tokens[1] ) && !ANY.equals( tokens[2] ) )
+                {
+                    patterns.add( toPattern( tokens[0], Coordinate.GROUP_ID ) );
+                    patterns.add( new CoordinateMatchingPattern( pattern, tokens[2], EnumSet.of(
+                            Coordinate.TYPE, Coordinate.CLASSIFIER ) ) );
+                }
+                else if ( !ANY.equals( tokens[0] ) && !ANY.equals( tokens[1] ) && ANY.equals( tokens[2] ) )
+                {
+                    patterns.add( toPattern( tokens[0], Coordinate.GROUP_ID ) );
+                    patterns.add( toPattern( tokens[1], Coordinate.ARTIFACT_ID ) );
+                }
+                else
+                {
+                    patterns.add( toPattern( tokens[0], Coordinate.GROUP_ID ) );
+                    patterns.add( toPattern( tokens[1], Coordinate.ARTIFACT_ID ) );
+                    patterns.add( toPattern( tokens[2], Coordinate.TYPE ) );
+                }
+
             }
             else if ( tokens.length == 2 )
             {
                 // tricky: may be "*:artifact" but also "*:war"
-                CoordinateMatchingPattern cmp0 = toPatternOrNullIfAny( tokens[0], Coordinate.GROUP_ID );
-                if ( cmp0 != null )
+                // *:* -> ALL
+                // *:xxx -> GATV(xxx)
+                // xxx:* -> G(xxx)
+                // xxx:yyy -> G(xxx)+A(yyy)
+
+                if ( ANY.equals( tokens[0] ) && ANY.equals( tokens[1] ) )
                 {
-                    if ( cmp0.containsAsterisk )
-                    {
-                        orThem( patterns, cmp0, EnumSet.of( Coordinate.GROUP_ID, Coordinate.ARTIFACT_ID,
-                                Coordinate.TYPE, Coordinate.BASE_VERSION ) );
-                    }
-                    else
-                    {
-                        patterns.add( cmp0 );
-                    }
+                    patterns.add( MATCH_ALL_PATTERN );
                 }
-                CoordinateMatchingPattern cmp1 = toPatternOrNullIfAny( tokens[1], Coordinate.ARTIFACT_ID );
-                if ( cmp1 != null )
+                else if ( ANY.equals( tokens[0] ) )
                 {
-                    if ( cmp1.containsAsterisk )
-                    {
-                        orThem( patterns, cmp1, EnumSet.of( Coordinate.GROUP_ID, Coordinate.ARTIFACT_ID,
-                                Coordinate.TYPE, Coordinate.BASE_VERSION ) );
-                    }
-                    else
-                    {
-                        patterns.add( cmp1 );
-                    }
+                    patterns.add( new CoordinateMatchingPattern( pattern, tokens[1], EnumSet.of( Coordinate.GROUP_ID,
+                            Coordinate.ARTIFACT_ID, Coordinate.TYPE, Coordinate.BASE_VERSION ) ) );
+                }
+                else if ( ANY.equals( tokens[1] ) )
+                {
+                    patterns.add( toPattern( tokens[0], Coordinate.GROUP_ID ) );
+                }
+                else
+                {
+                    patterns.add( toPattern( tokens[0], Coordinate.GROUP_ID ) );
+                    patterns.add( toPattern( tokens[1], Coordinate.ARTIFACT_ID ) );
                 }
             }
             else
             {
-                // trivial or not
-                CoordinateMatchingPattern cmp = toPatternOrNullIfAny( tokens[0], Coordinate.GROUP_ID );
-                if ( cmp != null )
-                {
-                    if ( cmp.containsAsterisk )
-                    {
-                        orThem( patterns, cmp, EnumSet.of( Coordinate.GROUP_ID, Coordinate.ARTIFACT_ID,
-                                Coordinate.TYPE, Coordinate.BASE_VERSION ) );
-                    }
-                    else
-                    {
-                        patterns.add( cmp );
-                    }
-                }
+                // trivial: G
+                patterns.add( toPattern( tokens[0], Coordinate.GROUP_ID ) );
             }
 
+            // build result if needed
             if ( patterns.isEmpty() )
             {
                 return new MatchAllPattern( pattern );
             }
+            else if ( patterns.size() == 1 )
+            {
+                return patterns.get( 0 );
+            }
             else
             {
+                // optimization: just leave out Pattern instances that are equal to MATCH_ALL_PATTERN
                 return new AndPattern( pattern, patterns.toArray( new Pattern[0] ) );
             }
         }
     }
 
-    /**
-     * Returns {@code null} if token is {@link #ANY} or corresponding pattern.
-     */
-    private static CoordinateMatchingPattern toPatternOrNullIfAny( String token, Coordinate coordinate )
+    private static Pattern toPattern( final String token, final Coordinate coordinate )
     {
         if ( ANY.equals( token ) )
         {
-            return null;
+            return MATCH_ALL_PATTERN;
         }
         else
         {
-            return new CoordinateMatchingPattern( token, token, coordinate );
+            return new CoordinateMatchingPattern( token, token, EnumSet.of( coordinate ) );
         }
     }
 
-    /**
-     * Adds {@link #toPatternOrNullIfAny(String, Coordinate)} if result is non-{@code null}.
-     */
-    private static void addIfNonNull( List<Pattern> patterns, String token, Coordinate coordinate )
-    {
-        CoordinateMatchingPattern cmp = toPatternOrNullIfAny( token, coordinate );
-        if ( cmp != null )
-        {
-            patterns.add( cmp );
-        }
-    }
+    private static final Pattern MATCH_ALL_PATTERN = new MatchAllPattern( ANY );
 
-    /**
-     * Creates new {@link CoordinateMatchingPattern}s using {@link CoordinateMatchingPattern#toCoordinate(Coordinate)}
-     * and passed in set of {@link Coordinate} set, makes one {@link OrPattern} out of them and adds that one to passed
-     * in list.
-     */
-    private static void orThem( final List<Pattern> patterns, final CoordinateMatchingPattern cmp,
-                                final EnumSet<Coordinate> coordinates )
-    {
-        ArrayList<CoordinateMatchingPattern> cmps = new ArrayList<>();
-        for ( Coordinate coordinate : coordinates )
-        {
-            cmps.add( cmp.toCoordinate( coordinate ) );
-        }
-        if ( !cmps.isEmpty() )
-        {
-            patterns.add( new OrPattern( cmp.pattern, cmps.toArray( new Pattern[0] ) ) );
-        }
-    }
-
-    /**
-     * Abstract class for patterns
-     */
     private abstract static class Pattern
     {
         protected final String pattern;
@@ -499,9 +508,6 @@ public class PatternIncludesArtifactFilter
         }
     }
 
-    /**
-     * Simple pattern which performs a logical AND between one or more patterns.
-     */
     private static class AndPattern extends Pattern
     {
         private final Pattern[] patterns;
@@ -526,38 +532,11 @@ public class PatternIncludesArtifactFilter
         }
     }
 
-    /**
-     * Simple pattern which performs a logical OR between one or more patterns.
-     */
-    private static class OrPattern extends Pattern
-    {
-        private final Pattern[] patterns;
-
-        private OrPattern( String pattern, Pattern[] patterns )
-        {
-            super( pattern );
-            this.patterns = patterns;
-        }
-
-        @Override
-        public boolean matches( Artifactoid artifactoid )
-        {
-            for ( Pattern pattern : patterns )
-            {
-                if ( pattern.matches( artifactoid ) )
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
-
     private static class CoordinateMatchingPattern extends Pattern
     {
         private final String token;
 
-        private final Coordinate coordinate;
+        private final EnumSet<Coordinate> coordinates;
 
         private final boolean containsWildcard;
 
@@ -565,14 +544,14 @@ public class PatternIncludesArtifactFilter
 
         private final VersionRange optionalVersionRange;
 
-        private CoordinateMatchingPattern( String pattern, String token, Coordinate coordinate )
+        private CoordinateMatchingPattern( String pattern, String token, EnumSet<Coordinate> coordinates )
         {
             super( pattern );
             this.token = token;
-            this.coordinate = coordinate;
+            this.coordinates = coordinates;
             this.containsAsterisk = token.contains( "*" );
             this.containsWildcard = this.containsAsterisk || token.contains( "?" );
-            if ( !this.containsWildcard && Coordinate.BASE_VERSION == coordinate
+            if ( !this.containsWildcard && coordinates.equals( EnumSet.of( Coordinate.BASE_VERSION ) )
                     && ( token.startsWith( "[" ) || token.startsWith( "(" ) ) )
             {
                 try
@@ -593,41 +572,34 @@ public class PatternIncludesArtifactFilter
         @Override
         public boolean matches( Artifactoid artifactoid )
         {
-            boolean matched;
-            String value = artifactoid.getCoordinate( coordinate );
-            if ( Coordinate.BASE_VERSION == coordinate && optionalVersionRange != null )
+            for ( Coordinate coordinate : coordinates )
             {
-                return optionalVersionRange.containsVersion( new DefaultArtifactVersion( value ) );
+                String value = artifactoid.getCoordinate( coordinate );
+                if ( Coordinate.BASE_VERSION == coordinate && optionalVersionRange != null )
+                {
+                    if ( optionalVersionRange.containsVersion( new DefaultArtifactVersion( value ) ) )
+                    {
+                        return true;
+                    }
+                }
+                else if ( containsWildcard )
+                {
+                    if ( match( token, containsAsterisk, value ) )
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    if ( token.equals( value ) )
+                    {
+                        return true;
+                    }
+                }
             }
-            else if ( containsWildcard )
-            {
-                matched = match( token, containsAsterisk, value );
-            }
-            else
-            {
-                matched = token.equals( value );
-            }
-            return matched;
-        }
-
-        /**
-         * Returns instance that matches same pattern as this one for passed in coordinate.
-         */
-        public CoordinateMatchingPattern toCoordinate( final Coordinate coordinate )
-        {
-            requireNonNull( coordinate );
-            if ( this.coordinate == coordinate )
-            {
-                return this;
-            }
-            else
-            {
-                return new CoordinateMatchingPattern( pattern, token, coordinate );
-            }
+            return false;
         }
     }
-
-    private static final MatchAllPattern MATCH_ALL_PATTERN = new MatchAllPattern( ANY );
 
     /**
      * Matches all input
