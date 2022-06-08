@@ -25,7 +25,8 @@ import java.util.Set;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
-import org.apache.maven.shared.utils.StringUtils;
+
+import static org.apache.maven.shared.artifact.filter.internal.Utils.isNotEmpty;
 
 /**
  * <p>ScopeFilter class.</p>
@@ -63,7 +64,7 @@ public class ScopeFilter
     {
         Set<Artifact> results = artifacts;
 
-        if ( StringUtils.isNotEmpty( includeScope ) )
+        if ( isNotEmpty( includeScope ) )
         {
             if ( !Artifact.SCOPE_COMPILE.equals( includeScope ) && !Artifact.SCOPE_TEST.equals( includeScope )
                 && !Artifact.SCOPE_PROVIDED.equals( includeScope ) && !Artifact.SCOPE_RUNTIME.equals( includeScope )
@@ -91,7 +92,7 @@ public class ScopeFilter
                 }
             }
         }
-        else if ( StringUtils.isNotEmpty( excludeScope ) )
+        else if ( isNotEmpty( excludeScope ) )
         {
             if ( !Artifact.SCOPE_COMPILE.equals( excludeScope ) && !Artifact.SCOPE_TEST.equals( excludeScope )
                 && !Artifact.SCOPE_PROVIDED.equals( excludeScope ) && !Artifact.SCOPE_RUNTIME.equals( excludeScope )
