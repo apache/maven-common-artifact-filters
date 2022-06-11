@@ -280,10 +280,13 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
         };
     }
 
+    /**
+     * Parses elements of {@link Artifact#getDependencyTrail()} list, they are either {@code G:A:T:V} or if artifact
+     * has classifier {@code G:A:T:C:V}, so strictly 4 or 5 segments only.
+     */
     private static Artifactoid adapt( final String depTrailString )
     {
         requireNonNull( depTrailString );
-        // G:A:T:C:V
         String[] coordinates = depTrailString.split( ":" );
         if ( coordinates.length != 4 && coordinates.length != 5 )
         {
