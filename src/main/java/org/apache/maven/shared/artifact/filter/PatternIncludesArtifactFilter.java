@@ -45,6 +45,8 @@ import static java.util.Objects.requireNonNull;
  */
 public class PatternIncludesArtifactFilter implements ArtifactFilter, StatisticsReportingArtifactFilter
 {
+    private static final String SEP = System.lineSeparator();
+
     /**
      * Holds the set of compiled patterns
      */
@@ -181,10 +183,10 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
 
                 for ( Pattern pattern : missed )
                 {
-                    buffer.append( "\no  '" ).append( pattern ).append( "'" );
+                    buffer.append( SEP ) .append( "o  '" ).append( pattern ).append( "'" );
                 }
 
-                buffer.append( "\n" );
+                buffer.append( SEP );
 
                 logger.warn( buffer.toString() );
             }
@@ -202,7 +204,7 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
         final StringBuilder buffer = new StringBuilder();
         for ( Pattern pattern : patterns )
         {
-            buffer.append( "\no '" ).append( pattern ).append( "'" );
+            buffer.append( SEP ).append( "o '" ).append( pattern ).append( "'" );
         }
 
         return buffer.toString();
@@ -223,7 +225,7 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
 
             for ( Artifact artifactId : filteredArtifact )
             {
-                buffer.append( '\n' ).append( artifactId.getId() );
+                buffer.append( SEP ).append( artifactId.getId() );
             }
 
             logger.debug( buffer.toString() );
