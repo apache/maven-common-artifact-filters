@@ -76,6 +76,35 @@ public class PatternFilterPerfTest {
     }
 
     @State(Scope.Benchmark)
+    static public class GNPatternState {
+
+        @Param({
+                "groupId:artifact-00,groupId:artifact-01,groupId:artifact-02,groupId:artifact-03,groupId:artifact-04,groupId:artifact-05,groupId:artifact-06,groupId:artifact-07,groupId:artifact-08,groupId:artifact-09",
+                "groupId:artifact-99",
+                "groupId:artifact-*",
+                "*:artifact-99",
+                "*:artifact-*",
+                "*:artifact-*:*",
+                "*:artifact-99:*",
+        })
+        public String patterns;
+
+        ArtifactFilter filter;
+        Artifact artifact;
+
+        @Setup(Level.Invocation)
+        public void setup()
+        {
+            filter = new GNPatternIncludesArtifactFilter( Arrays.asList( patterns.split( "," ) ) );
+            artifact = new DefaultArtifact(
+                    "groupId", "artifact-99", "1.0", "runtime",
+                    "jar", "", null
+            );
+        }
+
+    }
+
+    @State(Scope.Benchmark)
     static public class NewPatternState {
 
         @Param({
@@ -107,6 +136,12 @@ public class PatternFilterPerfTest {
 
     @Benchmark
     public boolean newPatternTest(NewPatternState state )
+    {
+        return state.filter.include( state.artifact );
+    }
+
+    @Benchmark
+    public boolean gnPatternTest(GNPatternState state )
     {
         return state.filter.include( state.artifact );
     }

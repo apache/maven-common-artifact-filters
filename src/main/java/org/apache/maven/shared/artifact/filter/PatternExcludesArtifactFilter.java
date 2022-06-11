@@ -53,7 +53,7 @@ public class PatternExcludesArtifactFilter
         super( patterns, actTransitively );
     }
 
-    /** {@inheritDoc} */
+    @Override
     public boolean include( Artifact artifact )
     {
         boolean shouldInclude = !patternMatches( artifact );
@@ -66,21 +66,13 @@ public class PatternExcludesArtifactFilter
         return shouldInclude;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return a {@link java.lang.String} object.
-     */
+    @Override
     protected String getFilterDescription()
     {
         return "artifact exclusion filter";
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return a {@link java.lang.String} object.
-     */
+    @Override
     public String toString()
     {
         return "Excludes filter:" + getPatternsAsString();

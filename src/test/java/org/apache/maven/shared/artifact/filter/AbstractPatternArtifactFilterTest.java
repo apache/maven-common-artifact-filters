@@ -544,4 +544,39 @@ public abstract class AbstractPatternArtifactFilterTest
             assertTrue( filter.include( artifact ) );
         }
     }
+
+    @Test
+    public void testmassembly955()
+    {
+        Artifact artifact1 = mock( Artifact.class );
+        when( artifact1.getGroupId() ).thenReturn( "org.python" );
+        when( artifact1.getArtifactId() ).thenReturn( "jython-standalone" );
+        when( artifact1.getType() ).thenReturn( "jar" );
+        when( artifact1.getBaseVersion() ).thenReturn( "1.0" );
+
+        Artifact artifact2 = mock( Artifact.class );
+        when( artifact2.getGroupId() ).thenReturn( "org.teiid" );
+        when( artifact2.getArtifactId() ).thenReturn( "teiid" );
+        when( artifact2.getType() ).thenReturn( "jar" );
+        when( artifact2.hasClassifier() ).thenReturn( true );
+        when( artifact2.getClassifier() ).thenReturn( "jdbc" );
+        when( artifact2.getBaseVersion() ).thenReturn( "1.0" );
+
+        final List<String> patterns = new ArrayList<>();
+        patterns.add( "org.teiid:teiid:*:jdbc:*" );
+        patterns.add( "org.python:jython-standalone" );
+
+        final ArtifactFilter filter = createFilter( patterns );
+
+        if ( isInclusionNotExpected() )
+        {
+            assertFalse( filter.include( artifact1 ) );
+            assertFalse( filter.include( artifact2 ) );
+        }
+        else
+        {
+            assertTrue( filter.include( artifact1 ) );
+            assertTrue( filter.include( artifact2 ) );
+        }
+    }
 }
