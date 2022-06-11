@@ -331,6 +331,12 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
         return tokens;
     }
 
+    /**
+     * Compiles pattern string into {@link Pattern}.
+     *
+     * TODO: patterns seems NOT documented anywhere, so best we have is source below.
+     * TODO: patterns in some cases (3, 2 tokens) seems ambiguous, we may need to clean up the specs
+     */
     private static Pattern compile( String pattern )
     {
         if ( pattern.startsWith( "!" ) )
