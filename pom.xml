@@ -45,7 +45,7 @@
   </issueManagement>
   <ciManagement>
     <system>Jenkins</system>
-    <url>https://ci-builds.apache.org/job/Maven/job/maven-box/job/maven-common-artifact-filters/</url>
+    <url>https://ci-maven.apache.org/job/Maven/job/maven-box/job/maven-common-artifact-filters/</url>
   </ciManagement>
   <distributionManagement>
     <site>
