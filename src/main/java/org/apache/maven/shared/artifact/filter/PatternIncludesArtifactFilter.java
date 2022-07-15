@@ -369,7 +369,7 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
                 patterns.add( toPattern( tokens[0], Coordinate.GROUP_ID ) );
                 patterns.add( toPattern( tokens[1], Coordinate.ARTIFACT_ID ) );
                 patterns.add( toPattern( tokens[2], Coordinate.TYPE ) );
-                patterns.add( toPattern( tokens[3], Coordinate.CLASSIFIER, Coordinate.BASE_VERSION ) );
+                patterns.add( toPattern( tokens[3], Coordinate.BASE_VERSION, Coordinate.CLASSIFIER ) );
             }
             else if ( tokens.length == 3 )
             {
