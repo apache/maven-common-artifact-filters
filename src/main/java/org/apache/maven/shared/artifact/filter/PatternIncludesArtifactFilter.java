@@ -20,6 +20,7 @@ package org.apache.maven.shared.artifact.filter;
  */
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -364,11 +365,11 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
             }
             else if ( tokens.length == 4 )
             {
-                // trivial, full pattern w/o classifier: G:A:T:V
+                // trivial, full pattern w/o classifier: G:A:T:V or G:A:T:C
                 patterns.add( toPattern( tokens[0], Coordinate.GROUP_ID ) );
                 patterns.add( toPattern( tokens[1], Coordinate.ARTIFACT_ID ) );
                 patterns.add( toPattern( tokens[2], Coordinate.TYPE ) );
-                patterns.add( toPattern( tokens[3], Coordinate.BASE_VERSION ) );
+                patterns.add( toPattern( tokens[3], Coordinate.CLASSIFIER, Coordinate.BASE_VERSION ) );
             }
             else if ( tokens.length == 3 )
             {
@@ -481,7 +482,7 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
         }
     }
 
-    private static Pattern toPattern( final String token, final Coordinate coordinate )
+    private static Pattern toPattern( final String token, final Coordinate... coordinate )
     {
         if ( ANY.equals( token ) )
         {
@@ -489,7 +490,9 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
         }
         else
         {
-            return new CoordinateMatchingPattern( token, token, EnumSet.of( coordinate ) );
+            EnumSet<Coordinate> coordinates = EnumSet.noneOf( Coordinate.class );
+            coordinates.addAll( Arrays.asList( coordinate ) );
+            return new CoordinateMatchingPattern( token, token, coordinates );
         }
     }
 
