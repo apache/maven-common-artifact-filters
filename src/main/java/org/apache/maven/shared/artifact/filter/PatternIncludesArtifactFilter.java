@@ -365,7 +365,7 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
             }
             else if ( tokens.length == 4 )
             {
-                // trivial, full pattern w/o classifier: G:A:T:V or G:A:T:C
+                // trivial, full pattern w/ version or classifier: G:A:T:V or G:A:T:C
                 patterns.add( toPattern( tokens[0], Coordinate.GROUP_ID ) );
                 patterns.add( toPattern( tokens[1], Coordinate.ARTIFACT_ID ) );
                 patterns.add( toPattern( tokens[2], Coordinate.TYPE ) );
