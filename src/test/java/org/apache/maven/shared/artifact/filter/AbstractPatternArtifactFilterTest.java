@@ -477,7 +477,7 @@ public abstract class AbstractPatternArtifactFilterTest
         when( artifact2.getArtifactId() ).thenReturn( otherArtifact );
         when( artifact2.getType() ).thenReturn( otherType );
         when( artifact2.getBaseVersion() ).thenReturn( "version" );
-        when( artifact2.getDependencyTrail() ).thenReturn( Collections.<String> emptyList() );
+        when( artifact2.getDependencyTrail() ).thenReturn( Collections.emptyList() );
 
         final ArtifactFilter filter = createFilter( patterns, true );
 

@@ -41,7 +41,6 @@ import org.apache.maven.shared.artifact.filter.resolve.OrFilter;
 import org.apache.maven.shared.artifact.filter.resolve.PatternExclusionsFilter;
 import org.apache.maven.shared.artifact.filter.resolve.PatternInclusionsFilter;
 import org.apache.maven.shared.artifact.filter.resolve.ScopeFilter;
-import org.apache.maven.shared.artifact.filter.resolve.TransformableFilter;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -95,9 +94,9 @@ public class ArtifactIncludeFilterTransformerTest
     public void testTransformOrFilter()
         throws Exception
     {
-        OrFilter filter =
-            new OrFilter( Arrays.<TransformableFilter>asList( ScopeFilter.including( "compile" ),
-                                                              ScopeFilter.including( "test" ) ) );
+        OrFilter filter = new OrFilter( Arrays.asList(
+                ScopeFilter.including( "compile" ),
+                ScopeFilter.including( "test" ) ) );
 
         ArtifactFilter dependencyFilter = filter.transform( transformer );
 

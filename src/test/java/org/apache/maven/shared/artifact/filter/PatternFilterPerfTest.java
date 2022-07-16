@@ -43,7 +43,7 @@ import org.openjdk.jmh.runner.options.TimeValue;
 
 @BenchmarkMode(Mode.Throughput)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
-@Warmup(iterations = 3, time = 3, timeUnit = TimeUnit.SECONDS)
+@Warmup(iterations = 3, time = 3 )
 public class PatternFilterPerfTest {
 
     @State(Scope.Benchmark)
