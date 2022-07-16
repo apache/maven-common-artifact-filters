@@ -37,7 +37,6 @@ import org.apache.maven.shared.artifact.filter.resolve.PatternInclusionsFilter;
 import org.apache.maven.shared.artifact.filter.resolve.ScopeFilter;
 import org.apache.maven.shared.artifact.filter.resolve.TransformableFilter;
 import org.eclipse.aether.graph.DependencyFilter;
-import org.eclipse.aether.graph.DependencyNode;
 import org.eclipse.aether.util.filter.AndDependencyFilter;
 import org.eclipse.aether.util.filter.ExclusionsDependencyFilter;
 import org.eclipse.aether.util.filter.OrDependencyFilter;
@@ -128,16 +127,12 @@ public class EclipseAetherFilterTransformer
     @Override
     public DependencyFilter transform( final AbstractFilter filter )
     {
-        return new DependencyFilter()
+        return ( node, parents ) ->
         {
-            @Override
-            public boolean accept( DependencyNode node, List<DependencyNode> parents )
-            {
-                requireNonNull( node, "node cannot be null" );
-                requireNonNull( parents, "parents cannot be null" );
+            requireNonNull( node, "node cannot be null" );
+            requireNonNull( parents, "parents cannot be null" );
 
-                return filter.accept( new EclipseAetherNode( node ), null );
-            }
+            return filter.accept( new EclipseAetherNode( node ), null );
         };
     }
 
@@ -156,28 +151,22 @@ public class EclipseAetherFilterTransformer
 
                 final String classifier = matcher.group( 2 );
 
-                DependencyFilter classifierFilter = new DependencyFilter()
+                filters.add( new AndDependencyFilter( patternFilter, ( node, parents ) ->
                 {
-                    @Override
-                    public boolean accept( DependencyNode node, List<DependencyNode> parents )
+                    requireNonNull( node, "node cannot be null" );
+                    requireNonNull( parents, "parents cannot be null" );
+
+                    String nodeClassifier = node.getArtifact().getClassifier();
+
+                    if ( nodeClassifier == null )
                     {
-                        requireNonNull( node, "node cannot be null" );
-                        requireNonNull( parents, "parents cannot be null" );
-
-                        String nodeClassifier = node.getArtifact().getClassifier();
-
-                        if ( nodeClassifier == null )
-                        {
-                            return false;
-                        }
-                        else
-                        {
-                            return "*".equals( classifier ) || nodeClassifier.matches( classifier );
-                        }
+                        return false;
                     }
-                };
-
-                filters.add( new AndDependencyFilter( patternFilter, classifierFilter ) );
+                    else
+                    {
+                        return "*".equals( classifier ) || nodeClassifier.matches( classifier );
+                    }
+                } ) );
             }
             else
             {

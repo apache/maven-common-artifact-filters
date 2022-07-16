@@ -230,9 +230,9 @@ public class ScopeArtifactFilter
                 report = true;
             }
 
-            if ( report )
+            if ( report && logger.isDebugEnabled() )
             {
-                logger.debug( "The following scope filters were not used: " + buffer.toString() );
+                logger.debug( "The following scope filters were not used: " + buffer );
             }
         }
     }
@@ -244,34 +244,8 @@ public class ScopeArtifactFilter
      */
     public boolean hasMissedCriteria()
     {
-        boolean report = false;
-
-        if ( !nullScopeHit )
-        {
-            report = true;
-        }
-        if ( !compileScopeHit )
-        {
-            report = true;
-        }
-        if ( !runtimeScopeHit )
-        {
-            report = true;
-        }
-        if ( !testScopeHit )
-        {
-            report = true;
-        }
-        if ( !providedScopeHit )
-        {
-            report = true;
-        }
-        if ( !systemScopeHit )
-        {
-            report = true;
-        }
-
-        return report;
+        return !nullScopeHit || !compileScopeHit || !runtimeScopeHit || !testScopeHit || !providedScopeHit
+                || !systemScopeHit;
     }
     
     /**

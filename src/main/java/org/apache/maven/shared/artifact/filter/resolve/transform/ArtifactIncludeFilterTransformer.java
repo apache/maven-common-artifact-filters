@@ -22,7 +22,6 @@ package org.apache.maven.shared.artifact.filter.resolve.transform;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.filter.AndArtifactFilter;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.apache.maven.artifact.resolver.filter.ExcludesArtifactFilter;
@@ -86,40 +85,36 @@ public class ArtifactIncludeFilterTransformer implements FilterTransformer<Artif
     @Override
     public ArtifactFilter transform( final ScopeFilter scopeFilter )
     {
-        return new ArtifactFilter()
+        return artifact ->
         {
-            @Override
-            public boolean include( Artifact artifact )
+            if ( artifact.getScope() == null )
             {
-                if ( artifact.getScope() == null )
-                {
-                    return includeNullScope;
-                }
-
-                boolean isIncluded;
-
-                if ( scopeFilter.getIncluded() != null )
-                {
-                    isIncluded = scopeFilter.getIncluded().contains( artifact.getScope() );
-                }
-                else
-                {
-                    isIncluded = true;
-                }
-
-                boolean isExcluded;
-
-                if ( scopeFilter.getExcluded() != null )
-                {
-                    isExcluded = scopeFilter.getExcluded().contains( artifact.getScope() );
-                }
-                else
-                {
-                    isExcluded = false;
-                }
-
-                return isIncluded && !isExcluded;
+                return includeNullScope;
             }
+
+            boolean isIncluded;
+
+            if ( scopeFilter.getIncluded() != null )
+            {
+                isIncluded = scopeFilter.getIncluded().contains( artifact.getScope() );
+            }
+            else
+            {
+                isIncluded = true;
+            }
+
+            boolean isExcluded;
+
+            if ( scopeFilter.getExcluded() != null )
+            {
+                isExcluded = scopeFilter.getExcluded().contains( artifact.getScope() );
+            }
+            else
+            {
+                isExcluded = false;
+            }
+
+            return isIncluded && !isExcluded;
         };
     }
 
@@ -155,20 +150,16 @@ public class ArtifactIncludeFilterTransformer implements FilterTransformer<Artif
             filters.add( subFilter.transform( this ) );
         }
 
-        return new ArtifactFilter()
+        return artifact ->
         {
-            @Override
-            public boolean include( Artifact artifact )
+            for ( ArtifactFilter filter : filters )
             {
-                for ( ArtifactFilter filter : filters )
+                if ( filter.include( artifact ) )
                 {
-                    if ( filter.include( artifact ) )
-                    {
-                        return true;
-                    }
+                    return true;
                 }
-                return false;
             }
+            return false;
         };
     }
 
@@ -190,13 +181,6 @@ public class ArtifactIncludeFilterTransformer implements FilterTransformer<Artif
     @Override
     public ArtifactFilter transform( final AbstractFilter filter )
     {
-        return new ArtifactFilter()
-        {
-            @Override
-            public boolean include( Artifact artifact )
-            {
-                return filter.accept( new ArtifactIncludeNode( artifact ), null );
-            }
-        };
+        return artifact -> filter.accept( new ArtifactIncludeNode( artifact ), null );
     }
 }
