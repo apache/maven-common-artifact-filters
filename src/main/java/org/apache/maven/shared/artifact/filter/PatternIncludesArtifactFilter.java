@@ -389,31 +389,25 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
                 }
                 else if ( ANY.equals( tokens[0] ) && ANY.equals( tokens[1] ) )
                 {
-                    patterns.add( new CoordinateMatchingPattern( pattern, tokens[2],
-                            EnumSet.of( Coordinate.TYPE, Coordinate.CLASSIFIER ) ) );
+                    patterns.add( toPattern( pattern, tokens[2], Coordinate.TYPE, Coordinate.CLASSIFIER ) );
                 }
                 else if ( ANY.equals( tokens[0] ) && ANY.equals( tokens[2] ) )
                 {
-                    patterns.add( new CoordinateMatchingPattern( pattern, tokens[1],
-                            EnumSet.of( Coordinate.ARTIFACT_ID, Coordinate.TYPE ) ) );
+                    patterns.add( toPattern( pattern, tokens[1], Coordinate.ARTIFACT_ID, Coordinate.TYPE ) );
                 }
                 else if ( ANY.equals( tokens[0] ) )
                 {
-                    patterns.add( new CoordinateMatchingPattern( pattern, tokens[1],
-                            EnumSet.of( Coordinate.GROUP_ID, Coordinate.ARTIFACT_ID ) ) );
-                    patterns.add( new CoordinateMatchingPattern( pattern, tokens[2],
-                            EnumSet.of( Coordinate.TYPE, Coordinate.CLASSIFIER ) ) );
+                    patterns.add( toPattern( pattern, tokens[1], Coordinate.GROUP_ID, Coordinate.ARTIFACT_ID ) );
+                    patterns.add( toPattern( pattern, tokens[2], Coordinate.TYPE, Coordinate.CLASSIFIER ) );
                 }
                 else if ( ANY.equals( tokens[1] ) && ANY.equals( tokens[2] ) )
                 {
-                    patterns.add( new CoordinateMatchingPattern( pattern, tokens[0],
-                            EnumSet.of( Coordinate.GROUP_ID, Coordinate.ARTIFACT_ID ) ) );
+                    patterns.add( toPattern( pattern, tokens[0], Coordinate.GROUP_ID, Coordinate.ARTIFACT_ID ) );
                 }
                 else if ( ANY.equals( tokens[1] ) )
                 {
-                    patterns.add( toPattern( tokens[0], Coordinate.GROUP_ID ) );
-                    patterns.add( new CoordinateMatchingPattern( pattern, tokens[2],
-                            EnumSet.of( Coordinate.TYPE, Coordinate.CLASSIFIER ) ) );
+                    patterns.add( toPattern( tokens[0], tokens[0], Coordinate.GROUP_ID ) );
+                    patterns.add( toPattern( pattern, tokens[2], Coordinate.TYPE, Coordinate.CLASSIFIER ) );
                 }
                 else if ( ANY.equals( tokens[2] ) )
                 {
@@ -442,9 +436,8 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
                 }
                 else if ( ANY.equals( tokens[0] ) )
                 {
-                    patterns.add( new CoordinateMatchingPattern( pattern, tokens[1],
-                            EnumSet.of( Coordinate.GROUP_ID, Coordinate.ARTIFACT_ID, Coordinate.TYPE,
-                                    Coordinate.BASE_VERSION ) ) );
+                    patterns.add( toPattern( pattern, tokens[1],
+                            Coordinate.GROUP_ID, Coordinate.ARTIFACT_ID, Coordinate.TYPE, Coordinate.BASE_VERSION ) );
                 }
                 else if ( ANY.equals( tokens[1] ) )
                 {
@@ -484,6 +477,11 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
 
     private static Pattern toPattern( final String token, final Coordinate... coordinate )
     {
+        return toPattern( token, token, coordinate );
+    }
+
+    private static Pattern toPattern( final String pattern, final String token, final Coordinate... coordinate )
+    {
         if ( ANY.equals( token ) )
         {
             return MATCH_ALL_PATTERN;
@@ -492,7 +490,7 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
         {
             EnumSet<Coordinate> coordinates = EnumSet.noneOf( Coordinate.class );
             coordinates.addAll( Arrays.asList( coordinate ) );
-            return new CoordinateMatchingPattern( token, token, coordinates );
+            return new CoordinateMatchingPattern( pattern, token, coordinates );
         }
     }
 
