@@ -475,12 +475,12 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
         }
     }
 
-    private static Pattern toPattern( final String token, final Coordinate... coordinate )
+    private static Pattern toPattern( final String token, final Coordinate... coordinates )
     {
-        return toPattern( token, token, coordinate );
+        return toPattern( token, token, coordinates );
     }
 
-    private static Pattern toPattern( final String pattern, final String token, final Coordinate... coordinate )
+    private static Pattern toPattern( final String pattern, final String token, final Coordinate... coordinates )
     {
         if ( ANY.equals( token ) )
         {
@@ -488,9 +488,9 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
         }
         else
         {
-            EnumSet<Coordinate> coordinates = EnumSet.noneOf( Coordinate.class );
-            coordinates.addAll( Arrays.asList( coordinate ) );
-            return new CoordinateMatchingPattern( pattern, token, coordinates );
+            EnumSet<Coordinate> coordinateSet = EnumSet.noneOf( Coordinate.class );
+            coordinateSet.addAll( Arrays.asList( coordinates ) );
+            return new CoordinateMatchingPattern( pattern, token, coordinateSet );
         }
     }
 
