@@ -20,6 +20,7 @@ package org.apache.maven.shared.artifact.filter;
  */
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -364,11 +365,11 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
             }
             else if ( tokens.length == 4 )
             {
-                // trivial, full pattern w/o classifier: G:A:T:V
+                // trivial, full pattern w/ version or classifier: G:A:T:V or G:A:T:C
                 patterns.add( toPattern( tokens[0], Coordinate.GROUP_ID ) );
                 patterns.add( toPattern( tokens[1], Coordinate.ARTIFACT_ID ) );
                 patterns.add( toPattern( tokens[2], Coordinate.TYPE ) );
-                patterns.add( toPattern( tokens[3], Coordinate.BASE_VERSION ) );
+                patterns.add( toPattern( tokens[3], Coordinate.BASE_VERSION, Coordinate.CLASSIFIER ) );
             }
             else if ( tokens.length == 3 )
             {
@@ -388,31 +389,25 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
                 }
                 else if ( ANY.equals( tokens[0] ) && ANY.equals( tokens[1] ) )
                 {
-                    patterns.add( new CoordinateMatchingPattern( pattern, tokens[2],
-                            EnumSet.of( Coordinate.TYPE, Coordinate.CLASSIFIER ) ) );
+                    patterns.add( toPattern( pattern, tokens[2], Coordinate.TYPE, Coordinate.CLASSIFIER ) );
                 }
                 else if ( ANY.equals( tokens[0] ) && ANY.equals( tokens[2] ) )
                 {
-                    patterns.add( new CoordinateMatchingPattern( pattern, tokens[1],
-                            EnumSet.of( Coordinate.ARTIFACT_ID, Coordinate.TYPE ) ) );
+                    patterns.add( toPattern( pattern, tokens[1], Coordinate.ARTIFACT_ID, Coordinate.TYPE ) );
                 }
                 else if ( ANY.equals( tokens[0] ) )
                 {
-                    patterns.add( new CoordinateMatchingPattern( pattern, tokens[1],
-                            EnumSet.of( Coordinate.GROUP_ID, Coordinate.ARTIFACT_ID ) ) );
-                    patterns.add( new CoordinateMatchingPattern( pattern, tokens[2],
-                            EnumSet.of( Coordinate.TYPE, Coordinate.CLASSIFIER ) ) );
+                    patterns.add( toPattern( pattern, tokens[1], Coordinate.GROUP_ID, Coordinate.ARTIFACT_ID ) );
+                    patterns.add( toPattern( pattern, tokens[2], Coordinate.TYPE, Coordinate.CLASSIFIER ) );
                 }
                 else if ( ANY.equals( tokens[1] ) && ANY.equals( tokens[2] ) )
                 {
-                    patterns.add( new CoordinateMatchingPattern( pattern, tokens[0],
-                            EnumSet.of( Coordinate.GROUP_ID, Coordinate.ARTIFACT_ID ) ) );
+                    patterns.add( toPattern( pattern, tokens[0], Coordinate.GROUP_ID, Coordinate.ARTIFACT_ID ) );
                 }
                 else if ( ANY.equals( tokens[1] ) )
                 {
-                    patterns.add( toPattern( tokens[0], Coordinate.GROUP_ID ) );
-                    patterns.add( new CoordinateMatchingPattern( pattern, tokens[2],
-                            EnumSet.of( Coordinate.TYPE, Coordinate.CLASSIFIER ) ) );
+                    patterns.add( toPattern( tokens[0], tokens[0], Coordinate.GROUP_ID ) );
+                    patterns.add( toPattern( pattern, tokens[2], Coordinate.TYPE, Coordinate.CLASSIFIER ) );
                 }
                 else if ( ANY.equals( tokens[2] ) )
                 {
@@ -441,9 +436,8 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
                 }
                 else if ( ANY.equals( tokens[0] ) )
                 {
-                    patterns.add( new CoordinateMatchingPattern( pattern, tokens[1],
-                            EnumSet.of( Coordinate.GROUP_ID, Coordinate.ARTIFACT_ID, Coordinate.TYPE,
-                                    Coordinate.BASE_VERSION ) ) );
+                    patterns.add( toPattern( pattern, tokens[1],
+                            Coordinate.GROUP_ID, Coordinate.ARTIFACT_ID, Coordinate.TYPE, Coordinate.BASE_VERSION ) );
                 }
                 else if ( ANY.equals( tokens[1] ) )
                 {
@@ -481,7 +475,12 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
         }
     }
 
-    private static Pattern toPattern( final String token, final Coordinate coordinate )
+    private static Pattern toPattern( final String token, final Coordinate... coordinates )
+    {
+        return toPattern( token, token, coordinates );
+    }
+
+    private static Pattern toPattern( final String pattern, final String token, final Coordinate... coordinates )
     {
         if ( ANY.equals( token ) )
         {
@@ -489,7 +488,9 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
         }
         else
         {
-            return new CoordinateMatchingPattern( token, token, EnumSet.of( coordinate ) );
+            EnumSet<Coordinate> coordinateSet = EnumSet.noneOf( Coordinate.class );
+            coordinateSet.addAll( Arrays.asList( coordinates ) );
+            return new CoordinateMatchingPattern( pattern, token, coordinateSet );
         }
     }
 
