@@ -650,7 +650,7 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
     private static boolean match( final String pattern, final boolean containsAsterisk, final String value )
     {
         char[] patArr = pattern.toCharArray();
-        char[] strArr = value.toCharArray();
+        char[] strArr = value != null ? value.toCharArray() : new char[0];
         int patIdxStart = 0;
         int patIdxEnd = patArr.length - 1;
         int strIdxStart = 0;
