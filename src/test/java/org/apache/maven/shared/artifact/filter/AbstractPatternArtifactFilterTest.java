@@ -19,19 +19,21 @@ package org.apache.maven.shared.artifact.filter;
  * under the License.
  */
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.DefaultArtifact;
+import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.junit.Test;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public abstract class AbstractPatternArtifactFilterTest
 {
@@ -577,6 +579,28 @@ public abstract class AbstractPatternArtifactFilterTest
         {
             assertTrue( filter.include( artifact1 ) );
             assertTrue( filter.include( artifact2 ) );
+        }
+    }
+
+    @Test
+    public void testPartialWildcardShouldNotMatchEmptyComponent()
+    {
+        Artifact artifact = mock( Artifact.class );
+        when( artifact.getGroupId() ).thenReturn( "test-group" );
+        when( artifact.getArtifactId() ).thenReturn( "test-artifact" );
+        when( artifact.getVersion() ).thenReturn( "test-version" );
+        when( artifact.hasClassifier() ).thenReturn( false );
+
+        ArtifactFilter filter = createFilter(
+                Collections.singletonList( "test-group:test-artifact:*:ERROR*" ) );
+
+        if ( isInclusionNotExpected() )
+        {
+            assertTrue( filter.include( artifact ) );
+        }
+        else
+        {
+            assertFalse( filter.include( artifact ) );
         }
     }
 }
