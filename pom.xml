@@ -23,7 +23,7 @@
   <parent>
     <artifactId>maven-shared-components</artifactId>
     <groupId>org.apache.maven.shared</groupId>
-    <version>36</version>
+    <version>37</version>
     <relativePath />
   </parent>
 
@@ -58,7 +58,6 @@
     <maven.version>3.2.5</maven.version>
     <javaVersion>8</javaVersion>
     <resolver.version>1.6.3</resolver.version>
-    <surefire.version>2.22.2</surefire.version>
     <checkstyle.violation.ignore>MethodLength</checkstyle.violation.ignore>
     <project.build.outputTimestamp>2022-07-17T16:57:02Z</project.build.outputTimestamp>
   </properties>
@@ -89,17 +88,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-plugin-api</artifactId>
-      <version>${maven.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>2.11.0</version>
-    </dependency>
-    <dependency>
       <groupId>org.apache.maven.resolver</groupId>
       <artifactId>maven-resolver-api</artifactId>
       <version>${resolver.version}</version>
@@ -113,6 +101,12 @@
     </dependency>
 
     <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.11.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.13.2</version>
@@ -121,7 +115,7 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>4.5.1</version>
+      <version>4.8.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
