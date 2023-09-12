@@ -18,8 +18,13 @@ package org.apache.maven.shared.artifact.filter.collection;
  * specific language governing permissions and limitations
  * under the License.    
  */
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.testing.ArtifactStubFactory;
@@ -91,5 +96,27 @@ public class TestTypeFilter
         TypeFilter filter = new TypeFilter( null, null );
         Set<Artifact> result = filter.filter( artifacts );
         assertEquals( 5, result.size() );
+    }
+
+    @Test
+    public void testFilteringOrder()
+            throws IOException
+    {
+        TypeFilter filter = new TypeFilter( "war,jar", "zip" );
+        Set<Artifact> artifacts = new LinkedHashSet<>();
+
+        ArtifactStubFactory factory = new ArtifactStubFactory( null, false );
+        artifacts.add( factory.createArtifact( "g", "a", "1.0", Artifact.SCOPE_COMPILE, "jar", null ) );
+        artifacts.add( factory.createArtifact( "g", "b", "1.0", Artifact.SCOPE_COMPILE, "zip", null ) );
+        artifacts.add( factory.createArtifact( "g", "c", "1.0", Artifact.SCOPE_COMPILE, "war", null ) );
+
+        Set<Artifact> result = filter.filter( artifacts );
+
+        assertEquals( 2, result.size() );
+
+        List<Artifact> resultList = new ArrayList<>( result );
+
+        assertEquals( "a", resultList.get(0).getArtifactId() );
+        assertEquals( "c", resultList.get(1).getArtifactId() );
     }
 }
