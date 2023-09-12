@@ -90,9 +90,9 @@ public abstract class AbstractArtifactFeatureFilter
     {
         Set<Artifact> result = new LinkedHashSet<>();
 
-        for ( String include : theIncludes )
+        for ( Artifact artifact : artifacts )
         {
-            for ( Artifact artifact : artifacts )
+            for ( String include : theIncludes )
             {
                 // if the classifier or type of the artifact
                 // matches the feature
