@@ -55,7 +55,7 @@
   </distributionManagement>
 
   <properties>
-    <maven.version>3.2.5</maven.version>
+    <maven.version>3.8.1</maven.version>
     <javaVersion>8</javaVersion>
     <resolver.version>1.6.3</resolver.version>
     <checkstyle.violation.ignore>MethodLength</checkstyle.violation.ignore>
