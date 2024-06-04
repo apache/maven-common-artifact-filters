@@ -1,5 +1,3 @@
-package org.apache.maven.shared.artifact.filter.resolve;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.shared.artifact.filter.resolve;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.shared.artifact.filter.resolve;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.shared.artifact.filter.resolve;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -29,9 +28,7 @@ import java.util.Collections;
  * @since 3.0
  * @see org.eclipse.aether.util.filter.ExclusionsDependencyFilter
  */
-public class ExclusionsFilter
-    implements TransformableFilter
-{
+public class ExclusionsFilter implements TransformableFilter {
     private final Collection<String> excludes;
 
     /**
@@ -40,9 +37,8 @@ public class ExclusionsFilter
      * @param excludes the keys to exclude, may not be {@code null}
      * @see org.apache.maven.artifact.Artifact#getDependencyConflictId()
      */
-    public ExclusionsFilter( Collection<String> excludes )
-    {
-        this.excludes = Collections.unmodifiableCollection( excludes );
+    public ExclusionsFilter(Collection<String> excludes) {
+        this.excludes = Collections.unmodifiableCollection(excludes);
     }
 
     /**
@@ -50,8 +46,7 @@ public class ExclusionsFilter
      *
      * @return The list of excludes.
      */
-    public final Collection<String> getExcludes()
-    {
+    public final Collection<String> getExcludes() {
         return excludes;
     }
 
@@ -61,8 +56,7 @@ public class ExclusionsFilter
      * Transform this filter to a tool specific implementation
      */
     @Override
-    public <T> T transform( FilterTransformer<T> transformer )
-    {
-        return transformer.transform( this );
+    public <T> T transform(FilterTransformer<T> transformer) {
+        return transformer.transform(this);
     }
 }

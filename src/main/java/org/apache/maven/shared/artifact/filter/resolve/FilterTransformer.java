@@ -1,5 +1,3 @@
-package org.apache.maven.shared.artifact.filter.resolve;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.shared.artifact.filter.resolve;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.shared.artifact.filter.resolve;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.shared.artifact.filter.resolve;
 
 /**
  * Provide a mechanism to transform a Filter to a tool specific equivalent using the visitor pattern.
@@ -27,15 +26,14 @@ package org.apache.maven.shared.artifact.filter.resolve;
  * @param <T> the tool specific filter
  * @since 3.0
  */
-public interface FilterTransformer<T>
-{
+public interface FilterTransformer<T> {
     /**
      * Transform the scopeFilter to T specific implementation
      *
      * @param scopeFilter the filter
      * @return the transformed filter, never {@code null}
      */
-    T transform( ScopeFilter scopeFilter );
+    T transform(ScopeFilter scopeFilter);
 
     /**
      * Transform the andFilter to T specific implementation
@@ -43,7 +41,7 @@ public interface FilterTransformer<T>
      * @param andFilter the filter
      * @return the transformed filter, never {@code null}
      */
-    T transform( AndFilter andFilter );
+    T transform(AndFilter andFilter);
 
     /**
      * Transform the exclusionsFilter to T specific implementation
@@ -51,7 +49,7 @@ public interface FilterTransformer<T>
      * @param exclusionsFilter the filter
      * @return the transformed filter, never {@code null}
      */
-    T transform( ExclusionsFilter exclusionsFilter );
+    T transform(ExclusionsFilter exclusionsFilter);
 
     /**
      * Transform the orFilter to T specific implementation
@@ -59,7 +57,7 @@ public interface FilterTransformer<T>
      * @param orFilter the filter
      * @return the transformed filter, never {@code null}
      */
-    T transform( OrFilter orFilter );
+    T transform(OrFilter orFilter);
 
     /**
      * Transform the patternExclusionsFilter to T specific implementation
@@ -67,7 +65,7 @@ public interface FilterTransformer<T>
      * @param patternExclusionsFilter the filter
      * @return the transformed filter, never {@code null}
      */
-    T transform( PatternExclusionsFilter patternExclusionsFilter );
+    T transform(PatternExclusionsFilter patternExclusionsFilter);
 
     /**
      * Transform the paternInclusionsFilter to T specific implementation
@@ -75,7 +73,7 @@ public interface FilterTransformer<T>
      * @param patternInclusionsFilter the filter
      * @return the transformed filter, never {@code null}
      */
-    T transform( PatternInclusionsFilter patternInclusionsFilter );
+    T transform(PatternInclusionsFilter patternInclusionsFilter);
 
     /**
      * Transform a custom filter to T specific implementation
@@ -83,5 +81,5 @@ public interface FilterTransformer<T>
      * @param abstractFilter the filter
      * @return the transformed filter, never {@code null}
      */
-    T transform( AbstractFilter abstractFilter );
+    T transform(AbstractFilter abstractFilter);
 }

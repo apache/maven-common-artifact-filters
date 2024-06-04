@@ -1,5 +1,3 @@
-package org.apache.maven.shared.artifact.filter.resolve;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.shared.artifact.filter.resolve;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.shared.artifact.filter.resolve;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.shared.artifact.filter.resolve;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -29,8 +28,7 @@ import java.util.Collections;
  * @since 3.0
  * @see org.eclipse.aether.util.filter.OrDependencyFilter
  */
-public class OrFilter implements TransformableFilter
-{
+public class OrFilter implements TransformableFilter {
 
     private final Collection<TransformableFilter> filters;
 
@@ -39,29 +37,26 @@ public class OrFilter implements TransformableFilter
      *
      * @param filters the filters, may not be {@code null}
      */
-    public OrFilter( Collection<TransformableFilter> filters )
-    {
-        this.filters = Collections.unmodifiableCollection( filters );
+    public OrFilter(Collection<TransformableFilter> filters) {
+        this.filters = Collections.unmodifiableCollection(filters);
     }
-    
+
     /**
      * Get the filters
      *
      * @return the filters, never {@code null}
      */
-    public Collection<TransformableFilter> getFilters()
-    {
+    public Collection<TransformableFilter> getFilters() {
         return filters;
     }
-    
+
     /**
      * {@inheritDoc}
      *
      * Transform this filter to a tool specific implementation
      */
     @Override
-    public <T> T transform( FilterTransformer<T> transformer )
-    {
-        return transformer.transform( this );
+    public <T> T transform(FilterTransformer<T> transformer) {
+        return transformer.transform(this);
     }
 }

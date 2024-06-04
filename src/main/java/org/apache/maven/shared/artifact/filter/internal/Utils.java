@@ -1,5 +1,3 @@
-package org.apache.maven.shared.artifact.filter.internal;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,17 +16,15 @@ package org.apache.maven.shared.artifact.filter.internal;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.shared.artifact.filter.internal;
 
 /**
  * Utilities.
  *
  * @since TBD
  */
-public final class Utils
-{
-    private Utils()
-    {
-    }
+public final class Utils {
+    private Utils() {}
 
     /**
      * <p>Checks if a String is non <code>null</code> and is
@@ -37,8 +33,7 @@ public final class Utils
      * @param str the String to check
      * @return true if the String is non-null, and not length zero
      */
-    public static boolean isNotEmpty( String str )
-    {
-        return ( ( str != null ) && ( str.length() > 0 ) );
+    public static boolean isNotEmpty(String str) {
+        return str != null && !str.isEmpty();
     }
 }

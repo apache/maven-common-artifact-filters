@@ -1,5 +1,3 @@
-package org.apache.maven.shared.artifact.filter.resolve.transform;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.shared.artifact.filter.resolve.transform;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,25 +16,24 @@ package org.apache.maven.shared.artifact.filter.resolve.transform;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.shared.artifact.filter.resolve.transform;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.shared.artifact.filter.resolve.Node;
 
 /**
- * 
+ *
  * @author Robert Scholte
  * @since 3.0
  */
-class ArtifactIncludeNode implements Node
-{
+class ArtifactIncludeNode implements Node {
     private final Artifact artifact;
-    
-    ArtifactIncludeNode( Artifact artifact )
-    {
+
+    ArtifactIncludeNode(Artifact artifact) {
         this.artifact = artifact;
     }
-    
+
     /**
      * {@inheritDoc}
      *
@@ -45,20 +42,17 @@ class ArtifactIncludeNode implements Node
      * @see EclipseAetherNode
      */
     @Override
-    public Dependency getDependency()
-    {
+    public Dependency getDependency() {
         Dependency mavenDependency = new Dependency();
-        mavenDependency.setGroupId( artifact.getGroupId() );
-        mavenDependency.setArtifactId( artifact.getArtifactId() );
-        mavenDependency.setVersion( artifact.getVersion() );
-        mavenDependency.setClassifier( artifact.getClassifier() );
-        mavenDependency.setType( artifact.getType() );
-        mavenDependency.setScope( artifact.getScope() );
-        mavenDependency.setOptional( artifact.isOptional() );
+        mavenDependency.setGroupId(artifact.getGroupId());
+        mavenDependency.setArtifactId(artifact.getArtifactId());
+        mavenDependency.setVersion(artifact.getVersion());
+        mavenDependency.setClassifier(artifact.getClassifier());
+        mavenDependency.setType(artifact.getType());
+        mavenDependency.setScope(artifact.getScope());
+        mavenDependency.setOptional(artifact.isOptional());
         // no setExcludes possible
-        
+
         return mavenDependency;
     }
-
-    
 }

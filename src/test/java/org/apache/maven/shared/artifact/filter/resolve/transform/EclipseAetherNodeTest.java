@@ -1,5 +1,3 @@
-package org.apache.maven.shared.artifact.filter.resolve.transform;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.shared.artifact.filter.resolve.transform;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.shared.artifact.filter.resolve.transform;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.shared.artifact.filter.resolve.transform;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,104 +32,94 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class EclipseAetherNodeTest
-{
+public class EclipseAetherNodeTest {
     @Test
-    public void testGAV()
-    {
-        Node node = new EclipseAetherNode( newDependencyNode( "g:a:v", null ) );
-        
+    public void testGAV() {
+        Node node = new EclipseAetherNode(newDependencyNode("g:a:v", null));
+
         org.apache.maven.model.Dependency mavenDependency = node.getDependency();
-        
-        assertEquals( "g", mavenDependency.getGroupId()  );
-        assertEquals( "a", mavenDependency.getArtifactId()  );
-        assertEquals( "v", mavenDependency.getVersion() );
-        assertEquals( "", mavenDependency.getClassifier() );
-        assertNull( mavenDependency.getType() );
-        assertEquals( "", mavenDependency.getScope() );
+
+        assertEquals("g", mavenDependency.getGroupId());
+        assertEquals("a", mavenDependency.getArtifactId());
+        assertEquals("v", mavenDependency.getVersion());
+        assertEquals("", mavenDependency.getClassifier());
+        assertNull(mavenDependency.getType());
+        assertEquals("", mavenDependency.getScope());
     }
 
     @Test
-    public void testClassifier()
-    {
-        Node node = new EclipseAetherNode( newDependencyNode( "g:a::c:v", null ) );
-        
+    public void testClassifier() {
+        Node node = new EclipseAetherNode(newDependencyNode("g:a::c:v", null));
+
         org.apache.maven.model.Dependency mavenDependency = node.getDependency();
-        
-        assertEquals( "g", mavenDependency.getGroupId()  );
-        assertEquals( "a", mavenDependency.getArtifactId()  );
-        assertEquals( "v", mavenDependency.getVersion() );
-        assertEquals( "c", mavenDependency.getClassifier() );
-        assertNull( mavenDependency.getType() );
-        assertEquals( "", mavenDependency.getScope() );
+
+        assertEquals("g", mavenDependency.getGroupId());
+        assertEquals("a", mavenDependency.getArtifactId());
+        assertEquals("v", mavenDependency.getVersion());
+        assertEquals("c", mavenDependency.getClassifier());
+        assertNull(mavenDependency.getType());
+        assertEquals("", mavenDependency.getScope());
     }
-    
+
     @Test
-    public void testScope()
-    {
-        Node node = new EclipseAetherNode( newDependencyNode( "g:a:c:v", "s" ) );
-        
+    public void testScope() {
+        Node node = new EclipseAetherNode(newDependencyNode("g:a:c:v", "s"));
+
         org.apache.maven.model.Dependency mavenDependency = node.getDependency();
-        
-        assertEquals( "g", mavenDependency.getGroupId()  );
-        assertEquals( "a", mavenDependency.getArtifactId()  );
-        assertEquals( "v", mavenDependency.getVersion() );
-        assertEquals( "", mavenDependency.getClassifier() );
-        assertNull( mavenDependency.getType() );
-        assertEquals( "s", mavenDependency.getScope() );
+
+        assertEquals("g", mavenDependency.getGroupId());
+        assertEquals("a", mavenDependency.getArtifactId());
+        assertEquals("v", mavenDependency.getVersion());
+        assertEquals("", mavenDependency.getClassifier());
+        assertNull(mavenDependency.getType());
+        assertEquals("s", mavenDependency.getScope());
     }
 
     @Test
-    public void testOptional()
-    {
-        Node node = new EclipseAetherNode( newDependencyNode( "g:a:v", null, (Boolean) null ) );
+    public void testOptional() {
+        Node node = new EclipseAetherNode(newDependencyNode("g:a:v", null, (Boolean) null));
 
-        assertNull( node.getDependency().getOptional() );
-        assertFalse( node.getDependency().isOptional() );
-        
-        node = new EclipseAetherNode( newDependencyNode( "g:a:v", null, true ) );
-        assertEquals( "true", node.getDependency().getOptional()  );
-        assertTrue( node.getDependency().isOptional() );
+        assertNull(node.getDependency().getOptional());
+        assertFalse(node.getDependency().isOptional());
 
-        node = new EclipseAetherNode( newDependencyNode( "g:a:v", null, false ) );
-        assertEquals( "false", node.getDependency().getOptional()  );
-        assertFalse( node.getDependency().isOptional() );
+        node = new EclipseAetherNode(newDependencyNode("g:a:v", null, true));
+        assertEquals("true", node.getDependency().getOptional());
+        assertTrue(node.getDependency().isOptional());
+
+        node = new EclipseAetherNode(newDependencyNode("g:a:v", null, false));
+        assertEquals("false", node.getDependency().getOptional());
+        assertFalse(node.getDependency().isOptional());
     }
-    
+
     @Test
-    public void testExclusions()
-    {
-        Node node = new EclipseAetherNode( newDependencyNode( "g:a:v", null, Collections.singletonList( "eg:ea" ) ) );
-        assertEquals( 1, node.getDependency().getExclusions().size() );
-        
-        org.apache.maven.model.Exclusion mavenExclusion = node.getDependency().getExclusions().get( 0 );
-        assertEquals( "eg", mavenExclusion.getGroupId() );
-        assertEquals( "ea", mavenExclusion.getArtifactId() );
+    public void testExclusions() {
+        Node node = new EclipseAetherNode(newDependencyNode("g:a:v", null, Collections.singletonList("eg:ea")));
+        assertEquals(1, node.getDependency().getExclusions().size());
+
+        org.apache.maven.model.Exclusion mavenExclusion =
+                node.getDependency().getExclusions().get(0);
+        assertEquals("eg", mavenExclusion.getGroupId());
+        assertEquals("ea", mavenExclusion.getArtifactId());
     }
 
-    private DependencyNode newDependencyNode( String coor, String scope )
-    {
-        return new DefaultDependencyNode( new Dependency( new DefaultArtifact( coor ), scope ) );
-    }
-    
-    private DependencyNode newDependencyNode( String coor, String scope, Boolean optional )
-    {
-        return new DefaultDependencyNode( new Dependency( new DefaultArtifact( coor ), scope, optional ) );
+    private DependencyNode newDependencyNode(String coor, String scope) {
+        return new DefaultDependencyNode(new Dependency(new DefaultArtifact(coor), scope));
     }
 
-    private DependencyNode newDependencyNode( String coor, String scope, Collection<String> exclusions )
-    {
-        Dependency dependency = new Dependency( new DefaultArtifact( coor ), scope );
-        
-        Collection<Exclusion> aetherExclusions = new ArrayList<>( exclusions.size() );
-        for ( String exclusion : exclusions )
-        {
-            String[] ga = exclusion.split( ":" );
-            aetherExclusions.add( new Exclusion( ga[0], ga[1], null, null ) );
+    private DependencyNode newDependencyNode(String coor, String scope, Boolean optional) {
+        return new DefaultDependencyNode(new Dependency(new DefaultArtifact(coor), scope, optional));
+    }
+
+    private DependencyNode newDependencyNode(String coor, String scope, Collection<String> exclusions) {
+        Dependency dependency = new Dependency(new DefaultArtifact(coor), scope);
+
+        Collection<Exclusion> aetherExclusions = new ArrayList<>(exclusions.size());
+        for (String exclusion : exclusions) {
+            String[] ga = exclusion.split(":");
+            aetherExclusions.add(new Exclusion(ga[0], ga[1], null, null));
         }
-        dependency = dependency.setExclusions( aetherExclusions );
-        
-        return new DefaultDependencyNode( dependency );
-    }
+        dependency = dependency.setExclusions(aetherExclusions);
 
+        return new DefaultDependencyNode(dependency);
+    }
 }

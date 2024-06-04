@@ -1,5 +1,3 @@
-package org.apache.maven.shared.artifact.filter;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,29 +16,25 @@ package org.apache.maven.shared.artifact.filter;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.shared.artifact.filter;
 
 import java.util.List;
 
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 
-public class PatternIncludesArtifactFilterTest
-    extends AbstractPatternArtifactFilterTest
-{
+public class PatternIncludesArtifactFilterTest extends AbstractPatternArtifactFilterTest {
     @Override
-    protected ArtifactFilter createFilter( final List<String> patterns )
-    {
-        return new PatternIncludesArtifactFilter( patterns );
+    protected ArtifactFilter createFilter(final List<String> patterns) {
+        return new PatternIncludesArtifactFilter(patterns);
     }
 
     @Override
-    protected ArtifactFilter createFilter( final List<String> patterns, final boolean actTransitively )
-    {
-        return new PatternIncludesArtifactFilter( patterns, actTransitively );
+    protected ArtifactFilter createFilter(final List<String> patterns, final boolean actTransitively) {
+        return new PatternIncludesArtifactFilter(patterns, actTransitively);
     }
 
     @Override
-    protected boolean isInclusionNotExpected()
-    {
+    protected boolean isInclusionNotExpected() {
         return false;
     }
 }

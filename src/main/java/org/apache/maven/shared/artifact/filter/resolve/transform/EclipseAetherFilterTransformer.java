@@ -1,5 +1,3 @@
-package org.apache.maven.shared.artifact.filter.resolve.transform;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.shared.artifact.filter.resolve.transform;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,14 +16,13 @@ package org.apache.maven.shared.artifact.filter.resolve.transform;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.shared.artifact.filter.resolve.transform;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static java.util.Objects.requireNonNull;
 
 import org.apache.maven.shared.artifact.filter.resolve.AbstractFilter;
 import org.apache.maven.shared.artifact.filter.resolve.AndFilter;
@@ -44,15 +41,15 @@ import org.eclipse.aether.util.filter.PatternExclusionsDependencyFilter;
 import org.eclipse.aether.util.filter.PatternInclusionsDependencyFilter;
 import org.eclipse.aether.util.filter.ScopeDependencyFilter;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * FilterTransformer implementation for Eclipse Aether.
  *
  * @author Robert Scholte
  * @since 3.0
  */
-public class EclipseAetherFilterTransformer
-    implements FilterTransformer<DependencyFilter>
-{
+public class EclipseAetherFilterTransformer implements FilterTransformer<DependencyFilter> {
     /**
      * When using as regular expression, group(1) + group(3) will be the coordinate,
      * group(2) will be the classifier.
@@ -61,118 +58,97 @@ public class EclipseAetherFilterTransformer
 
     /** {@inheritDoc} */
     @Override
-    public AndDependencyFilter transform( AndFilter andFilter )
-    {
+    public AndDependencyFilter transform(AndFilter andFilter) {
         Collection<DependencyFilter> filters = new ArrayList<>();
-        for ( TransformableFilter filter : andFilter.getFilters() )
-        {
-            filters.add( filter.transform( this ) );
+        for (TransformableFilter filter : andFilter.getFilters()) {
+            filters.add(filter.transform(this));
         }
-        return new AndDependencyFilter( filters );
+        return new AndDependencyFilter(filters);
     }
 
     /** {@inheritDoc} */
     @Override
-    public ExclusionsDependencyFilter transform( ExclusionsFilter filter )
-    {
-        return new ExclusionsDependencyFilter( filter.getExcludes() );
+    public ExclusionsDependencyFilter transform(ExclusionsFilter filter) {
+        return new ExclusionsDependencyFilter(filter.getExcludes());
     }
 
     /** {@inheritDoc} */
     @Override
-    public OrDependencyFilter transform( OrFilter orFilter )
-    {
+    public OrDependencyFilter transform(OrFilter orFilter) {
         Collection<DependencyFilter> filters = new ArrayList<>();
-        for ( TransformableFilter filter : orFilter.getFilters() )
-        {
-            filters.add( filter.transform( this ) );
+        for (TransformableFilter filter : orFilter.getFilters()) {
+            filters.add(filter.transform(this));
         }
-        return new OrDependencyFilter( filters );
+        return new OrDependencyFilter(filters);
     }
 
     /** {@inheritDoc} */
     @Override
-    public ScopeDependencyFilter transform( ScopeFilter filter )
-    {
-        return new ScopeDependencyFilter( filter.getIncluded(), filter.getExcluded() );
+    public ScopeDependencyFilter transform(ScopeFilter filter) {
+        return new ScopeDependencyFilter(filter.getIncluded(), filter.getExcluded());
     }
 
     /** {@inheritDoc} */
     @Override
-    public DependencyFilter transform( PatternExclusionsFilter filter )
-    {
-        return new PatternExclusionsDependencyFilter( filter.getExcludes() );
+    public DependencyFilter transform(PatternExclusionsFilter filter) {
+        return new PatternExclusionsDependencyFilter(filter.getExcludes());
     }
 
     /** {@inheritDoc} */
     @Override
-    public DependencyFilter transform( PatternInclusionsFilter filter )
-    {
+    public DependencyFilter transform(PatternInclusionsFilter filter) {
         // if any include contains a classifier:
         // split all includes and make it an or-filter for every include
         // for the classifier, add an and-filter with a classifierfilter and patterninclusionfilter
 
-        for ( String include : filter.getIncludes() )
-        {
-            if ( include.matches( GAE_C_V ) )
-            {
-                return newAdvancedPatternInclusionFilter( filter.getIncludes() );
+        for (String include : filter.getIncludes()) {
+            if (include.matches(GAE_C_V)) {
+                return newAdvancedPatternInclusionFilter(filter.getIncludes());
             }
         }
 
-        return new PatternInclusionsDependencyFilter( filter.getIncludes() );
+        return new PatternInclusionsDependencyFilter(filter.getIncludes());
     }
 
     /** {@inheritDoc} */
     @Override
-    public DependencyFilter transform( final AbstractFilter filter )
-    {
-        return ( node, parents ) ->
-        {
-            requireNonNull( node, "node cannot be null" );
-            requireNonNull( parents, "parents cannot be null" );
+    public DependencyFilter transform(final AbstractFilter filter) {
+        return (node, parents) -> {
+            requireNonNull(node, "node cannot be null");
+            requireNonNull(parents, "parents cannot be null");
 
-            return filter.accept( new EclipseAetherNode( node ), null );
+            return filter.accept(new EclipseAetherNode(node), null);
         };
     }
 
-    private DependencyFilter newAdvancedPatternInclusionFilter( Collection<String> includes )
-    {
-        List<DependencyFilter> filters = new ArrayList<>( includes.size() );
+    private DependencyFilter newAdvancedPatternInclusionFilter(Collection<String> includes) {
+        List<DependencyFilter> filters = new ArrayList<>(includes.size());
 
-        Pattern pattern = Pattern.compile( GAE_C_V );
-        for ( String include : includes )
-        {
-            Matcher matcher = pattern.matcher( include );
-            if ( matcher.matches() )
-            {
+        Pattern pattern = Pattern.compile(GAE_C_V);
+        for (String include : includes) {
+            Matcher matcher = pattern.matcher(include);
+            if (matcher.matches()) {
                 DependencyFilter patternFilter =
-                    new PatternInclusionsDependencyFilter( matcher.group( 1 ) + matcher.group( 3 ) );
+                        new PatternInclusionsDependencyFilter(matcher.group(1) + matcher.group(3));
 
-                final String classifier = matcher.group( 2 );
+                final String classifier = matcher.group(2);
 
-                filters.add( new AndDependencyFilter( patternFilter, ( node, parents ) ->
-                {
-                    requireNonNull( node, "node cannot be null" );
-                    requireNonNull( parents, "parents cannot be null" );
+                filters.add(new AndDependencyFilter(patternFilter, (node, parents) -> {
+                    requireNonNull(node, "node cannot be null");
+                    requireNonNull(parents, "parents cannot be null");
 
                     String nodeClassifier = node.getArtifact().getClassifier();
 
-                    if ( nodeClassifier == null )
-                    {
+                    if (nodeClassifier == null) {
                         return false;
+                    } else {
+                        return "*".equals(classifier) || nodeClassifier.matches(classifier);
                     }
-                    else
-                    {
-                        return "*".equals( classifier ) || nodeClassifier.matches( classifier );
-                    }
-                } ) );
-            }
-            else
-            {
-                filters.add( new PatternInclusionsDependencyFilter( include ) );
+                }));
+            } else {
+                filters.add(new PatternInclusionsDependencyFilter(include));
             }
         }
-        return new OrDependencyFilter( filters );
+        return new OrDependencyFilter(filters);
     }
 }

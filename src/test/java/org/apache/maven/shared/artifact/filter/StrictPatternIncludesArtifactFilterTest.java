@@ -1,5 +1,3 @@
-package org.apache.maven.shared.artifact.filter;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.shared.artifact.filter;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,23 +16,21 @@ package org.apache.maven.shared.artifact.filter;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.shared.artifact.filter;
 
 import java.util.List;
 
 /**
  * Tests <code>StrictPatternIncludesArtifactFilter</code>.
- * 
+ *
  * @author <a href="mailto:markhobson@gmail.com">Mark Hobson</a>
  * @see StrictPatternIncludesArtifactFilter
  */
-public class StrictPatternIncludesArtifactFilterTest
-    extends AbstractStrictPatternArtifactFilterTest
-{
+public class StrictPatternIncludesArtifactFilterTest extends AbstractStrictPatternArtifactFilterTest {
     /*
      * @see org.apache.maven.shared.artifact.filter.AbstractStrictPatternArtifactFilterTest#createFilter(java.util.List)
      */
-    protected AbstractStrictPatternArtifactFilter createFilter( List<String> patterns )
-    {
-        return new StrictPatternIncludesArtifactFilter( patterns );
+    protected AbstractStrictPatternArtifactFilter createFilter(List<String> patterns) {
+        return new StrictPatternIncludesArtifactFilter(patterns);
     }
 }

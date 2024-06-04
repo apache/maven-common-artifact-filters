@@ -1,5 +1,3 @@
-package org.apache.maven.shared.artifact.filter;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.shared.artifact.filter;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.shared.artifact.filter;
 
 import java.util.Collection;
 
@@ -29,17 +28,14 @@ import org.apache.maven.artifact.Artifact;
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  * @see StrictPatternExcludesArtifactFilter
  */
-public class PatternExcludesArtifactFilter
-    extends PatternIncludesArtifactFilter
-{
+public class PatternExcludesArtifactFilter extends PatternIncludesArtifactFilter {
     /**
      * <p>Constructor for PatternExcludesArtifactFilter.</p>
      *
      * @param patterns The pattern to be used.
      */
-    public PatternExcludesArtifactFilter( Collection<String> patterns )
-    {
-        super( patterns );
+    public PatternExcludesArtifactFilter(Collection<String> patterns) {
+        super(patterns);
     }
 
     /**
@@ -48,34 +44,28 @@ public class PatternExcludesArtifactFilter
      * @param patterns The pattern which will be used.
      * @param actTransitively yes/no.
      */
-    public PatternExcludesArtifactFilter( Collection<String> patterns, boolean actTransitively )
-    {
-        super( patterns, actTransitively );
+    public PatternExcludesArtifactFilter(Collection<String> patterns, boolean actTransitively) {
+        super(patterns, actTransitively);
     }
 
     @Override
-    public boolean include( Artifact artifact )
-    {
-        boolean shouldInclude = !patternMatches( artifact );
+    public boolean include(Artifact artifact) {
+        boolean shouldInclude = !patternMatches(artifact);
 
-        if ( !shouldInclude )
-        {
-            addFilteredArtifact( artifact );
+        if (!shouldInclude) {
+            addFilteredArtifact(artifact);
         }
 
         return shouldInclude;
     }
 
     @Override
-    protected String getFilterDescription()
-    {
+    protected String getFilterDescription() {
         return "artifact exclusion filter";
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "Excludes filter:" + getPatternsAsString();
     }
-
 }

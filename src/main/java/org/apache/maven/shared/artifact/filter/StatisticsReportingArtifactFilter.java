@@ -1,5 +1,3 @@
-package org.apache.maven.shared.artifact.filter;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,28 +16,28 @@ package org.apache.maven.shared.artifact.filter;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.shared.artifact.filter;
 
 import org.slf4j.Logger;
 
 /**
  * StatisticsReportingArtifactFilter interface.
  */
-public interface StatisticsReportingArtifactFilter
-{
+public interface StatisticsReportingArtifactFilter {
 
     /**
      * <p>reportMissedCriteria.</p>
      *
      * @param logger the logger
      */
-    void reportMissedCriteria( Logger logger );
+    void reportMissedCriteria(Logger logger);
 
     /**
      * <p>reportFilteredArtifacts.</p>
      *
      * @param logger the logger
      */
-    void reportFilteredArtifacts( Logger logger );
+    void reportFilteredArtifacts(Logger logger);
 
     /**
      * <p>hasMissedCriteria.</p>
@@ -47,5 +45,4 @@ public interface StatisticsReportingArtifactFilter
      * @return {@code true} if missed criteria; {@code false} otherwise.
      */
     boolean hasMissedCriteria();
-
 }

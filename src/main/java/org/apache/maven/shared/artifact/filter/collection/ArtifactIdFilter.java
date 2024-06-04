@@ -1,6 +1,4 @@
-package org.apache.maven.shared.artifact.filter.collection;
-
-/* 
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -9,15 +7,16 @@ package org.apache.maven.shared.artifact.filter.collection;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
+package org.apache.maven.shared.artifact.filter.collection;
 
 import org.apache.maven.artifact.Artifact;
 
@@ -27,25 +26,20 @@ import org.apache.maven.artifact.Artifact;
  * @author clove
  * @since 2.0-alpha-2
  */
-public class ArtifactIdFilter
-    extends AbstractArtifactFeatureFilter
-{
+public class ArtifactIdFilter extends AbstractArtifactFeatureFilter {
     /**
      * Will setup super with 'ArtifactId' as the filterType
      *
      * @param include comma separated list of artifactIds to include, may be {@code null}
      * @param exclude comma separated list of artifactIds to exclude, may be {@code null}
      */
-    public ArtifactIdFilter( String include, String exclude )
-    {
-        super( include, exclude );
+    public ArtifactIdFilter(String include, String exclude) {
+        super(include, exclude);
     }
 
     /** {@inheritDoc} */
     @Override
-    protected String getArtifactFeature( Artifact artifact )
-    {
+    protected String getArtifactFeature(Artifact artifact) {
         return artifact.getArtifactId();
     }
-
 }

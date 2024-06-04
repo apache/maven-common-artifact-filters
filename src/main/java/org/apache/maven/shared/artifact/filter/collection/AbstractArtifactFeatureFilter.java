@@ -1,6 +1,4 @@
-package org.apache.maven.shared.artifact.filter.collection;
-
-/* 
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -9,15 +7,16 @@ package org.apache.maven.shared.artifact.filter.collection;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
+package org.apache.maven.shared.artifact.filter.collection;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -34,9 +33,7 @@ import static org.apache.maven.shared.artifact.filter.internal.Utils.isNotEmpty;
  *
  * @author <a href="richardv@mxtelecom.com">Richard van der Hoff</a>
  */
-public abstract class AbstractArtifactFeatureFilter
-    extends AbstractArtifactsFilter
-{
+public abstract class AbstractArtifactFeatureFilter extends AbstractArtifactsFilter {
     /** The list of types or classifiers to include */
     private List<String> includes;
 
@@ -51,10 +48,9 @@ public abstract class AbstractArtifactFeatureFilter
      * @param include comma separated list with includes.
      * @param exclude comma separated list with excludes.
      */
-    public AbstractArtifactFeatureFilter( String include, String exclude )
-    {
-        setExcludes( exclude );
-        setIncludes( include );
+    public AbstractArtifactFeatureFilter(String include, String exclude) {
+        setExcludes(exclude);
+        setIncludes(include);
     }
 
     /**
@@ -62,18 +58,15 @@ public abstract class AbstractArtifactFeatureFilter
      *
      * This function determines if filtering needs to be performed. Includes are processed before Excludes.
      */
-    public Set<Artifact> filter( Set<Artifact> artifacts )
-    {
+    public Set<Artifact> filter(Set<Artifact> artifacts) {
         Set<Artifact> results = artifacts;
 
-        if ( this.includes != null && !this.includes.isEmpty() )
-        {
-            results = filterIncludes( results, this.includes );
+        if (this.includes != null && !this.includes.isEmpty()) {
+            results = filterIncludes(results, this.includes);
         }
 
-        if ( this.excludes != null && !this.excludes.isEmpty() )
-        {
-            results = filterExcludes( results, this.excludes );
+        if (this.excludes != null && !this.excludes.isEmpty()) {
+            results = filterExcludes(results, this.excludes);
         }
 
         return results;
@@ -81,26 +74,22 @@ public abstract class AbstractArtifactFeatureFilter
 
     /**
      * Processes the dependencies list and includes the dependencies that match a filter in the list.
-     * 
+     *
      * @param artifacts List of dependencies.
      * @param theIncludes List of types or classifiers to include.
      * @return a set of filtered artifacts.
      */
-    private Set<Artifact> filterIncludes( Set<Artifact> artifacts, List<String> theIncludes )
-    {
+    private Set<Artifact> filterIncludes(Set<Artifact> artifacts, List<String> theIncludes) {
         Set<Artifact> result = new LinkedHashSet<>();
 
-        for ( Artifact artifact : artifacts )
-        {
-            for ( String include : theIncludes )
-            {
+        for (Artifact artifact : artifacts) {
+            for (String include : theIncludes) {
                 // if the classifier or type of the artifact
                 // matches the feature
                 // to include, add to the
                 // results
-                if ( compareFeatures( getArtifactFeature( artifact ), include ) )
-                {
-                    result.add( artifact );
+                if (compareFeatures(getArtifactFeature(artifact), include)) {
+                    result.add(artifact);
                 }
             }
         }
@@ -109,35 +98,30 @@ public abstract class AbstractArtifactFeatureFilter
 
     /**
      * Processes the dependencies list and excludes the dependencies that match a filter in the list.
-     * 
+     *
      * @param artifacts List of dependencies.
      * @param theExcludes List of types or classifiers to exclude.
      * @return a set of filtered artifacts.
      */
-    private Set<Artifact> filterExcludes( Set<Artifact> artifacts, List<String> theExcludes )
-    {
+    private Set<Artifact> filterExcludes(Set<Artifact> artifacts, List<String> theExcludes) {
         Set<Artifact> result = new LinkedHashSet<>();
 
-        for ( Artifact artifact : artifacts )
-        {
+        for (Artifact artifact : artifacts) {
             boolean exclude = false;
-            String artifactFeature = getArtifactFeature( artifact );
+            String artifactFeature = getArtifactFeature(artifact);
 
             // look through all types or classifiers. If no
             // matches are found
             // then it can be added to the results.
-            for ( String excludeFeature : theExcludes )
-            {
-                if ( compareFeatures( artifactFeature, excludeFeature ) )
-                {
+            for (String excludeFeature : theExcludes) {
+                if (compareFeatures(artifactFeature, excludeFeature)) {
                     exclude = true;
                     break;
                 }
             }
 
-            if ( !exclude )
-            {
-                result.add( artifact );
+            if (!exclude) {
+                result.add(artifact);
             }
         }
 
@@ -150,18 +134,16 @@ public abstract class AbstractArtifactFeatureFilter
      * @param artifact artifact to return type or classifier of
      * @return type or classifier
      */
-    protected abstract String getArtifactFeature( Artifact artifact );
+    protected abstract String getArtifactFeature(Artifact artifact);
 
     /**
      * <p>Setter for the field <code>excludes</code>.</p>
      *
      * @param excludeString comma separated list with excludes.
      */
-    public void setExcludes( String excludeString )
-    {
-        if ( isNotEmpty( excludeString ) )
-        {
-            this.excludes = Arrays.asList( excludeString.split( "," ) );
+    public void setExcludes(String excludeString) {
+        if (isNotEmpty(excludeString)) {
+            this.excludes = Arrays.asList(excludeString.split(","));
         }
     }
 
@@ -170,11 +152,9 @@ public abstract class AbstractArtifactFeatureFilter
      *
      * @param includeString comma separated list with includes.
      */
-    public void setIncludes( String includeString )
-    {
-        if ( isNotEmpty( includeString ) )
-        {
-            this.includes = Arrays.asList( includeString.split( "," ) );
+    public void setIncludes(String includeString) {
+        if (isNotEmpty(includeString)) {
+            this.includes = Arrays.asList(includeString.split(","));
         }
     }
 
@@ -183,8 +163,7 @@ public abstract class AbstractArtifactFeatureFilter
      *
      * @return Returns the excludes.
      */
-    public List<String> getExcludes()
-    {
+    public List<String> getExcludes() {
         return this.excludes;
     }
 
@@ -193,8 +172,7 @@ public abstract class AbstractArtifactFeatureFilter
      *
      * @return Returns the includes.
      */
-    public List<String> getIncludes()
-    {
+    public List<String> getIncludes() {
         return this.includes;
     }
 
@@ -205,8 +183,7 @@ public abstract class AbstractArtifactFeatureFilter
      * @param rhs String feature from exclude or include list
      * @return boolean true if features match
      */
-    protected boolean compareFeatures( String lhs, String rhs )
-    {
-        return ( Objects.equals( lhs, rhs ) );
+    protected boolean compareFeatures(String lhs, String rhs) {
+        return (Objects.equals(lhs, rhs));
     }
 }

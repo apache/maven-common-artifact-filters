@@ -1,5 +1,3 @@
-package org.apache.maven.shared.artifact.filter.resolve.transform;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.shared.artifact.filter.resolve.transform;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.shared.artifact.filter.resolve.transform;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.shared.artifact.filter.resolve.transform;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,8 +45,7 @@ import org.apache.maven.shared.artifact.filter.resolve.TransformableFilter;
  * @author Robert Scholte
  * @since 3.0
  */
-public class ArtifactIncludeFilterTransformer implements FilterTransformer<ArtifactFilter>
-{
+public class ArtifactIncludeFilterTransformer implements FilterTransformer<ArtifactFilter> {
 
     private boolean includeNullScope = true;
 
@@ -61,8 +59,7 @@ public class ArtifactIncludeFilterTransformer implements FilterTransformer<Artif
      *
      * @param includeNullScope set to {@code false} if {@code null}-scoped Artifacts should not be included
      */
-    public void setIncludeNullScope( boolean includeNullScope )
-    {
+    public void setIncludeNullScope(boolean includeNullScope) {
         this.includeNullScope = includeNullScope;
     }
 
@@ -76,41 +73,31 @@ public class ArtifactIncludeFilterTransformer implements FilterTransformer<Artif
      * @param actTransitivelyPattern set to {@code true} if this artifact should be included/excluded just like one of
      *            its ancestors.
      */
-    public void setActTransitivelyPattern( boolean actTransitivelyPattern )
-    {
+    public void setActTransitivelyPattern(boolean actTransitivelyPattern) {
         this.actTransitivelyPattern = actTransitivelyPattern;
     }
 
     /** {@inheritDoc} */
     @Override
-    public ArtifactFilter transform( final ScopeFilter scopeFilter )
-    {
-        return artifact ->
-        {
-            if ( artifact.getScope() == null )
-            {
+    public ArtifactFilter transform(final ScopeFilter scopeFilter) {
+        return artifact -> {
+            if (artifact.getScope() == null) {
                 return includeNullScope;
             }
 
             boolean isIncluded;
 
-            if ( scopeFilter.getIncluded() != null )
-            {
-                isIncluded = scopeFilter.getIncluded().contains( artifact.getScope() );
-            }
-            else
-            {
+            if (scopeFilter.getIncluded() != null) {
+                isIncluded = scopeFilter.getIncluded().contains(artifact.getScope());
+            } else {
                 isIncluded = true;
             }
 
             boolean isExcluded;
 
-            if ( scopeFilter.getExcluded() != null )
-            {
-                isExcluded = scopeFilter.getExcluded().contains( artifact.getScope() );
-            }
-            else
-            {
+            if (scopeFilter.getExcluded() != null) {
+                isExcluded = scopeFilter.getExcluded().contains(artifact.getScope());
+            } else {
                 isExcluded = false;
             }
 
@@ -120,13 +107,11 @@ public class ArtifactIncludeFilterTransformer implements FilterTransformer<Artif
 
     /** {@inheritDoc} */
     @Override
-    public AndArtifactFilter transform( AndFilter andFilter )
-    {
+    public AndArtifactFilter transform(AndFilter andFilter) {
         AndArtifactFilter filter = new AndArtifactFilter();
 
-        for ( TransformableFilter subFilter : andFilter.getFilters() )
-        {
-            filter.add( subFilter.transform( this ) );
+        for (TransformableFilter subFilter : andFilter.getFilters()) {
+            filter.add(subFilter.transform(this));
         }
 
         return filter;
@@ -134,28 +119,23 @@ public class ArtifactIncludeFilterTransformer implements FilterTransformer<Artif
 
     /** {@inheritDoc} */
     @Override
-    public ArtifactFilter transform( final ExclusionsFilter exclusionsFilter )
-    {
-        return new ExcludesArtifactFilter( new ArrayList<>( exclusionsFilter.getExcludes() ) );
+    public ArtifactFilter transform(final ExclusionsFilter exclusionsFilter) {
+        return new ExcludesArtifactFilter(new ArrayList<>(exclusionsFilter.getExcludes()));
     }
 
     /** {@inheritDoc} */
     @Override
-    public ArtifactFilter transform( OrFilter orFilter )
-    {
-        final Collection<ArtifactFilter> filters = new ArrayList<>( orFilter.getFilters().size() );
+    public ArtifactFilter transform(OrFilter orFilter) {
+        final Collection<ArtifactFilter> filters =
+                new ArrayList<>(orFilter.getFilters().size());
 
-        for ( TransformableFilter subFilter : orFilter.getFilters() )
-        {
-            filters.add( subFilter.transform( this ) );
+        for (TransformableFilter subFilter : orFilter.getFilters()) {
+            filters.add(subFilter.transform(this));
         }
 
-        return artifact ->
-        {
-            for ( ArtifactFilter filter : filters )
-            {
-                if ( filter.include( artifact ) )
-                {
+        return artifact -> {
+            for (ArtifactFilter filter : filters) {
+                if (filter.include(artifact)) {
                     return true;
                 }
             }
@@ -165,22 +145,19 @@ public class ArtifactIncludeFilterTransformer implements FilterTransformer<Artif
 
     /** {@inheritDoc} */
     @Override
-    public ArtifactFilter transform( PatternExclusionsFilter patternExclusionsFilter )
-    {
-        return new PatternExcludesArtifactFilter( patternExclusionsFilter.getExcludes(), actTransitivelyPattern );
+    public ArtifactFilter transform(PatternExclusionsFilter patternExclusionsFilter) {
+        return new PatternExcludesArtifactFilter(patternExclusionsFilter.getExcludes(), actTransitivelyPattern);
     }
 
     /** {@inheritDoc} */
     @Override
-    public ArtifactFilter transform( PatternInclusionsFilter patternInclusionsFilter )
-    {
-        return new PatternIncludesArtifactFilter( patternInclusionsFilter.getIncludes(), actTransitivelyPattern );
+    public ArtifactFilter transform(PatternInclusionsFilter patternInclusionsFilter) {
+        return new PatternIncludesArtifactFilter(patternInclusionsFilter.getIncludes(), actTransitivelyPattern);
     }
 
     /** {@inheritDoc} */
     @Override
-    public ArtifactFilter transform( final AbstractFilter filter )
-    {
-        return artifact -> filter.accept( new ArtifactIncludeNode( artifact ), null );
+    public ArtifactFilter transform(final AbstractFilter filter) {
+        return artifact -> filter.accept(new ArtifactIncludeNode(artifact), null);
     }
 }

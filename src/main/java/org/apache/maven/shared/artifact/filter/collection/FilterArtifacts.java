@@ -1,5 +1,3 @@
-package org.apache.maven.shared.artifact.filter.collection;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,15 +7,16 @@ package org.apache.maven.shared.artifact.filter.collection;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
+package org.apache.maven.shared.artifact.filter.collection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,23 +29,20 @@ import org.apache.maven.artifact.Artifact;
  *
  * @author <a href="mailto:brianf@apache.org">Brian Fox</a>
  */
-public class FilterArtifacts
-{
+public class FilterArtifacts {
     private List<ArtifactsFilter> filters;
 
     /**
      * Created new instance.
      */
-    public FilterArtifacts()
-    {
+    public FilterArtifacts() {
         filters = new ArrayList<>();
     }
 
     /**
      * Removes all of the elements from this list. The list will be empty after this call returns.
      */
-    public void clearFilters()
-    {
+    public void clearFilters() {
         filters.clear();
     }
 
@@ -55,11 +51,9 @@ public class FilterArtifacts
      *
      * @param filter element to be appended to this list.
      */
-    public void addFilter( ArtifactsFilter filter )
-    {
-        if ( filter != null )
-        {
-            filters.add( filter );
+    public void addFilter(ArtifactsFilter filter) {
+        if (filter != null) {
+            filters.add(filter);
         }
     }
 
@@ -71,11 +65,9 @@ public class FilterArtifacts
      * @param filter the filter to be inserted.
      * @throws IndexOutOfBoundsException if index is out of range <code>(index &lt; 0 || index &gt; size())</code>.
      */
-    public void addFilter( int index, ArtifactsFilter filter )
-    {
-        if ( filter != null )
-        {
-            filters.add( index, filter );
+    public void addFilter(int index, ArtifactsFilter filter) {
+        if (filter != null) {
+            filters.add(index, filter);
         }
     }
 
@@ -86,19 +78,13 @@ public class FilterArtifacts
      * @return The resulting artifacts set.
      * @throws org.apache.maven.shared.artifact.filter.collection.ArtifactFilterException in case of a failure.
      */
-    public Set<Artifact> filter( Set<Artifact> artifacts )
-        throws ArtifactFilterException
-    {
+    public Set<Artifact> filter(Set<Artifact> artifacts) throws ArtifactFilterException {
         // apply filters
-        for ( ArtifactsFilter filter : filters )
-        {
+        for (ArtifactsFilter filter : filters) {
             // log(artifacts,log);
-            try
-            {
-                artifacts = filter.filter( artifacts );
-            }
-            catch ( NullPointerException e )
-            {
+            try {
+                artifacts = filter.filter(artifacts);
+            } catch (NullPointerException e) {
                 // don't do anything, just skip this.
             }
         }
@@ -111,8 +97,7 @@ public class FilterArtifacts
      *
      * @return the filters.
      */
-    public List<ArtifactsFilter> getFilters()
-    {
+    public List<ArtifactsFilter> getFilters() {
         return this.filters;
     }
 
@@ -121,8 +106,7 @@ public class FilterArtifacts
      *
      * @param filters The filters to set.
      */
-    public void setFilters( List<ArtifactsFilter> filters )
-    {
+    public void setFilters(List<ArtifactsFilter> filters) {
         this.filters = filters;
     }
 }

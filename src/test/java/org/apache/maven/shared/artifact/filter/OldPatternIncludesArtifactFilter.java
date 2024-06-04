@@ -1,5 +1,3 @@
-package org.apache.maven.shared.artifact.filter;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.shared.artifact.filter;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.shared.artifact.filter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,9 +38,7 @@ import org.slf4j.Logger;
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  * @see StrictPatternIncludesArtifactFilter
  */
-public class OldPatternIncludesArtifactFilter
-        implements ArtifactFilter, StatisticsReportingArtifactFilter
-{
+public class OldPatternIncludesArtifactFilter implements ArtifactFilter, StatisticsReportingArtifactFilter {
     private final List<String> positivePatterns;
 
     private final List<String> negativePatterns;
@@ -55,31 +52,24 @@ public class OldPatternIncludesArtifactFilter
     /**
      * @param patterns The pattern to be used.
      */
-    public OldPatternIncludesArtifactFilter( final Collection<String> patterns )
-    {
-        this( patterns, false );
+    public OldPatternIncludesArtifactFilter(final Collection<String> patterns) {
+        this(patterns, false);
     }
 
     /**
      * @param patterns The pattern to be used.
      * @param actTransitively transitive yes/no.
      */
-    public OldPatternIncludesArtifactFilter( final Collection<String> patterns, final boolean actTransitively )
-    {
+    public OldPatternIncludesArtifactFilter(final Collection<String> patterns, final boolean actTransitively) {
         this.actTransitively = actTransitively;
         final List<String> pos = new ArrayList<>();
         final List<String> neg = new ArrayList<>();
-        if ( patterns != null && !patterns.isEmpty() )
-        {
-            for ( String pattern : patterns )
-            {
-                if ( pattern.startsWith( "!" ) )
-                {
-                    neg.add( pattern.substring( 1 ) );
-                }
-                else
-                {
-                    pos.add( pattern );
+        if (patterns != null && !patterns.isEmpty()) {
+            for (String pattern : patterns) {
+                if (pattern.startsWith("!")) {
+                    neg.add(pattern.substring(1));
+                } else {
+                    pos.add(pattern);
                 }
             }
         }
@@ -89,13 +79,11 @@ public class OldPatternIncludesArtifactFilter
     }
 
     /** {@inheritDoc} */
-    public boolean include( final Artifact artifact )
-    {
-        final boolean shouldInclude = patternMatches( artifact );
+    public boolean include(final Artifact artifact) {
+        final boolean shouldInclude = patternMatches(artifact);
 
-        if ( !shouldInclude )
-        {
-            addFilteredArtifactId( artifact.getId() );
+        if (!shouldInclude) {
+            addFilteredArtifactId(artifact.getId());
         }
 
         return shouldInclude;
@@ -105,28 +93,22 @@ public class OldPatternIncludesArtifactFilter
      * @param artifact to check for.
      * @return true if the match is true false otherwise.
      */
-    protected boolean patternMatches( final Artifact artifact )
-    {
-        return positiveMatch( artifact ) == Boolean.TRUE || negativeMatch( artifact ) == Boolean.FALSE;
+    protected boolean patternMatches(final Artifact artifact) {
+        return positiveMatch(artifact) == Boolean.TRUE || negativeMatch(artifact) == Boolean.FALSE;
     }
 
     /**
      * @param artifactId add artifact to the filtered artifacts list.
      */
-    protected void addFilteredArtifactId( final String artifactId )
-    {
-        filteredArtifactIds.add( artifactId );
+    protected void addFilteredArtifactId(final String artifactId) {
+        filteredArtifactIds.add(artifactId);
     }
 
-    private Boolean negativeMatch( final Artifact artifact )
-    {
-        if ( negativePatterns == null || negativePatterns.isEmpty() )
-        {
+    private Boolean negativeMatch(final Artifact artifact) {
+        if (negativePatterns == null || negativePatterns.isEmpty()) {
             return null;
-        }
-        else
-        {
-            return match( artifact, negativePatterns );
+        } else {
+            return match(artifact, negativePatterns);
         }
     }
 
@@ -134,49 +116,37 @@ public class OldPatternIncludesArtifactFilter
      * @param artifact check for positive match.
      * @return true/false.
      */
-    protected Boolean positiveMatch( final Artifact artifact )
-    {
-        if ( positivePatterns == null || positivePatterns.isEmpty() )
-        {
+    protected Boolean positiveMatch(final Artifact artifact) {
+        if (positivePatterns == null || positivePatterns.isEmpty()) {
             return null;
-        }
-        else
-        {
-            return match( artifact, positivePatterns );
+        } else {
+            return match(artifact, positivePatterns);
         }
     }
 
-    private boolean match( final Artifact artifact, final List<String> patterns )
-    {
-        final String shortId = ArtifactUtils.versionlessKey( artifact );
+    private boolean match(final Artifact artifact, final List<String> patterns) {
+        final String shortId = ArtifactUtils.versionlessKey(artifact);
         final String id = artifact.getDependencyConflictId();
         final String wholeId = artifact.getId();
 
-        if ( matchAgainst( wholeId, patterns, false ) )
-        {
+        if (matchAgainst(wholeId, patterns, false)) {
             return true;
         }
 
-        if ( matchAgainst( id, patterns, false ) )
-        {
+        if (matchAgainst(id, patterns, false)) {
             return true;
         }
 
-        if ( matchAgainst( shortId, patterns, false ) )
-        {
+        if (matchAgainst(shortId, patterns, false)) {
             return true;
         }
 
-        if ( actTransitively )
-        {
+        if (actTransitively) {
             final List<String> depTrail = artifact.getDependencyTrail();
 
-            if ( depTrail != null && depTrail.size() > 1 )
-            {
-                for ( String trailItem : depTrail )
-                {
-                    if ( matchAgainst( trailItem, patterns, true ) )
-                    {
+            if (depTrail != null && depTrail.size() > 1) {
+                for (String trailItem : depTrail) {
+                    if (matchAgainst(trailItem, patterns, true)) {
                         return true;
                     }
                 }
@@ -186,64 +156,52 @@ public class OldPatternIncludesArtifactFilter
         return false;
     }
 
-    private boolean matchAgainst( final String value, final List<String> patterns, final boolean regionMatch )
-    {
-        final String[] tokens = value.split( ":" );
-        for ( String pattern : patterns )
-        {
-            String[] patternTokens = pattern.split( ":" );
+    private boolean matchAgainst(final String value, final List<String> patterns, final boolean regionMatch) {
+        final String[] tokens = value.split(":");
+        for (String pattern : patterns) {
+            String[] patternTokens = pattern.split(":");
 
-            if ( patternTokens.length == 5 && tokens.length < 5 )
-            {
+            if (patternTokens.length == 5 && tokens.length < 5) {
                 // 4th element is the classifier
-                if ( !"*".equals( patternTokens[3] ) )
-                {
+                if (!"*".equals(patternTokens[3])) {
                     // classifier required, cannot be a match
                     return false;
                 }
-                patternTokens = new String[] { patternTokens[0], patternTokens[1], patternTokens[2], patternTokens[4] };
+                patternTokens = new String[] {patternTokens[0], patternTokens[1], patternTokens[2], patternTokens[4]};
             }
 
             // fail immediately if pattern tokens outnumber tokens to match
             boolean matched = patternTokens.length <= tokens.length;
 
-            for ( int i = 0; matched && i < patternTokens.length; i++ )
-            {
-                matched = matches( tokens[i], patternTokens[i] );
+            for (int i = 0; matched && i < patternTokens.length; i++) {
+                matched = matches(tokens[i], patternTokens[i]);
             }
 
             // case of starting '*' like '*:jar:*'
             // This really only matches from the end instead.....
-            if ( !matched && patternTokens.length < tokens.length && isFirstPatternWildcard( patternTokens ) )
-            {
+            if (!matched && patternTokens.length < tokens.length && isFirstPatternWildcard(patternTokens)) {
                 matched = true;
                 int tokenOffset = tokens.length - patternTokens.length;
-                for ( int i = 0; matched && i < patternTokens.length; i++ )
-                {
-                    matched = matches( tokens[i + tokenOffset], patternTokens[i] );
+                for (int i = 0; matched && i < patternTokens.length; i++) {
+                    matched = matches(tokens[i + tokenOffset], patternTokens[i]);
                 }
             }
 
-            if ( matched )
-            {
-                patternsTriggered.add( pattern );
+            if (matched) {
+                patternsTriggered.add(pattern);
                 return true;
             }
 
-            if ( regionMatch && value.contains( pattern ) )
-            {
-                patternsTriggered.add( pattern );
+            if (regionMatch && value.contains(pattern)) {
+                patternsTriggered.add(pattern);
                 return true;
             }
-
         }
         return false;
-
     }
 
-    private boolean isFirstPatternWildcard( String[] patternTokens )
-    {
-        return patternTokens.length > 0 && "*".equals( patternTokens[0] );
+    private boolean isFirstPatternWildcard(String[] patternTokens) {
+        return patternTokens.length > 0 && "*".equals(patternTokens[0]);
     }
 
     /**
@@ -253,48 +211,40 @@ public class OldPatternIncludesArtifactFilter
      * @param pattern the pattern segment to match, as defined above
      * @return <code>true</code> if the specified token is matched by the specified pattern segment
      */
-    private boolean matches( final String token, final String pattern )
-    {
+    private boolean matches(final String token, final String pattern) {
         boolean matches;
 
         // support full wildcard and implied wildcard
-        if ( "*".equals( pattern ) || pattern.length() == 0 )
-        {
+        if ("*".equals(pattern) || pattern.length() == 0) {
             matches = true;
         }
         // support contains wildcard
-        else if ( pattern.startsWith( "*" ) && pattern.endsWith( "*" ) )
-        {
-            final String contains = pattern.substring( 1, pattern.length() - 1 );
+        else if (pattern.startsWith("*") && pattern.endsWith("*")) {
+            final String contains = pattern.substring(1, pattern.length() - 1);
 
-            matches = token.contains( contains );
+            matches = token.contains(contains);
         }
         // support leading wildcard
-        else if ( pattern.startsWith( "*" ) )
-        {
-            final String suffix = pattern.substring( 1 );
+        else if (pattern.startsWith("*")) {
+            final String suffix = pattern.substring(1);
 
-            matches = token.endsWith( suffix );
+            matches = token.endsWith(suffix);
         }
         // support trailing wildcard
-        else if ( pattern.endsWith( "*" ) )
-        {
-            final String prefix = pattern.substring( 0, pattern.length() - 1 );
+        else if (pattern.endsWith("*")) {
+            final String prefix = pattern.substring(0, pattern.length() - 1);
 
-            matches = token.startsWith( prefix );
+            matches = token.startsWith(prefix);
         }
         // support wildcards in the middle of a pattern segment
-        else if ( pattern.indexOf( '*' ) > -1 )
-        {
-            String[] parts = pattern.split( "\\*" );
+        else if (pattern.indexOf('*') > -1) {
+            String[] parts = pattern.split("\\*");
             int lastPartEnd = -1;
             boolean match = true;
 
-            for ( String part : parts )
-            {
-                int idx = token.indexOf( part );
-                if ( idx <= lastPartEnd )
-                {
+            for (String part : parts) {
+                int idx = token.indexOf(part);
+                if (idx <= lastPartEnd) {
                     match = false;
                     break;
                 }
@@ -305,78 +255,65 @@ public class OldPatternIncludesArtifactFilter
             matches = match;
         }
         // support versions range
-        else if ( pattern.startsWith( "[" ) || pattern.startsWith( "(" ) )
-        {
-            matches = isVersionIncludedInRange( token, pattern );
+        else if (pattern.startsWith("[") || pattern.startsWith("(")) {
+            matches = isVersionIncludedInRange(token, pattern);
         }
         // support exact match
-        else
-        {
-            matches = token.equals( pattern );
+        else {
+            matches = token.equals(pattern);
         }
 
         return matches;
     }
 
-    private boolean isVersionIncludedInRange( final String version, final String range )
-    {
-        try
-        {
-            return VersionRange.createFromVersionSpec( range ).containsVersion( new DefaultArtifactVersion( version ) );
-        }
-        catch ( final InvalidVersionSpecificationException e )
-        {
+    private boolean isVersionIncludedInRange(final String version, final String range) {
+        try {
+            return VersionRange.createFromVersionSpec(range).containsVersion(new DefaultArtifactVersion(version));
+        } catch (final InvalidVersionSpecificationException e) {
             return false;
         }
     }
 
     /** {@inheritDoc} */
-    public void reportMissedCriteria( final Logger logger )
-    {
+    public void reportMissedCriteria(final Logger logger) {
         // if there are no patterns, there is nothing to report.
-        if ( !positivePatterns.isEmpty() || !negativePatterns.isEmpty() )
-        {
+        if (!positivePatterns.isEmpty() || !negativePatterns.isEmpty()) {
             final List<String> missed = new ArrayList<>();
-            missed.addAll( positivePatterns );
-            missed.addAll( negativePatterns );
+            missed.addAll(positivePatterns);
+            missed.addAll(negativePatterns);
 
-            missed.removeAll( patternsTriggered );
+            missed.removeAll(patternsTriggered);
 
-            if ( !missed.isEmpty() && logger.isWarnEnabled() )
-            {
+            if (!missed.isEmpty() && logger.isWarnEnabled()) {
                 final StringBuilder buffer = new StringBuilder();
 
-                buffer.append( "The following patterns were never triggered in this " );
-                buffer.append( getFilterDescription() );
-                buffer.append( ':' );
+                buffer.append("The following patterns were never triggered in this ");
+                buffer.append(getFilterDescription());
+                buffer.append(':');
 
-                for ( String pattern : missed )
-                {
-                    buffer.append( "\no  '" ).append( pattern ).append( "'" );
+                for (String pattern : missed) {
+                    buffer.append("\no  '").append(pattern).append("'");
                 }
 
-                buffer.append( "\n" );
+                buffer.append("\n");
 
-                logger.warn( buffer.toString() );
+                logger.warn(buffer.toString());
             }
         }
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "Includes filter:" + getPatternsAsString();
     }
 
     /**
      * @return pattern as a string.
      */
-    protected String getPatternsAsString()
-    {
+    protected String getPatternsAsString() {
         final StringBuilder buffer = new StringBuilder();
-        for ( String pattern : positivePatterns )
-        {
-            buffer.append( "\no '" ).append( pattern ).append( "'" );
+        for (String pattern : positivePatterns) {
+            buffer.append("\no '").append(pattern).append("'");
         }
 
         return buffer.toString();
@@ -385,44 +322,37 @@ public class OldPatternIncludesArtifactFilter
     /**
      * @return description.
      */
-    protected String getFilterDescription()
-    {
+    protected String getFilterDescription() {
         return "artifact inclusion filter";
     }
 
     /** {@inheritDoc} */
-    public void reportFilteredArtifacts( final Logger logger )
-    {
-        if ( !filteredArtifactIds.isEmpty() && logger.isDebugEnabled() )
-        {
+    public void reportFilteredArtifacts(final Logger logger) {
+        if (!filteredArtifactIds.isEmpty() && logger.isDebugEnabled()) {
             final StringBuilder buffer =
-                    new StringBuilder( "The following artifacts were removed by this " + getFilterDescription() + ": " );
+                    new StringBuilder("The following artifacts were removed by this " + getFilterDescription() + ": ");
 
-            for ( String artifactId : filteredArtifactIds )
-            {
-                buffer.append( '\n' ).append( artifactId );
+            for (String artifactId : filteredArtifactIds) {
+                buffer.append('\n').append(artifactId);
             }
 
-            logger.debug( buffer.toString() );
+            logger.debug(buffer.toString());
         }
     }
 
     /** {@inheritDoc} */
-    public boolean hasMissedCriteria()
-    {
+    public boolean hasMissedCriteria() {
         // if there are no patterns, there is nothing to report.
-        if ( !positivePatterns.isEmpty() || !negativePatterns.isEmpty() )
-        {
+        if (!positivePatterns.isEmpty() || !negativePatterns.isEmpty()) {
             final List<String> missed = new ArrayList<>();
-            missed.addAll( positivePatterns );
-            missed.addAll( negativePatterns );
+            missed.addAll(positivePatterns);
+            missed.addAll(negativePatterns);
 
-            missed.removeAll( patternsTriggered );
+            missed.removeAll(patternsTriggered);
 
             return !missed.isEmpty();
         }
 
         return false;
     }
-
 }

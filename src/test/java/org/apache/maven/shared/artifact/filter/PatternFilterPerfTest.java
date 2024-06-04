@@ -1,5 +1,3 @@
-package org.apache.maven.shared.artifact.filter;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.shared.artifact.filter;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.shared.artifact.filter;
 
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
@@ -43,20 +42,20 @@ import org.openjdk.jmh.runner.options.TimeValue;
 
 @BenchmarkMode(Mode.Throughput)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
-@Warmup(iterations = 3, time = 3 )
+@Warmup(iterations = 3, time = 3)
 public class PatternFilterPerfTest {
 
     @State(Scope.Benchmark)
-    static public class OldPatternState {
+    public static class OldPatternState {
 
         @Param({
-                "groupId:artifact-00,groupId:artifact-01,groupId:artifact-02,groupId:artifact-03,groupId:artifact-04,groupId:artifact-05,groupId:artifact-06,groupId:artifact-07,groupId:artifact-08,groupId:artifact-09",
-                "groupId:artifact-99",
-                "groupId:artifact-*",
-                "*:artifact-99",
-                "*:artifact-*",
-                "*:artifact-*:*",
-                "*:artifact-99:*",
+            "groupId:artifact-00,groupId:artifact-01,groupId:artifact-02,groupId:artifact-03,groupId:artifact-04,groupId:artifact-05,groupId:artifact-06,groupId:artifact-07,groupId:artifact-08,groupId:artifact-09",
+            "groupId:artifact-99",
+            "groupId:artifact-*",
+            "*:artifact-99",
+            "*:artifact-*",
+            "*:artifact-*:*",
+            "*:artifact-99:*",
         })
         public String patterns;
 
@@ -64,28 +63,23 @@ public class PatternFilterPerfTest {
         Artifact artifact;
 
         @Setup(Level.Invocation)
-        public void setup()
-        {
-            filter = new OldPatternIncludesArtifactFilter( Arrays.asList( patterns.split( "," ) ) );
-            artifact = new DefaultArtifact(
-                    "groupId", "artifact-99", "1.0", "runtime",
-                    "jar", "", null
-            );
+        public void setup() {
+            filter = new OldPatternIncludesArtifactFilter(Arrays.asList(patterns.split(",")));
+            artifact = new DefaultArtifact("groupId", "artifact-99", "1.0", "runtime", "jar", "", null);
         }
-
     }
 
     @State(Scope.Benchmark)
-    static public class GNPatternState {
+    public static class GNPatternState {
 
         @Param({
-                "groupId:artifact-00,groupId:artifact-01,groupId:artifact-02,groupId:artifact-03,groupId:artifact-04,groupId:artifact-05,groupId:artifact-06,groupId:artifact-07,groupId:artifact-08,groupId:artifact-09",
-                "groupId:artifact-99",
-                "groupId:artifact-*",
-                "*:artifact-99",
-                "*:artifact-*",
-                "*:artifact-*:*",
-                "*:artifact-99:*",
+            "groupId:artifact-00,groupId:artifact-01,groupId:artifact-02,groupId:artifact-03,groupId:artifact-04,groupId:artifact-05,groupId:artifact-06,groupId:artifact-07,groupId:artifact-08,groupId:artifact-09",
+            "groupId:artifact-99",
+            "groupId:artifact-*",
+            "*:artifact-99",
+            "*:artifact-*",
+            "*:artifact-*:*",
+            "*:artifact-99:*",
         })
         public String patterns;
 
@@ -93,28 +87,23 @@ public class PatternFilterPerfTest {
         Artifact artifact;
 
         @Setup(Level.Invocation)
-        public void setup()
-        {
-            filter = new GNPatternIncludesArtifactFilter( Arrays.asList( patterns.split( "," ) ) );
-            artifact = new DefaultArtifact(
-                    "groupId", "artifact-99", "1.0", "runtime",
-                    "jar", "", null
-            );
+        public void setup() {
+            filter = new GNPatternIncludesArtifactFilter(Arrays.asList(patterns.split(",")));
+            artifact = new DefaultArtifact("groupId", "artifact-99", "1.0", "runtime", "jar", "", null);
         }
-
     }
 
     @State(Scope.Benchmark)
-    static public class NewPatternState {
+    public static class NewPatternState {
 
         @Param({
-                "groupId:artifact-00,groupId:artifact-01,groupId:artifact-02,groupId:artifact-03,groupId:artifact-04,groupId:artifact-05,groupId:artifact-06,groupId:artifact-07,groupId:artifact-08,groupId:artifact-09",
-                "groupId:artifact-99",
-                "groupId:artifact-*",
-                "*:artifact-99",
-                "*:artifact-*",
-                "*:artifact-*:*",
-                "*:artifact-99:*",
+            "groupId:artifact-00,groupId:artifact-01,groupId:artifact-02,groupId:artifact-03,groupId:artifact-04,groupId:artifact-05,groupId:artifact-06,groupId:artifact-07,groupId:artifact-08,groupId:artifact-09",
+            "groupId:artifact-99",
+            "groupId:artifact-*",
+            "*:artifact-99",
+            "*:artifact-*",
+            "*:artifact-*:*",
+            "*:artifact-99:*",
         })
         public String patterns;
 
@@ -122,45 +111,34 @@ public class PatternFilterPerfTest {
         Artifact artifact;
 
         @Setup(Level.Invocation)
-        public void setup()
-        {
-            filter = new PatternIncludesArtifactFilter( Arrays.asList( patterns.split( "," ) ) );
-            artifact = new DefaultArtifact(
-                    "groupId", "artifact-99", "1.0", "runtime",
-                    "jar", "", null
-            );
+        public void setup() {
+            filter = new PatternIncludesArtifactFilter(Arrays.asList(patterns.split(",")));
+            artifact = new DefaultArtifact("groupId", "artifact-99", "1.0", "runtime", "jar", "", null);
         }
-
-    }
-
-
-    @Benchmark
-    public boolean newPatternTest(NewPatternState state )
-    {
-        return state.filter.include( state.artifact );
     }
 
     @Benchmark
-    public boolean gnPatternTest(GNPatternState state )
-    {
-        return state.filter.include( state.artifact );
+    public boolean newPatternTest(NewPatternState state) {
+        return state.filter.include(state.artifact);
     }
 
     @Benchmark
-    public boolean oldPatternTest(OldPatternState state )
-    {
-        return state.filter.include( state.artifact );
+    public boolean gnPatternTest(GNPatternState state) {
+        return state.filter.include(state.artifact);
     }
 
-    public static void main( String... args )
-            throws RunnerException
-    {
+    @Benchmark
+    public boolean oldPatternTest(OldPatternState state) {
+        return state.filter.include(state.artifact);
+    }
+
+    public static void main(String... args) throws RunnerException {
         Options opts = new OptionsBuilder()
-                .measurementIterations( 3 )
-                .measurementTime( TimeValue.milliseconds( 3000 ) )
-                .forks( 1 )
-                .include( "org.apache.maven.shared.artifact.filter.PatternFilterPerfTest" )
+                .measurementIterations(3)
+                .measurementTime(TimeValue.milliseconds(3000))
+                .forks(1)
+                .include("org.apache.maven.shared.artifact.filter.PatternFilterPerfTest")
                 .build();
-        new Runner( opts ).run();
+        new Runner(opts).run();
     }
 }

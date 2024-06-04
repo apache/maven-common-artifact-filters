@@ -1,5 +1,3 @@
-package org.apache.maven.shared.artifact.filter.resolve;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.shared.artifact.filter.resolve;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.shared.artifact.filter.resolve;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.shared.artifact.filter.resolve;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -43,28 +42,25 @@ import java.util.Collections;
  * @see org.eclipse.aether.util.filter.PatternInclusionsDependencyFilter
  * @see org.eclipse.aether.version.VersionScheme
  */
-public class PatternInclusionsFilter implements TransformableFilter
-{
-    
+public class PatternInclusionsFilter implements TransformableFilter {
+
     private final Collection<String> includes;
-    
+
     /**
      * The default constructor specifying a collection of pattern based keys which must be included.
      *
      * @param includes the includes
      */
-    public PatternInclusionsFilter( Collection<String> includes )
-    {
-        this.includes = Collections.unmodifiableCollection( includes );
+    public PatternInclusionsFilter(Collection<String> includes) {
+        this.includes = Collections.unmodifiableCollection(includes);
     }
-    
+
     /**
      * Get the includes
      *
      * @return the includes,
      */
-    public final Collection<String> getIncludes()
-    {
+    public final Collection<String> getIncludes() {
         return includes;
     }
 
@@ -74,8 +70,7 @@ public class PatternInclusionsFilter implements TransformableFilter
      * Transform this filter to a tool specific implementation
      */
     @Override
-    public <T> T transform( FilterTransformer<T> transformer )
-    {
-        return transformer.transform( this );
+    public <T> T transform(FilterTransformer<T> transformer) {
+        return transformer.transform(this);
     }
 }

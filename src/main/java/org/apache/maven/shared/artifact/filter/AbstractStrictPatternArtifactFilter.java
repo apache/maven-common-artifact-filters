@@ -1,5 +1,3 @@
-package org.apache.maven.shared.artifact.filter;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.shared.artifact.filter;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,14 +16,15 @@ package org.apache.maven.shared.artifact.filter;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.shared.artifact.filter;
+
+import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
 import org.apache.maven.artifact.versioning.VersionRange;
-
-import java.util.List;
 
 /**
  * Filter to include or exclude artifacts from a list of patterns. The artifact pattern syntax is of the form:
@@ -44,8 +43,7 @@ import java.util.List;
  *
  * @author <a href="mailto:markhobson@gmail.com">Mark Hobson</a>
  */
-public abstract class AbstractStrictPatternArtifactFilter implements ArtifactFilter
-{
+public abstract class AbstractStrictPatternArtifactFilter implements ArtifactFilter {
     // fields -----------------------------------------------------------------
 
     /**
@@ -70,8 +68,7 @@ public abstract class AbstractStrictPatternArtifactFilter implements ArtifactFil
      *            <code>true</code> to include artifacts that match the patterns, or <code>false</code> to exclude
      *            them
      */
-    public AbstractStrictPatternArtifactFilter( List<String> patterns, boolean include )
-    {
+    public AbstractStrictPatternArtifactFilter(List<String> patterns, boolean include) {
         this.patterns = patterns;
         this.include = include;
     }
@@ -79,14 +76,11 @@ public abstract class AbstractStrictPatternArtifactFilter implements ArtifactFil
     // ArtifactFilter methods -------------------------------------------------
 
     /** {@inheritDoc} */
-    public boolean include( Artifact artifact )
-    {
+    public boolean include(Artifact artifact) {
         boolean matched = false;
 
-        for ( String pattern : patterns )
-        {
-            if ( include( artifact, pattern ) )
-            {
+        for (String pattern : patterns) {
+            if (include(artifact, pattern)) {
                 matched = true;
                 break;
             }
@@ -99,30 +93,25 @@ public abstract class AbstractStrictPatternArtifactFilter implements ArtifactFil
 
     /**
      * Gets whether the specified artifact matches the specified pattern.
-     * 
+     *
      * @param artifact
      *            the artifact to check
      * @param pattern
      *            the pattern to match, as defined above
      * @return <code>true</code> if the specified artifact is matched by the specified pattern
      */
-    private boolean include( Artifact artifact, String pattern )
-    {
+    private boolean include(Artifact artifact, String pattern) {
         String[] tokens = new String[] {
-            artifact.getGroupId(),
-            artifact.getArtifactId(),
-            artifact.getType(),
-            artifact.getBaseVersion()
+            artifact.getGroupId(), artifact.getArtifactId(), artifact.getType(), artifact.getBaseVersion()
         };
 
-        String[] patternTokens = pattern.split( ":" );
+        String[] patternTokens = pattern.split(":");
 
         // fail immediately if pattern tokens outnumber tokens to match
         boolean matched = patternTokens.length <= tokens.length;
 
-        for ( int i = 0; matched && i < patternTokens.length; i++ )
-        {
-            matched = matches( tokens[i], patternTokens[i] );
+        for (int i = 0; matched && i < patternTokens.length; i++) {
+            matched = matches(tokens[i], patternTokens[i]);
         }
 
         return matched;
@@ -130,65 +119,53 @@ public abstract class AbstractStrictPatternArtifactFilter implements ArtifactFil
 
     /**
      * Gets whether the specified token matches the specified pattern segment.
-     * 
+     *
      * @param token
      *            the token to check
      * @param pattern
      *            the pattern segment to match, as defined above
      * @return <code>true</code> if the specified token is matched by the specified pattern segment
      */
-    private boolean matches( String token, String pattern )
-    {
+    private boolean matches(String token, String pattern) {
         boolean matches;
 
         // support full wildcard and implied wildcard
-        if ( "*".equals( pattern ) || pattern.length() == 0 )
-        {
+        if ("*".equals(pattern) || pattern.length() == 0) {
             matches = true;
         }
         // support contains wildcard
-        else if ( pattern.startsWith( "*" ) && pattern.endsWith( "*" ) )
-        {
-            String contains = pattern.substring( 1, pattern.length() - 1 );
+        else if (pattern.startsWith("*") && pattern.endsWith("*")) {
+            String contains = pattern.substring(1, pattern.length() - 1);
 
-            matches = token.contains( contains );
+            matches = token.contains(contains);
         }
         // support leading wildcard
-        else if ( pattern.startsWith( "*" ) )
-        {
-            matches = token.endsWith( pattern.substring( 1 ) );
+        else if (pattern.startsWith("*")) {
+            matches = token.endsWith(pattern.substring(1));
         }
         // support trailing wildcard
-        else if ( pattern.endsWith( "*" ) )
-        {
-            String prefix = pattern.substring( 0, pattern.length() - 1 );
+        else if (pattern.endsWith("*")) {
+            String prefix = pattern.substring(0, pattern.length() - 1);
 
-            matches = token.startsWith( prefix );
+            matches = token.startsWith(prefix);
         }
-        // support versions range 
-        else if ( pattern.startsWith( "[" ) || pattern.startsWith( "(" ) )
-        {
-            matches = isVersionIncludedInRange( token, pattern );
+        // support versions range
+        else if (pattern.startsWith("[") || pattern.startsWith("(")) {
+            matches = isVersionIncludedInRange(token, pattern);
         }
         // support exact match
-        else
-        {
-            matches = token.equals( pattern );
+        else {
+            matches = token.equals(pattern);
         }
 
         return matches;
     }
 
-    private boolean isVersionIncludedInRange( final String version, final String range )
-    {
-        try
-        {
-            return VersionRange.createFromVersionSpec( range ).containsVersion( new DefaultArtifactVersion( version ) );
-        }
-        catch ( InvalidVersionSpecificationException e )
-        {
+    private boolean isVersionIncludedInRange(final String version, final String range) {
+        try {
+            return VersionRange.createFromVersionSpec(range).containsVersion(new DefaultArtifactVersion(version));
+        } catch (InvalidVersionSpecificationException e) {
             return false;
         }
     }
-
 }
