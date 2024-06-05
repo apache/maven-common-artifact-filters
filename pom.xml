@@ -28,7 +28,7 @@
   </parent>
 
   <artifactId>maven-common-artifact-filters</artifactId>
-  <version>3.3.3-SNAPSHOT</version>
+  <version>3.4.0</version>
 
   <name>Apache Maven Common Artifact Filters</name>
   <description>A collection of ready-made filters to control inclusion/exclusion of artifacts during dependency resolution.</description>
@@ -36,7 +36,7 @@
   <scm>
     <connection>scm:git:https://gitbox.apache.org/repos/asf/maven-common-artifact-filters.git</connection>
     <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/maven-common-artifact-filters.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>maven-common-artifact-filters-3.4.0</tag>
     <url>https://github.com/apache/maven-common-artifact-filters/tree/${project.scm.tag}</url>
   </scm>
   <issueManagement>
@@ -59,7 +59,7 @@
     <mavenVersion>3.6.3</mavenVersion>
     <resolverVersion>1.4.1</resolverVersion>
     <checkstyle.violation.ignore>MethodLength</checkstyle.violation.ignore>
-    <project.build.outputTimestamp>2022-09-12T19:17:26Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2024-06-05T14:42:54Z</project.build.outputTimestamp>
   </properties>
 
   <dependencies>
