@@ -27,17 +27,16 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.testing.ArtifactStubFactory;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author <a href="mailto:brianf@apache.org">Brian Fox</a>
  */
-public class TestFilterArtifacts {
+class TestFilterArtifacts {
     @Test
-    public void testNullFilters() throws IOException, ArtifactFilterException {
+    void checkNullFilters() throws IOException, ArtifactFilterException {
 
         // TODO: convert these old tests to use the abstract test case for dep
         // plugin
@@ -69,7 +68,7 @@ public class TestFilterArtifacts {
     }
 
     @Test
-    public void testArtifactFilter() {
+    void checkArtifactFilter() {
         Set<Artifact> a = new HashSet<>();
         FilterArtifacts fa = new FilterArtifacts();
         ArtifactsFilter scope = new ScopeFilter("compile", "system");
@@ -81,13 +80,13 @@ public class TestFilterArtifacts {
         assertEquals(1, fa.getFilters().size());
         fa.addFilter(type);
         assertEquals(2, fa.getFilters().size());
-        assertTrue(fa.getFilters().get(0) instanceof ScopeFilter);
-        assertTrue(fa.getFilters().get(1) instanceof TypeFilter);
+        assertInstanceOf(ScopeFilter.class, fa.getFilters().get(0));
+        assertInstanceOf(TypeFilter.class, fa.getFilters().get(1));
         fa.addFilter(1, trans);
         assertEquals(3, fa.getFilters().size());
-        assertTrue(fa.getFilters().get(0) instanceof ScopeFilter);
-        assertTrue(fa.getFilters().get(1) instanceof ProjectTransitivityFilter);
-        assertTrue(fa.getFilters().get(2) instanceof TypeFilter);
+        assertInstanceOf(ScopeFilter.class, fa.getFilters().get(0));
+        assertInstanceOf(ProjectTransitivityFilter.class, fa.getFilters().get(1));
+        assertInstanceOf(TypeFilter.class, fa.getFilters().get(2));
 
         ArrayList<ArtifactsFilter> list = new ArrayList<>(fa.getFilters());
 
@@ -96,13 +95,13 @@ public class TestFilterArtifacts {
 
         fa.setFilters(list);
         assertEquals(3, fa.getFilters().size());
-        assertTrue(fa.getFilters().get(0) instanceof ScopeFilter);
-        assertTrue(fa.getFilters().get(1) instanceof ProjectTransitivityFilter);
-        assertTrue(fa.getFilters().get(2) instanceof TypeFilter);
+        assertInstanceOf(ScopeFilter.class, fa.getFilters().get(0));
+        assertInstanceOf(ProjectTransitivityFilter.class, fa.getFilters().get(1));
+        assertInstanceOf(TypeFilter.class, fa.getFilters().get(2));
     }
 
     @Test
-    public void testArtifactFilterWithClassifier() throws IOException, ArtifactFilterException {
+    void checkArtifactFilterWithClassifier() throws IOException, ArtifactFilterException {
         File outputFolder = new File("target/filters/");
         FileUtils.deleteDirectory(outputFolder);
         ArtifactStubFactory fact = new ArtifactStubFactory(outputFolder, false);

@@ -31,7 +31,6 @@ import org.apache.maven.shared.artifact.filter.resolve.OrFilter;
 import org.apache.maven.shared.artifact.filter.resolve.PatternExclusionsFilter;
 import org.apache.maven.shared.artifact.filter.resolve.PatternInclusionsFilter;
 import org.apache.maven.shared.artifact.filter.resolve.ScopeFilter;
-import org.apache.maven.shared.artifact.filter.resolve.TransformableFilter;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.graph.DefaultDependencyNode;
 import org.eclipse.aether.graph.Dependency;
@@ -43,126 +42,106 @@ import org.eclipse.aether.util.filter.OrDependencyFilter;
 import org.eclipse.aether.util.filter.PatternExclusionsDependencyFilter;
 import org.eclipse.aether.util.filter.PatternInclusionsDependencyFilter;
 import org.eclipse.aether.util.filter.ScopeDependencyFilter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class EclipseAetherFilterTransformerTest {
+class EclipseAetherFilterTransformerTest {
     private final EclipseAetherFilterTransformer transformer = new EclipseAetherFilterTransformer();
 
     @Test
-    public void testTransformAndFilter() {
+    void checkTransformAndFilter() {
         AndFilter filter = new AndFilter(Arrays.asList(
                 ScopeFilter.including("compile"), new ExclusionsFilter(Collections.singletonList("x:a"))));
 
         AndDependencyFilter dependencyFilter = (AndDependencyFilter) filter.transform(transformer);
 
-        assertTrue(dependencyFilter.accept(
-                newDependencyNode("g:a:v", "compile"), Collections.<DependencyNode>emptyList()));
+        assertTrue(dependencyFilter.accept(newDependencyNode("g:a:v", "compile"), Collections.emptyList()));
 
-        assertFalse(dependencyFilter.accept(
-                newDependencyNode("x:a:v", "compile"), Collections.<DependencyNode>emptyList()));
+        assertFalse(dependencyFilter.accept(newDependencyNode("x:a:v", "compile"), Collections.emptyList()));
 
-        assertFalse(
-                dependencyFilter.accept(newDependencyNode("g:a:v", "test"), Collections.<DependencyNode>emptyList()));
+        assertFalse(dependencyFilter.accept(newDependencyNode("g:a:v", "test"), Collections.emptyList()));
 
-        assertFalse(
-                dependencyFilter.accept(newDependencyNode("x:a:v", "test"), Collections.<DependencyNode>emptyList()));
+        assertFalse(dependencyFilter.accept(newDependencyNode("x:a:v", "test"), Collections.emptyList()));
     }
 
     @Test
-    public void testTransformExclusionsFilter() {
+    void checkTransformExclusionsFilter() {
         ExclusionsFilter filter = new ExclusionsFilter(Collections.singletonList("x:a"));
 
         ExclusionsDependencyFilter dependencyFilter = (ExclusionsDependencyFilter) filter.transform(transformer);
 
-        assertTrue(dependencyFilter.accept(
-                newDependencyNode("g:a:v", "compile"), Collections.<DependencyNode>emptyList()));
+        assertTrue(dependencyFilter.accept(newDependencyNode("g:a:v", "compile"), Collections.emptyList()));
 
-        assertFalse(dependencyFilter.accept(
-                newDependencyNode("x:a:v", "compile"), Collections.<DependencyNode>emptyList()));
+        assertFalse(dependencyFilter.accept(newDependencyNode("x:a:v", "compile"), Collections.emptyList()));
     }
 
     @Test
-    public void testTransformOrFilter() {
-        OrFilter filter = new OrFilter(
-                Arrays.<TransformableFilter>asList(ScopeFilter.including("compile"), ScopeFilter.including("test")));
+    void checkTransformOrFilter() {
+        OrFilter filter = new OrFilter(Arrays.asList(ScopeFilter.including("compile"), ScopeFilter.including("test")));
 
         OrDependencyFilter dependencyFilter = (OrDependencyFilter) filter.transform(transformer);
 
-        assertTrue(dependencyFilter.accept(
-                newDependencyNode("g:a:v", "compile"), Collections.<DependencyNode>emptyList()));
+        assertTrue(dependencyFilter.accept(newDependencyNode("g:a:v", "compile"), Collections.emptyList()));
 
-        assertTrue(
-                dependencyFilter.accept(newDependencyNode("g:a:v", "test"), Collections.<DependencyNode>emptyList()));
+        assertTrue(dependencyFilter.accept(newDependencyNode("g:a:v", "test"), Collections.emptyList()));
 
-        assertFalse(dependencyFilter.accept(
-                newDependencyNode("g:a:v", "runtime"), Collections.<DependencyNode>emptyList()));
+        assertFalse(dependencyFilter.accept(newDependencyNode("g:a:v", "runtime"), Collections.emptyList()));
     }
 
     @Test
-    public void testTransformScopeFilter() {
+    void checkTransformScopeFilter() {
         ScopeFilter filter = ScopeFilter.including(Collections.singletonList("runtime"));
 
         ScopeDependencyFilter dependencyFilter = (ScopeDependencyFilter) filter.transform(transformer);
 
-        assertTrue(dependencyFilter.accept(
-                newDependencyNode("g:a:v", "runtime"), Collections.<DependencyNode>emptyList()));
+        assertTrue(dependencyFilter.accept(newDependencyNode("g:a:v", "runtime"), Collections.emptyList()));
 
-        assertFalse(dependencyFilter.accept(
-                newDependencyNode("g:a:v", "compile"), Collections.<DependencyNode>emptyList()));
+        assertFalse(dependencyFilter.accept(newDependencyNode("g:a:v", "compile"), Collections.emptyList()));
 
-        assertFalse(
-                dependencyFilter.accept(newDependencyNode("g:a:v", "test"), Collections.<DependencyNode>emptyList()));
+        assertFalse(dependencyFilter.accept(newDependencyNode("g:a:v", "test"), Collections.emptyList()));
     }
 
     @Test
-    public void testTransformPatternExclusionsFilter() {
+    void checkTransformPatternExclusionsFilter() {
         PatternExclusionsFilter filter = new PatternExclusionsFilter(Collections.singletonList("x:*"));
 
         PatternExclusionsDependencyFilter dependencyFilter =
                 (PatternExclusionsDependencyFilter) filter.transform(transformer);
 
-        assertTrue(dependencyFilter.accept(
-                newDependencyNode("g:a:v", "runtime"), Collections.<DependencyNode>emptyList()));
+        assertTrue(dependencyFilter.accept(newDependencyNode("g:a:v", "runtime"), Collections.emptyList()));
 
-        assertFalse(dependencyFilter.accept(
-                newDependencyNode("x:a:v", "runtime"), Collections.<DependencyNode>emptyList()));
+        assertFalse(dependencyFilter.accept(newDependencyNode("x:a:v", "runtime"), Collections.emptyList()));
     }
 
     @Test
-    public void testTransformPatternInclusionsFilter() {
+    void checkTransformPatternInclusionsFilter() {
         PatternInclusionsFilter filter = new PatternInclusionsFilter(Collections.singletonList("g:*"));
 
         PatternInclusionsDependencyFilter dependencyFilter =
                 (PatternInclusionsDependencyFilter) filter.transform(transformer);
 
-        assertTrue(dependencyFilter.accept(
-                newDependencyNode("g:a:v", "runtime"), Collections.<DependencyNode>emptyList()));
+        assertTrue(dependencyFilter.accept(newDependencyNode("g:a:v", "runtime"), Collections.emptyList()));
 
-        assertFalse(dependencyFilter.accept(
-                newDependencyNode("x:a:v", "runtime"), Collections.<DependencyNode>emptyList()));
+        assertFalse(dependencyFilter.accept(newDependencyNode("x:a:v", "runtime"), Collections.emptyList()));
     }
 
     @Test
-    public void testTransformClassifierPatternInclusionsFilter() {
+    void checkTransformClassifierPatternInclusionsFilter() {
         PatternInclusionsFilter filter = new PatternInclusionsFilter(Collections.singletonList("g:*:*:c:*"));
 
         DependencyFilter dependencyFilter = filter.transform(transformer);
 
-        assertTrue(dependencyFilter.accept(
-                newDependencyNode("g:a:v:c:*", "runtime"), Collections.<DependencyNode>emptyList()));
+        assertTrue(dependencyFilter.accept(newDependencyNode("g:a:v:c:*", "runtime"), Collections.emptyList()));
 
-        assertFalse(dependencyFilter.accept(
-                newDependencyNode("g:a:v", "runtime"), Collections.<DependencyNode>emptyList()));
+        assertFalse(dependencyFilter.accept(newDependencyNode("g:a:v", "runtime"), Collections.emptyList()));
 
-        assertFalse(dependencyFilter.accept(
-                newDependencyNode("x:a:v:c:*", "runtime"), Collections.<DependencyNode>emptyList()));
+        assertFalse(dependencyFilter.accept(newDependencyNode("x:a:v:c:*", "runtime"), Collections.emptyList()));
     }
 
     @Test
-    public void testTransformAbstractFilter() {
+    void checkTransformAbstractFilter() {
         AbstractFilter snapshotFilter = new AbstractFilter() {
             @Override
             public boolean accept(Node node, List<Node> parents) {
@@ -172,11 +151,9 @@ public class EclipseAetherFilterTransformerTest {
 
         DependencyFilter dependencyFilter = snapshotFilter.transform(transformer);
 
-        assertTrue(dependencyFilter.accept(
-                newDependencyNode("g:a:1.0-SNAPSHOT", "compile"), Collections.<DependencyNode>emptyList()));
+        assertTrue(dependencyFilter.accept(newDependencyNode("g:a:1.0-SNAPSHOT", "compile"), Collections.emptyList()));
 
-        assertFalse(dependencyFilter.accept(
-                newDependencyNode("g:a:1.0", "compile"), Collections.<DependencyNode>emptyList()));
+        assertFalse(dependencyFilter.accept(newDependencyNode("g:a:1.0", "compile"), Collections.emptyList()));
     }
 
     private DependencyNode newDependencyNode(String string, String scope) {

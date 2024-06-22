@@ -23,15 +23,15 @@ import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.testing.ArtifactStubFactory;
 import org.apache.maven.shared.artifact.filter.resolve.Node;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class ArtifactIncludeNodeTest {
+class ArtifactIncludeNodeTest {
     private final ArtifactStubFactory artifactFactory = new ArtifactStubFactory();
 
     @Test
-    public void testGAV() throws Exception {
+    void checkGav() throws Exception {
         Node node = new ArtifactIncludeNode(newArtifact("g:a:v", null));
 
         Dependency dependency = node.getDependency();
@@ -45,7 +45,7 @@ public class ArtifactIncludeNodeTest {
     }
 
     @Test
-    public void testClassifier() throws Exception {
+    void checkClassifier() throws Exception {
         Node node = new ArtifactIncludeNode(newArtifact("g:a::c:v", null));
 
         Dependency dependency = node.getDependency();
@@ -59,7 +59,7 @@ public class ArtifactIncludeNodeTest {
     }
 
     @Test
-    public void testType() throws Exception {
+    void checkType() throws Exception {
         Node node = new ArtifactIncludeNode(newArtifact("g:a:pom:v", null));
 
         Dependency dependency = node.getDependency();
@@ -72,7 +72,7 @@ public class ArtifactIncludeNodeTest {
     }
 
     @Test
-    public void testScope() throws Exception {
+    void checkScope() throws Exception {
         Node node = new ArtifactIncludeNode(newArtifact("g:a:v", "s"));
 
         Dependency dependency = node.getDependency();
@@ -86,7 +86,7 @@ public class ArtifactIncludeNodeTest {
     }
 
     @Test
-    public void testOptional() throws Exception {
+    void checkOptional() throws Exception {
         Node node = new ArtifactIncludeNode(newArtifact("g:a:pom:v", null, null));
 
         assertEquals("false", node.getDependency().getOptional());

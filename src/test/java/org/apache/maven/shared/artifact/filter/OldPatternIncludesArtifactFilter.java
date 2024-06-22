@@ -215,7 +215,7 @@ public class OldPatternIncludesArtifactFilter implements ArtifactFilter, Statist
         boolean matches;
 
         // support full wildcard and implied wildcard
-        if ("*".equals(pattern) || pattern.length() == 0) {
+        if ("*".equals(pattern) || pattern.isEmpty()) {
             matches = true;
         }
         // support contains wildcard

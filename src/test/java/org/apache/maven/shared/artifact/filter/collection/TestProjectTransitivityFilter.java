@@ -22,23 +22,23 @@ import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.testing.ArtifactStubFactory;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author <a href="mailto:brianf@apache.org">Brian Fox</a>
  */
-public class TestProjectTransitivityFilter {
+class TestProjectTransitivityFilter {
     Set<Artifact> artifacts;
 
     Set<Artifact> directArtifacts;
 
     Set<Artifact> classifiedArtifacts;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         ArtifactStubFactory fact = new ArtifactStubFactory(null, false);
         artifacts = fact.getScopedArtifacts();
         directArtifacts = fact.getReleaseAndSnapshotArtifacts();
@@ -48,14 +48,14 @@ public class TestProjectTransitivityFilter {
     }
 
     @Test
-    public void testAll() {
+    void checkAll() {
         ProjectTransitivityFilter filter = new ProjectTransitivityFilter(directArtifacts, false);
         Set<Artifact> result = filter.filter(artifacts);
         assertEquals(11, result.size());
     }
 
     @Test
-    public void testExclude() {
+    void checkExclude() {
         ProjectTransitivityFilter filter = new ProjectTransitivityFilter(directArtifacts, false);
         assertFalse(filter.isExcludeTransitive());
         filter.setExcludeTransitive(true);
@@ -71,7 +71,7 @@ public class TestProjectTransitivityFilter {
     }
 
     @Test
-    public void testClassified() {
+    void checkClassified() {
         ProjectTransitivityFilter filter = new ProjectTransitivityFilter(classifiedArtifacts, true);
         Set<Artifact> result = filter.filter(artifacts);
         assertEquals(4, result.size());

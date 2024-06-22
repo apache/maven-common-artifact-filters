@@ -25,10 +25,10 @@ import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -41,7 +41,7 @@ public abstract class AbstractPatternArtifactFilterTest {
     protected abstract boolean isInclusionNotExpected();
 
     @Test
-    public void testShouldTriggerBothPatternsWithWildcards() {
+    public void shouldTriggerBothPatternsWithWildcards() {
         final String groupId1 = "group";
         final String artifactId1 = "artifact";
 
@@ -76,7 +76,7 @@ public abstract class AbstractPatternArtifactFilterTest {
     }
 
     @Test
-    public void testShouldTriggerBothPatternsWithNonColonWildcards() {
+    public void shouldTriggerBothPatternsWithNonColonWildcards() {
         final String groupId1 = "group";
         final String artifactId1 = "artifact";
 
@@ -111,7 +111,7 @@ public abstract class AbstractPatternArtifactFilterTest {
     }
 
     @Test
-    public void testShouldIncludeDirectlyMatchedArtifactByGroupIdArtifactId() {
+    public void shouldIncludeDirectlyMatchedArtifactByGroupIdArtifactId() {
         final String groupId = "group";
         final String artifactId = "artifact";
 
@@ -131,7 +131,7 @@ public abstract class AbstractPatternArtifactFilterTest {
     }
 
     @Test
-    public void testShouldIncludeDirectlyMatchedArtifactByDependencyConflictId() {
+    public void shouldIncludeDirectlyMatchedArtifactByDependencyConflictId() {
         final String groupId = "group";
         final String artifactId = "artifact";
 
@@ -151,7 +151,7 @@ public abstract class AbstractPatternArtifactFilterTest {
     }
 
     @Test
-    public void testShouldNotIncludeWhenGroupIdDiffers() {
+    public void shouldNotIncludeWhenGroupIdDiffers() {
         final String groupId = "group";
         final String artifactId = "artifact";
 
@@ -175,7 +175,7 @@ public abstract class AbstractPatternArtifactFilterTest {
     }
 
     @Test
-    public void testShouldNotIncludeWhenArtifactIdDiffers() {
+    public void shouldNotIncludeWhenArtifactIdDiffers() {
         final String groupId = "group";
         final String artifactId = "artifact";
 
@@ -199,7 +199,7 @@ public abstract class AbstractPatternArtifactFilterTest {
     }
 
     @Test
-    public void testShouldNotIncludeWhenBothIdElementsDiffer() {
+    public void shouldNotIncludeWhenBothIdElementsDiffer() {
         final String groupId = "group";
         final String artifactId = "artifact";
 
@@ -223,7 +223,7 @@ public abstract class AbstractPatternArtifactFilterTest {
     }
 
     @Test
-    public void testShouldIncludeWhenPatternMatchesDependencyTrailAndTransitivityIsEnabled() {
+    public void shouldIncludeWhenPatternMatchesDependencyTrailAndTransitivityIsEnabled() {
         final String groupId = "group";
         final String artifactId = "artifact";
 
@@ -250,7 +250,7 @@ public abstract class AbstractPatternArtifactFilterTest {
     }
 
     @Test
-    public void testIncludeWhenPatternMatchesDepTrailWithTransitivityUsingNonColonWildcard() {
+    public void shouldIncludeWhenPatternMatchesDepTrailWithTransitivityUsingNonColonWildcard() {
         final String groupId = "group";
         final String artifactId = "artifact";
 
@@ -277,7 +277,7 @@ public abstract class AbstractPatternArtifactFilterTest {
     }
 
     @Test
-    public void testShouldNotIncludeWhenNegativeMatch() {
+    public void shouldNotIncludeWhenNegativeMatch() {
         final String groupId = "group";
         final String artifactId = "artifact";
 
@@ -300,7 +300,7 @@ public abstract class AbstractPatternArtifactFilterTest {
     }
 
     @Test
-    public void testShouldIncludeWhenWildcardMatchesInsideSequence() {
+    public void shouldIncludeWhenWildcardMatchesInsideSequence() {
         final String groupId = "group";
         final String artifactId = "artifact";
 
@@ -323,7 +323,7 @@ public abstract class AbstractPatternArtifactFilterTest {
     }
 
     @Test
-    public void testShouldIncludeWhenWildcardMatchesOutsideSequence() {
+    public void shouldIncludeWhenWildcardMatchesOutsideSequence() {
         final String groupId = "group";
         final String artifactId = "artifact";
 
@@ -347,7 +347,7 @@ public abstract class AbstractPatternArtifactFilterTest {
     }
 
     @Test
-    public void testShouldIncludeWhenWildcardMatchesMiddleOfArtifactId() {
+    public void shouldIncludeWhenWildcardMatchesMiddleOfArtifactId() {
         final String groupId = "group";
         final String artifactId = "some-artifact-id";
 
@@ -371,7 +371,7 @@ public abstract class AbstractPatternArtifactFilterTest {
     }
 
     @Test
-    public void testShouldIncludeWhenWildcardCoversPartOfGroupIdAndEverythingElse() {
+    public void shouldIncludeWhenWildcardCoversPartOfGroupIdAndEverythingElse() {
         final String groupId = "some.group.id";
         final String artifactId = "some-artifact-id";
 
@@ -395,7 +395,7 @@ public abstract class AbstractPatternArtifactFilterTest {
     }
 
     @Test
-    public void testShouldIncludeTransitiveDependencyWhenWildcardMatchesButDoesntMatchParent() {
+    public void shouldIncludeTransitiveDependencyWhenWildcardMatchesButDoesntMatchParent() {
         final String groupId = "group";
         final String artifactId = "artifact";
 
@@ -430,7 +430,7 @@ public abstract class AbstractPatternArtifactFilterTest {
     }
 
     @Test
-    public void testShouldIncludeJarsWithAndWithoutClassifier() {
+    public void shouldIncludeJarsWithAndWithoutClassifier() {
         final String groupId = "com.mycompany.myproject";
         final String artifactId = "some-artifact-id";
 
@@ -453,7 +453,7 @@ public abstract class AbstractPatternArtifactFilterTest {
     }
 
     @Test
-    public void testWithVersionRange() {
+    public void checkWithVersionRange() {
         final String groupId = "com.mycompany.myproject";
         final String artifactId = "some-artifact-id";
 
@@ -476,7 +476,7 @@ public abstract class AbstractPatternArtifactFilterTest {
     }
 
     @Test
-    public void testmassembly955() {
+    public void checkMassembly955() {
         Artifact artifact1 = mock(Artifact.class);
         when(artifact1.getGroupId()).thenReturn("org.python");
         when(artifact1.getArtifactId()).thenReturn("jython-standalone");
@@ -507,7 +507,7 @@ public abstract class AbstractPatternArtifactFilterTest {
     }
 
     @Test
-    public void testPartialWildcardShouldNotMatchEmptyComponent() {
+    public void partialWildcardShouldNotMatchEmptyComponent() {
         Artifact artifact = mock(Artifact.class);
         when(artifact.getGroupId()).thenReturn("test-group");
         when(artifact.getArtifactId()).thenReturn("test-artifact");

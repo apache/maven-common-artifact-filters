@@ -37,25 +37,25 @@ import org.apache.maven.shared.artifact.filter.resolve.OrFilter;
 import org.apache.maven.shared.artifact.filter.resolve.PatternExclusionsFilter;
 import org.apache.maven.shared.artifact.filter.resolve.PatternInclusionsFilter;
 import org.apache.maven.shared.artifact.filter.resolve.ScopeFilter;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ArtifactIncludeFilterTransformerTest {
+class ArtifactIncludeFilterTransformerTest {
 
     private ArtifactIncludeFilterTransformer transformer;
 
     private final ArtifactStubFactory artifactFactory = new ArtifactStubFactory();
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         transformer = new ArtifactIncludeFilterTransformer();
     }
 
     @Test
-    public void testTransformAndFilter() throws Exception {
+    void checkTransformAndFilter() throws Exception {
         AndFilter filter = new AndFilter(Arrays.asList(
                 ScopeFilter.including("compile"), new ExclusionsFilter(Collections.singletonList("x:a"))));
 
@@ -71,7 +71,7 @@ public class ArtifactIncludeFilterTransformerTest {
     }
 
     @Test
-    public void testTransformExclusionsFilter() throws Exception {
+    void checkTransformExclusionsFilter() throws Exception {
         ExclusionsFilter filter = new ExclusionsFilter(Collections.singletonList("x:a"));
 
         ArtifactFilter dependencyFilter = filter.transform(transformer);
@@ -82,7 +82,7 @@ public class ArtifactIncludeFilterTransformerTest {
     }
 
     @Test
-    public void testTransformOrFilter() throws Exception {
+    void checkTransformOrFilter() throws Exception {
         OrFilter filter = new OrFilter(Arrays.asList(ScopeFilter.including("compile"), ScopeFilter.including("test")));
 
         ArtifactFilter dependencyFilter = filter.transform(transformer);
@@ -95,7 +95,7 @@ public class ArtifactIncludeFilterTransformerTest {
     }
 
     @Test
-    public void testTransformScopeFilter() throws Exception {
+    void checkTransformScopeFilter() throws Exception {
         ScopeFilter filter = ScopeFilter.including(Collections.singletonList("runtime"));
 
         ArtifactFilter dependencyFilter = filter.transform(transformer);
@@ -108,7 +108,7 @@ public class ArtifactIncludeFilterTransformerTest {
     }
 
     @Test
-    public void testTransformScopeFilterIncludeNullScope() throws Exception {
+    void checkTransformScopeFilterIncludeNullScope() throws Exception {
         ScopeFilter filter = ScopeFilter.including();
 
         Artifact artifact = newArtifact("g:a:v", null);
@@ -122,7 +122,7 @@ public class ArtifactIncludeFilterTransformerTest {
     }
 
     @Test
-    public void testTransformPatternExclusionsFilter() throws Exception {
+    void checkTransformPatternExclusionsFilter() throws Exception {
         PatternExclusionsFilter filter = new PatternExclusionsFilter(Collections.singletonList("x:*"));
 
         PatternExcludesArtifactFilter dependencyFilter = (PatternExcludesArtifactFilter) filter.transform(transformer);
@@ -133,7 +133,7 @@ public class ArtifactIncludeFilterTransformerTest {
     }
 
     @Test
-    public void testTransformPatternExclusionsFilterActTransitivily() throws Exception {
+    void checkTransformPatternExclusionsFilterActTransitivily() throws Exception {
         PatternExclusionsFilter filter = new PatternExclusionsFilter(Collections.singletonList("x:*"));
 
         transformer.setActTransitivelyPattern(true);
@@ -156,7 +156,7 @@ public class ArtifactIncludeFilterTransformerTest {
     }
 
     @Test
-    public void testTransformPatternInclusionsFilter() throws Exception {
+    void checkTransformPatternInclusionsFilter() throws Exception {
         PatternInclusionsFilter filter = new PatternInclusionsFilter(Collections.singletonList("g:*"));
 
         PatternIncludesArtifactFilter dependencyFilter = (PatternIncludesArtifactFilter) filter.transform(transformer);
@@ -167,7 +167,7 @@ public class ArtifactIncludeFilterTransformerTest {
     }
 
     @Test
-    public void testTransformPatternInclusionsFilterActTransitivily() throws Exception {
+    void checkTransformPatternInclusionsFilterActTransitivily() throws Exception {
         PatternInclusionsFilter filter = new PatternInclusionsFilter(Collections.singletonList("x:*"));
 
         transformer.setActTransitivelyPattern(true);
@@ -190,7 +190,7 @@ public class ArtifactIncludeFilterTransformerTest {
     }
 
     @Test
-    public void testTransformAbstractFilter() throws Exception {
+    void checkTransformAbstractFilter() throws Exception {
         AbstractFilter snapshotFilter = new AbstractFilter() {
             @Override
             public boolean accept(Node node, List<Node> parents) {
