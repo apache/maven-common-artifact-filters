@@ -189,8 +189,8 @@ public class ScopeArtifactFilter implements ArtifactFilter, StatisticsReportingA
                 report = true;
             }
 
-            if (report && logger.isDebugEnabled()) {
-                logger.debug("The following scope filters were not used: " + buffer);
+            if (report) {
+                logger.debug("The following scope filters were not used: {}", buffer);
             }
         }
     }

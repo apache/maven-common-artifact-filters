@@ -25,9 +25,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Abstract test case for subclasses of AbstractArtifactFeatureFilter
@@ -48,7 +48,7 @@ public abstract class AbstractArtifactFeatureFilterTest {
     }
 
     @Test
-    public abstract void testParsing() throws Exception;
+    public abstract void checkParsing() throws Exception;
 
     public void parsing()
             throws SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException,
@@ -69,7 +69,7 @@ public abstract class AbstractArtifactFeatureFilterTest {
     }
 
     @Test
-    public abstract void testFiltering() throws Exception;
+    public abstract void checkFiltering() throws Exception;
 
     public Set<Artifact> filtering()
             throws SecurityException, IllegalArgumentException, NoSuchMethodException, InstantiationException,
@@ -83,7 +83,7 @@ public abstract class AbstractArtifactFeatureFilterTest {
     }
 
     @Test
-    public abstract void testFiltering2() throws Exception;
+    public abstract void checkFiltering2() throws Exception;
 
     public Set<Artifact> filtering2()
             throws SecurityException, IllegalArgumentException, NoSuchMethodException, InstantiationException,
@@ -97,7 +97,7 @@ public abstract class AbstractArtifactFeatureFilterTest {
     }
 
     @Test
-    public abstract void testFiltering3() throws Exception;
+    public abstract void checkFiltering3() throws Exception;
 
     public void filtering3()
             throws SecurityException, IllegalArgumentException, NoSuchMethodException, InstantiationException,

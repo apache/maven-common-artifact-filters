@@ -22,30 +22,30 @@ import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.testing.ArtifactStubFactory;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test case for ClassifierFilter
  */
-public class TestClassifierFilter extends AbstractArtifactFeatureFilterTest {
+class TestClassifierFilter extends AbstractArtifactFeatureFilterTest {
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         filterClass = ClassifierFilter.class;
         ArtifactStubFactory factory = new ArtifactStubFactory(null, false);
         artifacts = factory.getClassifiedArtifacts();
     }
 
     @Test
-    public void testParsing() throws Exception {
+    public void checkParsing() throws Exception {
         parsing();
     }
 
     @Test
-    public void testFiltering() throws Exception {
+    public void checkFiltering() throws Exception {
         Set<Artifact> result = filtering();
         for (Artifact artifact : result) {
             assertTrue(artifact.getClassifier().equals("one")
@@ -54,7 +54,7 @@ public class TestClassifierFilter extends AbstractArtifactFeatureFilterTest {
     }
 
     @Test
-    public void testFiltering2() throws Exception {
+    public void checkFiltering2() throws Exception {
         Set<Artifact> result = filtering2();
         for (Artifact artifact : result) {
             assertTrue(artifact.getClassifier().equals("two")
@@ -63,7 +63,7 @@ public class TestClassifierFilter extends AbstractArtifactFeatureFilterTest {
     }
 
     @Test
-    public void testFiltering3() throws Exception {
+    public void checkFiltering3() throws Exception {
         filtering3();
     }
 }

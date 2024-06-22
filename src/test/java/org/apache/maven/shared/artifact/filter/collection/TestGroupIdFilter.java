@@ -22,31 +22,31 @@ import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.testing.ArtifactStubFactory;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * TestCases for GroupIdFilter
  */
-public class TestGroupIdFilter extends AbstractArtifactFeatureFilterTest {
+class TestGroupIdFilter extends AbstractArtifactFeatureFilterTest {
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         filterClass = GroupIdFilter.class;
         ArtifactStubFactory factory = new ArtifactStubFactory(null, false);
         artifacts = factory.getGroupIdArtifacts();
     }
 
     @Test
-    public void testParsing() throws Exception {
+    public void checkParsing() throws Exception {
         parsing();
     }
 
     @Test
-    public void testFiltering() throws Exception {
+    public void checkFiltering() throws Exception {
         Set<Artifact> result = filtering();
         for (Artifact artifact : result) {
             assertTrue(
@@ -55,7 +55,7 @@ public class TestGroupIdFilter extends AbstractArtifactFeatureFilterTest {
     }
 
     @Test
-    public void testFiltering2() throws Exception {
+    public void checkFiltering2() throws Exception {
         Set<Artifact> result = filtering2();
         for (Artifact artifact : result) {
             assertTrue(
@@ -64,12 +64,12 @@ public class TestGroupIdFilter extends AbstractArtifactFeatureFilterTest {
     }
 
     @Test
-    public void testFiltering3() throws Exception {
+    public void checkFiltering3() throws Exception {
         filtering3();
     }
 
     @Test
-    public void testFiltering4() throws Exception {
+    void chckFiltering4() throws Exception {
         // include o* from groupIds one,two should leave one
         Set<Artifact> result = filtering();
         assertEquals(1, result.size());
@@ -90,7 +90,7 @@ public class TestGroupIdFilter extends AbstractArtifactFeatureFilterTest {
     }
 
     @Test
-    public void testMultipleInclude() throws SecurityException, IllegalArgumentException, ArtifactFilterException {
+    void checkMultipleInclude() throws SecurityException, IllegalArgumentException, ArtifactFilterException {
         ArtifactsFilter filter = new GroupIdFilter("one,two", null);
 
         assertEquals(4, artifacts.size());
@@ -101,7 +101,7 @@ public class TestGroupIdFilter extends AbstractArtifactFeatureFilterTest {
     }
 
     @Test
-    public void testMultipleExclude() throws SecurityException, IllegalArgumentException, ArtifactFilterException {
+    void checkMultipleExclude() throws SecurityException, IllegalArgumentException, ArtifactFilterException {
         ArtifactsFilter filter = new GroupIdFilter(null, "one,two");
 
         assertEquals(4, artifacts.size());

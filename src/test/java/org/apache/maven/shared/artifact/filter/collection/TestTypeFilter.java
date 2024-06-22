@@ -26,26 +26,26 @@ import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.testing.ArtifactStubFactory;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author <a href="mailto:brianf@apache.org">Brian Fox</a>
  */
-public class TestTypeFilter {
+class TestTypeFilter {
     Set<Artifact> artifacts;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         ArtifactStubFactory factory = new ArtifactStubFactory(null, false);
         artifacts = factory.getTypedArtifacts();
     }
 
     @Test
-    public void testTypeParsing() {
+    void checkTypeParsing() {
         TypeFilter filter = new TypeFilter("war,jar", "sources,zip,");
         List<String> includes = filter.getIncludes();
         List<String> excludes = filter.getExcludes();
@@ -59,7 +59,7 @@ public class TestTypeFilter {
     }
 
     @Test
-    public void testFiltering() {
+    void checkFiltering() {
         TypeFilter filter = new TypeFilter("war,jar", "war,zip,");
         Set<Artifact> result = filter.filter(artifacts);
         assertEquals(1, result.size());
@@ -70,7 +70,7 @@ public class TestTypeFilter {
     }
 
     @Test
-    public void testFiltering2() {
+    void checkFiltering2() {
         TypeFilter filter = new TypeFilter(null, "war,jar,");
         Set<Artifact> result = filter.filter(artifacts);
         assertEquals(3, result.size());
@@ -81,14 +81,14 @@ public class TestTypeFilter {
     }
 
     @Test
-    public void testFiltering3() {
+    void checkFiltering3() {
         TypeFilter filter = new TypeFilter(null, null);
         Set<Artifact> result = filter.filter(artifacts);
         assertEquals(5, result.size());
     }
 
     @Test
-    public void testFilteringOrder() throws IOException {
+    void checkFilteringOrder() throws IOException {
         TypeFilter filter = new TypeFilter("war,jar", "zip");
         Set<Artifact> artifacts = new LinkedHashSet<>();
 

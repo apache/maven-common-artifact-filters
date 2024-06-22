@@ -28,13 +28,13 @@ import org.eclipse.aether.graph.DefaultDependencyNode;
 import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.graph.DependencyNode;
 import org.eclipse.aether.graph.Exclusion;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class EclipseAetherNodeTest {
+class EclipseAetherNodeTest {
     @Test
-    public void testGAV() {
+    void checkGav() {
         Node node = new EclipseAetherNode(newDependencyNode("g:a:v", null));
 
         org.apache.maven.model.Dependency mavenDependency = node.getDependency();
@@ -48,7 +48,7 @@ public class EclipseAetherNodeTest {
     }
 
     @Test
-    public void testClassifier() {
+    void checkClassifier() {
         Node node = new EclipseAetherNode(newDependencyNode("g:a::c:v", null));
 
         org.apache.maven.model.Dependency mavenDependency = node.getDependency();
@@ -62,7 +62,7 @@ public class EclipseAetherNodeTest {
     }
 
     @Test
-    public void testScope() {
+    void checkScope() {
         Node node = new EclipseAetherNode(newDependencyNode("g:a:c:v", "s"));
 
         org.apache.maven.model.Dependency mavenDependency = node.getDependency();
@@ -76,7 +76,7 @@ public class EclipseAetherNodeTest {
     }
 
     @Test
-    public void testOptional() {
+    void checkOptional() {
         Node node = new EclipseAetherNode(newDependencyNode("g:a:v", null, (Boolean) null));
 
         assertNull(node.getDependency().getOptional());
@@ -92,7 +92,7 @@ public class EclipseAetherNodeTest {
     }
 
     @Test
-    public void testExclusions() {
+    void checkExclusions() {
         Node node = new EclipseAetherNode(newDependencyNode("g:a:v", null, Collections.singletonList("eg:ea")));
         assertEquals(1, node.getDependency().getExclusions().size());
 

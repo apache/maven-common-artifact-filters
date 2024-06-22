@@ -62,22 +62,25 @@ class EclipseAetherNode implements Node {
             mavenDependency.setOptional(nodeDependency.isOptional());
         }
         if (nodeDependency.getExclusions() != null) {
-            List<org.apache.maven.model.Exclusion> mavenExclusions =
-                    new ArrayList<>(nodeDependency.getExclusions().size());
-
-            for (Exclusion aetherExclusion : nodeDependency.getExclusions()) {
-                org.apache.maven.model.Exclusion mavenExclusion = new org.apache.maven.model.Exclusion();
-
-                mavenExclusion.setGroupId(aetherExclusion.getGroupId());
-                mavenExclusion.setArtifactId(aetherExclusion.getArtifactId());
-                // that's all folks, although Aether has more metadata
-
-                mavenExclusions.add(mavenExclusion);
-            }
-
-            mavenDependency.setExclusions(mavenExclusions);
+            mavenDependency.setExclusions(getExclusions(nodeDependency));
         }
 
         return mavenDependency;
+    }
+
+    private static List<org.apache.maven.model.Exclusion> getExclusions(Dependency nodeDependency) {
+        List<org.apache.maven.model.Exclusion> mavenExclusions =
+                new ArrayList<>(nodeDependency.getExclusions().size());
+
+        for (Exclusion aetherExclusion : nodeDependency.getExclusions()) {
+            org.apache.maven.model.Exclusion mavenExclusion = new org.apache.maven.model.Exclusion();
+
+            mavenExclusion.setGroupId(aetherExclusion.getGroupId());
+            mavenExclusion.setArtifactId(aetherExclusion.getArtifactId());
+            // that's all folks, although Aether has more metadata
+
+            mavenExclusions.add(mavenExclusion);
+        }
+        return mavenExclusions;
     }
 }

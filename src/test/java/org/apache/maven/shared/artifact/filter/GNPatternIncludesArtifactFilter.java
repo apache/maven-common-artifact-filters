@@ -239,7 +239,7 @@ public class GNPatternIncludesArtifactFilter implements ArtifactFilter, Statisti
     private static final char[] ANY = new char[] {'*'};
 
     static char[] emptyOrChars(String str) {
-        return str != null && str.length() > 0 ? str.toCharArray() : EMPTY;
+        return str != null && !str.isEmpty() ? str.toCharArray() : EMPTY;
     }
 
     static char[] anyOrChars(char[] str) {
