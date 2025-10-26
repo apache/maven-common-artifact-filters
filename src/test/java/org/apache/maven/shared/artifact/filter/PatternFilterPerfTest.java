@@ -57,16 +57,24 @@ public class PatternFilterPerfTest {
             "*:artifact-*:*",
             "*:artifact-99:*",
         })
-        public String patterns;
+        private String patterns;
 
         ArtifactFilter filter;
         Artifact artifact;
 
         @Setup(Level.Invocation)
         public void setup() {
-            filter = new OldPatternIncludesArtifactFilter(Arrays.asList(patterns.split(",")));
+            filter = new OldPatternIncludesArtifactFilter(Arrays.asList(getPatterns().split(",")));
             artifact = new DefaultArtifact("groupId", "artifact-99", "1.0", "runtime", "jar", "", null);
         }
+
+      public String getPatterns() {
+        return patterns;
+      }
+
+      public void setPatterns(String patterns) {
+        this.patterns = patterns;
+      }
     }
 
     @State(Scope.Benchmark)
@@ -81,16 +89,24 @@ public class PatternFilterPerfTest {
             "*:artifact-*:*",
             "*:artifact-99:*",
         })
-        public String patterns;
+        private String patterns;
 
         ArtifactFilter filter;
         Artifact artifact;
 
         @Setup(Level.Invocation)
         public void setup() {
-            filter = new GNPatternIncludesArtifactFilter(Arrays.asList(patterns.split(",")));
+            filter = new GNPatternIncludesArtifactFilter(Arrays.asList(getPatterns().split(",")));
             artifact = new DefaultArtifact("groupId", "artifact-99", "1.0", "runtime", "jar", "", null);
         }
+
+      public String getPatterns() {
+        return patterns;
+      }
+
+      public void setPatterns(String patterns) {
+        this.patterns = patterns;
+      }
     }
 
     @State(Scope.Benchmark)
@@ -105,16 +121,24 @@ public class PatternFilterPerfTest {
             "*:artifact-*:*",
             "*:artifact-99:*",
         })
-        public String patterns;
+        private String patterns;
 
         ArtifactFilter filter;
         Artifact artifact;
 
         @Setup(Level.Invocation)
         public void setup() {
-            filter = new PatternIncludesArtifactFilter(Arrays.asList(patterns.split(",")));
+            filter = new PatternIncludesArtifactFilter(Arrays.asList(getPatterns().split(",")));
             artifact = new DefaultArtifact("groupId", "artifact-99", "1.0", "runtime", "jar", "", null);
         }
+
+      public String getPatterns() {
+        return patterns;
+      }
+
+      public void setPatterns(String patterns) {
+        this.patterns = patterns;
+      }
     }
 
     @Benchmark
