@@ -25,7 +25,10 @@ import org.apache.maven.plugin.testing.ArtifactStubFactory;
 import org.apache.maven.shared.artifact.filter.resolve.Node;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ArtifactIncludeNodeTest {
     private final ArtifactStubFactory artifactFactory = new ArtifactStubFactory();
