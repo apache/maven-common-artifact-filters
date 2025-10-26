@@ -64,17 +64,18 @@ public class PatternFilterPerfTest {
 
         @Setup(Level.Invocation)
         public void setup() {
-            filter = new OldPatternIncludesArtifactFilter(Arrays.asList(getPatterns().split(",")));
+            filter = new OldPatternIncludesArtifactFilter(
+                    Arrays.asList(getPatterns().split(",")));
             artifact = new DefaultArtifact("groupId", "artifact-99", "1.0", "runtime", "jar", "", null);
         }
 
-      public String getPatterns() {
-        return patterns;
-      }
+        public String getPatterns() {
+            return patterns;
+        }
 
-      public void setPatterns(String patterns) {
-        this.patterns = patterns;
-      }
+        public void setPatterns(String patterns) {
+            this.patterns = patterns;
+        }
     }
 
     @State(Scope.Benchmark)
@@ -96,17 +97,18 @@ public class PatternFilterPerfTest {
 
         @Setup(Level.Invocation)
         public void setup() {
-            filter = new GNPatternIncludesArtifactFilter(Arrays.asList(getPatterns().split(",")));
+            filter = new GNPatternIncludesArtifactFilter(
+                    Arrays.asList(getPatterns().split(",")));
             artifact = new DefaultArtifact("groupId", "artifact-99", "1.0", "runtime", "jar", "", null);
         }
 
-      public String getPatterns() {
-        return patterns;
-      }
+        public String getPatterns() {
+            return patterns;
+        }
 
-      public void setPatterns(String patterns) {
-        this.patterns = patterns;
-      }
+        public void setPatterns(String patterns) {
+            this.patterns = patterns;
+        }
     }
 
     @State(Scope.Benchmark)
@@ -128,17 +130,18 @@ public class PatternFilterPerfTest {
 
         @Setup(Level.Invocation)
         public void setup() {
-            filter = new PatternIncludesArtifactFilter(Arrays.asList(getPatterns().split(",")));
+            filter = new PatternIncludesArtifactFilter(
+                    Arrays.asList(getPatterns().split(",")));
             artifact = new DefaultArtifact("groupId", "artifact-99", "1.0", "runtime", "jar", "", null);
         }
 
-      public String getPatterns() {
-        return patterns;
-      }
+        public String getPatterns() {
+            return patterns;
+        }
 
-      public void setPatterns(String patterns) {
-        this.patterns = patterns;
-      }
+        public void setPatterns(String patterns) {
+            this.patterns = patterns;
+        }
     }
 
     @Benchmark
