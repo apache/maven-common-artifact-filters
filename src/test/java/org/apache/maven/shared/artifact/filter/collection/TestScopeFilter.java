@@ -43,28 +43,28 @@ class TestScopeFilter {
     }
 
     @Test
-    void checkScopeCompile() throws ArtifactFilterException {
+    void checkScopeCompile() throws Exception {
         ScopeFilter filter = new ScopeFilter(Artifact.SCOPE_COMPILE, null);
         Set<Artifact> result = filter.filter(artifacts);
         assertEquals(3, result.size());
     }
 
     @Test
-    void checkScopeRuntime() throws ArtifactFilterException {
+    void checkScopeRuntime() throws Exception {
         ScopeFilter filter = new ScopeFilter(Artifact.SCOPE_RUNTIME, null);
         Set<Artifact> result = filter.filter(artifacts);
         assertEquals(2, result.size());
     }
 
     @Test
-    void checkScopeTest() throws ArtifactFilterException {
+    void checkScopeTest() throws Exception {
         ScopeFilter filter = new ScopeFilter(Artifact.SCOPE_TEST, null);
         Set<Artifact> result = filter.filter(artifacts);
         assertEquals(5, result.size());
     }
 
     @Test
-    void checkScopeProvided() throws ArtifactFilterException {
+    void checkScopeProvided() throws Exception {
         ScopeFilter filter = new ScopeFilter(Artifact.SCOPE_PROVIDED, null);
         Set<Artifact> result = filter.filter(artifacts);
         assertFalse(result.isEmpty());
@@ -74,7 +74,7 @@ class TestScopeFilter {
     }
 
     @Test
-    void checkScopeSystem() throws ArtifactFilterException {
+    void checkScopeSystem() throws Exception {
         ScopeFilter filter = new ScopeFilter(Artifact.SCOPE_SYSTEM, null);
         Set<Artifact> result = filter.filter(artifacts);
         assertFalse(result.isEmpty());
@@ -84,21 +84,21 @@ class TestScopeFilter {
     }
 
     @Test
-    void checkScopeFilterNull() throws ArtifactFilterException {
+    void checkScopeFilterNull() throws Exception {
         ScopeFilter filter = new ScopeFilter(null, null);
         Set<Artifact> result = filter.filter(artifacts);
         assertEquals(5, result.size());
     }
 
     @Test
-    void checkScopeFilterEmpty() throws ArtifactFilterException {
+    void checkScopeFilterEmpty() throws Exception {
         ScopeFilter filter = new ScopeFilter("", "");
         Set<Artifact> result = filter.filter(artifacts);
         assertEquals(5, result.size());
     }
 
     @Test
-    void checkExcludeProvided() throws ArtifactFilterException {
+    void checkExcludeProvided() throws Exception {
         ScopeFilter filter = new ScopeFilter("", Artifact.SCOPE_PROVIDED);
         Set<Artifact> result = filter.filter(artifacts);
         assertNotNull(result);
@@ -109,7 +109,7 @@ class TestScopeFilter {
     }
 
     @Test
-    void checkExcludeSystem() throws ArtifactFilterException {
+    void checkExcludeSystem() throws Exception {
         ScopeFilter filter = new ScopeFilter("", Artifact.SCOPE_SYSTEM);
         Set<Artifact> result = filter.filter(artifacts);
         assertNotNull(result);
@@ -120,7 +120,7 @@ class TestScopeFilter {
     }
 
     @Test
-    void checkExcludeCompile() throws ArtifactFilterException {
+    void checkExcludeCompile() throws Exception {
         ScopeFilter filter = new ScopeFilter("", Artifact.SCOPE_COMPILE);
         Set<Artifact> result = filter.filter(artifacts);
         assertEquals(2, result.size());

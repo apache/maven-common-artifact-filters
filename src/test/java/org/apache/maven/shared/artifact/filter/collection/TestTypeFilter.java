@@ -18,7 +18,6 @@
  */
 package org.apache.maven.shared.artifact.filter.collection;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -88,7 +87,7 @@ class TestTypeFilter {
     }
 
     @Test
-    void checkFilteringOrder() throws IOException {
+    void checkFilteringOrder() throws Exception {
         TypeFilter filter = new TypeFilter("war,jar", "zip");
         Set<Artifact> artifacts = new LinkedHashSet<>();
 

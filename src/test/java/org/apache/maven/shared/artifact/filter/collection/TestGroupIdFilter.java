@@ -90,7 +90,7 @@ class TestGroupIdFilter extends AbstractArtifactFeatureFilterTest {
     }
 
     @Test
-    void checkMultipleInclude() throws SecurityException, IllegalArgumentException, ArtifactFilterException {
+    void checkMultipleInclude() throws Exception {
         ArtifactsFilter filter = new GroupIdFilter("one,two", null);
 
         assertEquals(4, artifacts.size());
@@ -101,7 +101,7 @@ class TestGroupIdFilter extends AbstractArtifactFeatureFilterTest {
     }
 
     @Test
-    void checkMultipleExclude() throws SecurityException, IllegalArgumentException, ArtifactFilterException {
+    void checkMultipleExclude() throws Exception {
         ArtifactsFilter filter = new GroupIdFilter(null, "one,two");
 
         assertEquals(4, artifacts.size());
