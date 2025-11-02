@@ -19,7 +19,6 @@
 package org.apache.maven.shared.artifact.filter.collection;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -37,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
  */
 class TestFilterArtifacts {
     @Test
-    void checkNullFilters() throws IOException, ArtifactFilterException {
+    void checkNullFilters() throws Exception {
 
         // TODO: convert these old tests to use the abstract test case for dep
         // plugin
@@ -102,7 +101,7 @@ class TestFilterArtifacts {
     }
 
     @Test
-    void checkArtifactFilterWithClassifier() throws IOException, ArtifactFilterException {
+    void checkArtifactFilterWithClassifier() throws Exception {
         File outputFolder = new File("target/filters/");
         FileUtils.deleteDirectory(outputFolder);
         ArtifactStubFactory fact = new ArtifactStubFactory(outputFolder, false);
