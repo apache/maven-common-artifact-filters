@@ -85,7 +85,7 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
         this.actTransitively = actTransitively;
         final Set<Pattern> pat = new LinkedHashSet<>();
         if (patterns != null && !patterns.isEmpty()) {
-            for (String pattern : patterns) {
+            for (String pattern : new LinkedHashSet<>(patterns)) {
                 Pattern p = compile(pattern);
                 pat.add(p);
             }
