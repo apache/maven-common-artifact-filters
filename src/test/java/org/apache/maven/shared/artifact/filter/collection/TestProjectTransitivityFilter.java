@@ -18,9 +18,11 @@
  */
 package org.apache.maven.shared.artifact.filter.collection;
 
+import java.util.Collections;
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.plugin.testing.ArtifactStubFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -77,5 +79,21 @@ class TestProjectTransitivityFilter {
         ProjectTransitivityFilter filter = new ProjectTransitivityFilter(classifiedArtifacts, true);
         Set<Artifact> result = filter.filter(artifacts);
         assertEquals(4, result.size());
+    }
+
+    @Test
+    void checkTimestampedSnapshot() {
+        Artifact directDependency = new DefaultArtifact("group", "artifact", "1.0-SNAPSHOT", null, "jar", "", null);
+        Artifact resolvedDependency =
+                new DefaultArtifact("group", "artifact", "1.0-20220318.120000-1", null, "jar", "", null);
+        resolvedDependency.setBaseVersion("1.0-SNAPSHOT");
+        Artifact differentDependency = new DefaultArtifact("group", "artifact", "2.0-SNAPSHOT", null, "jar", "", null);
+
+        ProjectTransitivityFilter filter = new ProjectTransitivityFilter(Collections.singleton(directDependency), true);
+
+        assertTrue(filter.artifactIsADirectDependency(resolvedDependency));
+        assertEquals(
+                Collections.singleton(resolvedDependency), filter.filter(Collections.singleton(resolvedDependency)));
+        assertFalse(filter.artifactIsADirectDependency(differentDependency));
     }
 }
