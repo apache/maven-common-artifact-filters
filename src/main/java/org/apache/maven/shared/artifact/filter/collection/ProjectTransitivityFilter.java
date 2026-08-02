@@ -71,7 +71,7 @@ public class ProjectTransitivityFilter extends AbstractArtifactsFilter {
      */
     public boolean artifactIsADirectDependency(Artifact artifact) {
         for (Artifact dependency : this.directDependencies) {
-            if (dependency.equals(artifact)) {
+            if (dependency.getId().equals(artifact.getId())) {
                 return true;
             }
         }
