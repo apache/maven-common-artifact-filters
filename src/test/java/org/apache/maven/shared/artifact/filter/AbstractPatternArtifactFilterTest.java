@@ -507,6 +507,23 @@ public abstract class AbstractPatternArtifactFilterTest {
     }
 
     @Test
+    public void shouldNotReportDuplicateMatchingPatternsAsMissed() {
+        Artifact artifact = mock(Artifact.class);
+        when(artifact.getGroupId()).thenReturn("org.python");
+        when(artifact.getArtifactId()).thenReturn("jython-standalone");
+        when(artifact.getType()).thenReturn("jar");
+        when(artifact.getBaseVersion()).thenReturn("1.0");
+
+        String pattern = "org.python:jython-standalone";
+        ArtifactFilter filter = createFilter(Arrays.asList(pattern, pattern));
+        StatisticsReportingArtifactFilter statistics = (StatisticsReportingArtifactFilter) filter;
+
+        assertTrue(statistics.hasMissedCriteria());
+        filter.include(artifact);
+        assertFalse(statistics.hasMissedCriteria());
+    }
+
+    @Test
     public void partialWildcardShouldNotMatchEmptyComponent() {
         Artifact artifact = mock(Artifact.class);
         when(artifact.getGroupId()).thenReturn("test-group");
