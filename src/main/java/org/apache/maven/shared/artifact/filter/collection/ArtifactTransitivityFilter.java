@@ -18,6 +18,7 @@
  */
 package org.apache.maven.shared.artifact.filter.collection;
 
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -40,7 +41,7 @@ public class ArtifactTransitivityFilter extends AbstractArtifactsFilter {
     /**
      * List of dependencyConflictIds of transitiveArtifacts
      */
-    private Set<String> transitiveArtifacts;
+    private final Set<String> transitiveArtifacts = new HashSet<>();
 
     /**
      * <p>
