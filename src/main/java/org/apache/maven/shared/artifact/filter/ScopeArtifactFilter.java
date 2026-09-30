@@ -20,22 +20,23 @@ package org.apache.maven.shared.artifact.filter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.DefaultArtifact;
-import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
+import org.apache.maven.api.Dependency;
+import org.apache.maven.api.DependencyScope;
+import org.apache.maven.shared.artifact.filter.internal.Utils;
 import org.slf4j.Logger;
 
 /**
  * <p>
- * {@link ArtifactFilter} implementation that selects artifacts based on their scopes.
+ * {@link Predicate} implementation that selects artifacts based on their scopes.
  * </p>
  * <strong>NOTE:</strong> None of the fine-grained scopes imply other scopes when enabled;
  * when fine-grained scope control is used, each scope must be enabled separately,
  * UNLESS the corresponding XXXWithImplications() method is used to enable that
  * scope.
  */
-public class ScopeArtifactFilter implements ArtifactFilter, StatisticsReportingArtifactFilter {
+public class ScopeArtifactFilter implements Predicate<Dependency>, StatisticsReportingArtifactFilter {
     private boolean includeCompileScope;
 
     private boolean includeRuntimeScope;
@@ -79,65 +80,51 @@ public class ScopeArtifactFilter implements ArtifactFilter, StatisticsReportingA
      * @param scope the scope
      */
     public ScopeArtifactFilter(String scope) {
-        if (DefaultArtifact.SCOPE_COMPILE.equals(scope)) {
+        if (DependencyScope.COMPILE.id().equals(scope)) {
             setIncludeCompileScopeWithImplications(true);
-        } else if (DefaultArtifact.SCOPE_RUNTIME.equals(scope)) {
+        } else if (DependencyScope.RUNTIME.id().equals(scope)) {
             setIncludeRuntimeScopeWithImplications(true);
-        } else if (DefaultArtifact.SCOPE_TEST.equals(scope)) {
+        } else if (DependencyScope.TEST.id().equals(scope)) {
             setIncludeTestScopeWithImplications(true);
-        } else if (DefaultArtifact.SCOPE_PROVIDED.equals(scope)) {
+        } else if (DependencyScope.PROVIDED.id().equals(scope)) {
             setIncludeProvidedScope(true);
-        } else if (DefaultArtifact.SCOPE_SYSTEM.equals(scope)) {
+        } else if (DependencyScope.SYSTEM.id().equals(scope)) {
             setIncludeSystemScope(true);
         }
     }
 
     /** {@inheritDoc} */
-    public boolean include(Artifact artifact) {
+    public boolean test(Dependency artifact) {
         boolean result = true;
 
-        if (artifact.getScope() == null) {
+        DependencyScope scope = artifact.getScope();
+        if (scope == null || scope == DependencyScope.NONE || scope == DependencyScope.UNDEFINED) {
             nullScopeHit = true;
             result = includeNullScope;
-        } else if (Artifact.SCOPE_COMPILE.equals(artifact.getScope())) {
+        } else if (scope == DependencyScope.COMPILE) {
             compileScopeHit = true;
             result = includeCompileScope;
-        } else if (Artifact.SCOPE_RUNTIME.equals(artifact.getScope())) {
+        } else if (scope == DependencyScope.RUNTIME) {
             runtimeScopeHit = true;
             result = includeRuntimeScope;
-        } else if (Artifact.SCOPE_TEST.equals(artifact.getScope())) {
+        } else if (scope == DependencyScope.TEST) {
             testScopeHit = true;
             result = includeTestScope;
-        } else if (Artifact.SCOPE_PROVIDED.equals(artifact.getScope())) {
+        } else if (scope == DependencyScope.PROVIDED) {
             providedScopeHit = true;
             result = includeProvidedScope;
-        } else if (Artifact.SCOPE_SYSTEM.equals(artifact.getScope())) {
+        } else if (scope == DependencyScope.SYSTEM) {
             systemScopeHit = true;
             result = includeSystemScope;
         }
 
         if (!result) {
-            // We have to be very careful with artifacts that have ranges,
-            // because DefaultArtifact.getId() as of <= 2.1.0-M1 will throw a NPE
-            // if a range is specified.
-            String id;
-            if (artifact.getVersionRange() != null) {
-                id = artifact.getDependencyConflictId() + ":" + artifact.getVersionRange();
-            } else {
-                id = artifact.getId();
-            }
-
-            filteredArtifactIds.add(id);
+            filteredArtifactIds.add(Utils.getId(artifact));
         }
 
         return result;
     }
 
-    /**
-     * <p>toString.</p>
-     *
-     * @return Information converted to a string.
-     */
     public String toString() {
         return "Scope filter [null-scope=" + includeNullScope + ", compile=" + includeCompileScope + ", runtime="
                 + includeRuntimeScope + ", test=" + includeTestScope + ", provided=" + includeProvidedScope

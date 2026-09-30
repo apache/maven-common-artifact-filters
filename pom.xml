@@ -28,7 +28,7 @@
   </parent>
 
   <artifactId>maven-common-artifact-filters</artifactId>
-  <version>3.4.1-SNAPSHOT</version>
+  <version>4.0.0-SNAPSHOT</version>
 
   <name>Apache Maven Common Artifact Filters</name>
   <description>A collection of ready-made filters to control inclusion/exclusion of artifacts during dependency resolution.</description>
@@ -55,9 +55,10 @@
   </distributionManagement>
 
   <properties>
-    <javaVersion>8</javaVersion>
-    <mavenVersion>3.6.3</mavenVersion>
-    <resolverVersion>1.9.27</resolverVersion>
+    <javaVersion>17</javaVersion>
+    <mavenVersion>4.0.0-rc-7</mavenVersion>
+    <resolverVersion>2.0.23</resolverVersion>
+    <mockitoVersion>5.23.0</mockitoVersion>
     <checkstyle.violation.ignore>MethodLength</checkstyle.violation.ignore>
     <project.build.outputTimestamp>2024-06-05T14:43:17Z</project.build.outputTimestamp>
   </properties>
@@ -66,24 +67,18 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>1.7.36</version>
+      <version>2.0.17</version>
     </dependency>
 
     <dependency>
       <groupId>org.apache.maven</groupId>
-      <artifactId>maven-artifact</artifactId>
+      <artifactId>maven-api-core</artifactId>
       <version>${mavenVersion}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
-      <artifactId>maven-model</artifactId>
-      <version>${mavenVersion}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-core</artifactId>
+      <artifactId>maven-api-model</artifactId>
       <version>${mavenVersion}</version>
       <scope>provided</scope>
     </dependency>
@@ -94,40 +89,22 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <!-- GenericVersionScheme evaluates version ranges in the patterns, same engine Maven 4 uses for VersionParser -->
       <groupId>org.apache.maven.resolver</groupId>
       <artifactId>maven-resolver-util</artifactId>
       <version>${resolverVersion}</version>
     </dependency>
 
     <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>2.22.0</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>4.11.0</version>
+      <version>${mockitoVersion}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-junit-jupiter</artifactId>
-      <version>4.11.0</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.plugin-testing</groupId>
-      <artifactId>maven-plugin-testing-harness</artifactId>
-      <version>3.5.1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <!-- used by maven-plugin-testing-harness -->
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-archiver</artifactId>
-      <version>4.14.0</version>
+      <version>${mockitoVersion}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

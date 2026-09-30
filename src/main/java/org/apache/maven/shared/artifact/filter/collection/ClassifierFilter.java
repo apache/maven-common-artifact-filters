@@ -18,7 +18,8 @@
  */
 package org.apache.maven.shared.artifact.filter.collection;
 
-import org.apache.maven.artifact.Artifact;
+import org.apache.maven.api.Dependency;
+import org.apache.maven.shared.artifact.filter.internal.Utils;
 
 /**
  * <p>ClassifierFilter class.</p>
@@ -37,7 +38,7 @@ public class ClassifierFilter extends AbstractArtifactFeatureFilter {
     }
 
     /** {@inheritDoc} */
-    protected String getArtifactFeature(Artifact artifact) {
-        return artifact.getClassifier();
+    protected String getArtifactFeature(Dependency artifact) {
+        return Utils.getClassifier(artifact);
     }
 }

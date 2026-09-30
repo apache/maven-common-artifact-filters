@@ -22,15 +22,12 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.apache.maven.RepositoryUtils;
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.project.DefaultProjectBuildingRequest;
-import org.apache.maven.project.DependencyResolutionResult;
-import org.apache.maven.project.ProjectBuilder;
-import org.apache.maven.project.ProjectBuildingException;
-import org.apache.maven.project.ProjectBuildingRequest;
-import org.apache.maven.project.ProjectBuildingResult;
-import org.eclipse.aether.graph.Dependency;
+import org.apache.maven.api.Artifact;
+import org.apache.maven.api.Dependency;
+import org.apache.maven.api.Node;
+import org.apache.maven.api.PathScope;
+import org.apache.maven.api.Session;
+import org.apache.maven.shared.artifact.filter.internal.Utils;
 
 /**
  * This filter will exclude everything that is not a dependency of the selected artifact.
@@ -39,52 +36,32 @@ import org.eclipse.aether.graph.Dependency;
  */
 public class ArtifactTransitivityFilter extends AbstractArtifactsFilter {
     /**
-     * List of dependencyConflictIds of transitiveArtifacts
+     * List of conflict ids of transitiveArtifacts
      */
     private final Set<String> transitiveArtifacts = new HashSet<>();
 
     /**
-     * <p>
-     * Use {@link org.apache.maven.execution.MavenSession#getProjectBuildingRequest()} to get the buildingRequest.
-     * The projectBuilder should be resolved with CDI.
-     * </p>
-     * <pre>
-     *   // For Mojo
-     *   &#64;Component
-     *   private ProjectBuilder projectBuilder;
+     * Collects the dependencies of the given artifact through the session, using the
+     * {@link PathScope#TEST_RUNTIME test runtime} scope so that no scope is left out.
      *
-     *   // For Components
-     *   &#64;Requirement // or &#64;Inject
-     *   private ProjectBuilder projectBuilder;
-     * </pre>
-     *
-     * @param artifact        the artifact to resolve the dependencies from
-     * @param buildingRequest the buildingRequest
-     * @param projectBuilder  the projectBuilder
-     * @throws ProjectBuildingException if the project descriptor could not be successfully built
+     * @param session  the current session, in a Mojo obtained by injecting {@link Session}
+     * @param artifact the artifact to resolve the dependencies from
      */
-    public ArtifactTransitivityFilter(
-            Artifact artifact, ProjectBuildingRequest buildingRequest, ProjectBuilder projectBuilder)
-            throws ProjectBuildingException {
-        ProjectBuildingRequest request = new DefaultProjectBuildingRequest(buildingRequest);
+    public ArtifactTransitivityFilter(Session session, Artifact artifact) {
+        Node root = session.collectDependencies(artifact, PathScope.TEST_RUNTIME);
 
-        request.setResolveDependencies(true);
-
-        ProjectBuildingResult buildingResult = projectBuilder.build(artifact, request);
-
-        DependencyResolutionResult resolutionResult = buildingResult.getDependencyResolutionResult();
-        if (resolutionResult != null) {
-            for (Dependency dependency : resolutionResult.getDependencies()) {
-                Artifact mavenArtifact = RepositoryUtils.toArtifact(dependency.getArtifact());
-                transitiveArtifacts.add(mavenArtifact.getDependencyConflictId());
+        for (Node node : session.flattenDependencies(root, PathScope.TEST_RUNTIME)) {
+            Dependency dependency = node.getDependency();
+            if (node != root && dependency != null) {
+                transitiveArtifacts.add(Utils.getConflictId(dependency));
             }
         }
     }
 
     /** {@inheritDoc} */
-    public Set<Artifact> filter(Set<Artifact> artifacts) {
-        Set<Artifact> result = new LinkedHashSet<>();
-        for (Artifact artifact : artifacts) {
+    public Set<Dependency> filter(Set<Dependency> artifacts) {
+        Set<Dependency> result = new LinkedHashSet<>();
+        for (Dependency artifact : artifacts) {
             if (artifactIsATransitiveDependency(artifact)) {
                 result.add(artifact);
             }
@@ -98,7 +75,7 @@ public class ArtifactTransitivityFilter extends AbstractArtifactsFilter {
      * @param artifact representing the item to compare.
      * @return true if artifact is a transitive dependency
      */
-    public boolean artifactIsATransitiveDependency(Artifact artifact) {
-        return transitiveArtifacts.contains(artifact.getDependencyConflictId());
+    public boolean artifactIsATransitiveDependency(Dependency artifact) {
+        return transitiveArtifacts.contains(Utils.getConflictId(artifact));
     }
 }

@@ -21,7 +21,7 @@ package org.apache.maven.shared.artifact.filter.collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.apache.maven.artifact.Artifact;
+import org.apache.maven.api.Dependency;
 
 /**
  * <p>Abstract AbstractArtifactsFilter class.</p>
@@ -30,8 +30,8 @@ import org.apache.maven.artifact.Artifact;
  */
 public abstract class AbstractArtifactsFilter implements ArtifactsFilter {
     /** {@inheritDoc} */
-    public boolean isArtifactIncluded(Artifact artifact) throws ArtifactFilterException {
-        Set<Artifact> set = new LinkedHashSet<>();
+    public boolean isArtifactIncluded(Dependency artifact) throws ArtifactFilterException {
+        Set<Dependency> set = new LinkedHashSet<>();
         set.add(artifact);
 
         set = filter(set);

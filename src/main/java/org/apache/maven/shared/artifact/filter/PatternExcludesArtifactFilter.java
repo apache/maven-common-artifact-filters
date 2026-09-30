@@ -20,7 +20,7 @@ package org.apache.maven.shared.artifact.filter;
 
 import java.util.Collection;
 
-import org.apache.maven.artifact.Artifact;
+import org.apache.maven.api.Dependency;
 
 /**
  * TODO: include in maven-artifact in future
@@ -38,18 +38,8 @@ public class PatternExcludesArtifactFilter extends PatternIncludesArtifactFilter
         super(patterns);
     }
 
-    /**
-     * <p>Constructor for PatternExcludesArtifactFilter.</p>
-     *
-     * @param patterns The pattern which will be used.
-     * @param actTransitively yes/no.
-     */
-    public PatternExcludesArtifactFilter(Collection<String> patterns, boolean actTransitively) {
-        super(patterns, actTransitively);
-    }
-
     @Override
-    public boolean include(Artifact artifact) {
+    public boolean test(Dependency artifact) {
         boolean shouldInclude = !patternMatches(artifact);
 
         if (!shouldInclude) {

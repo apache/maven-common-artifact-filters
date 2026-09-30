@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.maven.artifact.Artifact;
+import org.apache.maven.api.Dependency;
 
 /**
  * <p>FilterArtifacts class.</p>
@@ -74,11 +74,11 @@ public class FilterArtifacts {
     /**
      * <p>filter.</p>
      *
-     * @param artifacts The {@link org.apache.maven.artifact.Artifact}s to filter.
+     * @param artifacts The {@link org.apache.maven.api.Dependency}s to filter.
      * @return The resulting artifacts set.
      * @throws org.apache.maven.shared.artifact.filter.collection.ArtifactFilterException in case of a failure.
      */
-    public Set<Artifact> filter(Set<Artifact> artifacts) throws ArtifactFilterException {
+    public Set<Dependency> filter(Set<Dependency> artifacts) throws ArtifactFilterException {
         // apply filters
         for (ArtifactsFilter filter : filters) {
             // log(artifacts,log);

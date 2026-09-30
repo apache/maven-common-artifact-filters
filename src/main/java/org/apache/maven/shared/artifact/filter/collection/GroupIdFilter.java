@@ -18,7 +18,7 @@
  */
 package org.apache.maven.shared.artifact.filter.collection;
 
-import org.apache.maven.artifact.Artifact;
+import org.apache.maven.api.Dependency;
 
 /**
  * Filter on GroupId Name.
@@ -40,7 +40,7 @@ public class GroupIdFilter extends AbstractArtifactFeatureFilter {
 
     /** {@inheritDoc} */
     @Override
-    protected String getArtifactFeature(Artifact artifact) {
+    protected String getArtifactFeature(Dependency artifact) {
         return artifact.getGroupId();
     }
 

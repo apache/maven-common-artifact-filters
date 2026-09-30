@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import org.apache.maven.artifact.Artifact;
+import org.apache.maven.api.Dependency;
 
 import static org.apache.maven.shared.artifact.filter.internal.Utils.isNotEmpty;
 
@@ -58,8 +58,8 @@ public abstract class AbstractArtifactFeatureFilter extends AbstractArtifactsFil
      *
      * This function determines if filtering needs to be performed. Includes are processed before Excludes.
      */
-    public Set<Artifact> filter(Set<Artifact> artifacts) {
-        Set<Artifact> results = artifacts;
+    public Set<Dependency> filter(Set<Dependency> artifacts) {
+        Set<Dependency> results = artifacts;
 
         if (this.includes != null && !this.includes.isEmpty()) {
             results = filterIncludes(results, this.includes);
@@ -79,10 +79,10 @@ public abstract class AbstractArtifactFeatureFilter extends AbstractArtifactsFil
      * @param theIncludes List of types or classifiers to include.
      * @return a set of filtered artifacts.
      */
-    private Set<Artifact> filterIncludes(Set<Artifact> artifacts, List<String> theIncludes) {
-        Set<Artifact> result = new LinkedHashSet<>();
+    private Set<Dependency> filterIncludes(Set<Dependency> artifacts, List<String> theIncludes) {
+        Set<Dependency> result = new LinkedHashSet<>();
 
-        for (Artifact artifact : artifacts) {
+        for (Dependency artifact : artifacts) {
             for (String include : theIncludes) {
                 // if the classifier or type of the artifact
                 // matches the feature
@@ -103,10 +103,10 @@ public abstract class AbstractArtifactFeatureFilter extends AbstractArtifactsFil
      * @param theExcludes List of types or classifiers to exclude.
      * @return a set of filtered artifacts.
      */
-    private Set<Artifact> filterExcludes(Set<Artifact> artifacts, List<String> theExcludes) {
-        Set<Artifact> result = new LinkedHashSet<>();
+    private Set<Dependency> filterExcludes(Set<Dependency> artifacts, List<String> theExcludes) {
+        Set<Dependency> result = new LinkedHashSet<>();
 
-        for (Artifact artifact : artifacts) {
+        for (Dependency artifact : artifacts) {
             boolean exclude = false;
             String artifactFeature = getArtifactFeature(artifact);
 
@@ -134,7 +134,7 @@ public abstract class AbstractArtifactFeatureFilter extends AbstractArtifactsFil
      * @param artifact artifact to return type or classifier of
      * @return type or classifier
      */
-    protected abstract String getArtifactFeature(Artifact artifact);
+    protected abstract String getArtifactFeature(Dependency artifact);
 
     /**
      * <p>Setter for the field <code>excludes</code>.</p>

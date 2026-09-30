@@ -18,54 +18,45 @@
  */
 package org.apache.maven.shared.artifact.filter.collection;
 
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.handler.DefaultArtifactHandler;
-import org.apache.maven.project.DefaultProjectBuildingRequest;
-import org.apache.maven.project.DependencyResolutionResult;
-import org.apache.maven.project.ProjectBuilder;
-import org.apache.maven.project.ProjectBuildingRequest;
-import org.apache.maven.project.ProjectBuildingResult;
-import org.eclipse.aether.graph.Dependency;
+import org.apache.maven.api.Artifact;
+import org.apache.maven.api.Dependency;
+import org.apache.maven.api.Node;
+import org.apache.maven.api.PathScope;
+import org.apache.maven.api.Session;
+import org.apache.maven.shared.artifact.filter.DependencyStubs;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class TestArtifactTransitivityFilter {
-
     @Test
     void resolvedDependenciesAreRecordedAndFiltered() throws Exception {
-        Artifact root = new org.apache.maven.artifact.DefaultArtifact(
-                "g", "root", "1.0", "compile", "jar", null, new DefaultArtifactHandler("jar"));
-        Artifact dep = new org.apache.maven.artifact.DefaultArtifact(
-                "g", "dep", "1.0", "compile", "jar", null, new DefaultArtifactHandler("jar"));
-        Artifact other = new org.apache.maven.artifact.DefaultArtifact(
-                "g", "other", "1.0", "compile", "jar", null, new DefaultArtifactHandler("jar"));
+        Session session = mock(Session.class);
+        Artifact root = mock(Artifact.class);
+        Node rootNode = mock(Node.class);
+        Node childNode = mock(Node.class);
+        Dependency dep = DependencyStubs.dependency("g", "dep", "1.0", "compile");
+        Dependency other = DependencyStubs.dependency("g", "other", "1.0", "compile");
+        when(childNode.getDependency()).thenReturn(dep);
+        when(session.collectDependencies(root, PathScope.TEST_RUNTIME)).thenReturn(rootNode);
+        when(session.flattenDependencies(rootNode, PathScope.TEST_RUNTIME))
+                .thenReturn(Arrays.asList(rootNode, childNode));
 
-        ProjectBuilder projectBuilder = mock(ProjectBuilder.class);
-        ProjectBuildingResult buildingResult = mock(ProjectBuildingResult.class);
-        DependencyResolutionResult resolutionResult = mock(DependencyResolutionResult.class);
-        when(projectBuilder.build(any(Artifact.class), any(ProjectBuildingRequest.class)))
-                .thenReturn(buildingResult);
-        when(buildingResult.getDependencyResolutionResult()).thenReturn(resolutionResult);
-        when(resolutionResult.getDependencies())
-                .thenReturn(Collections.singletonList(
-                        new Dependency(new org.eclipse.aether.artifact.DefaultArtifact("g:dep:jar:1.0"), "compile")));
-
-        ArtifactTransitivityFilter filter =
-                new ArtifactTransitivityFilter(root, new DefaultProjectBuildingRequest(), projectBuilder);
+        ArtifactTransitivityFilter filter = new ArtifactTransitivityFilter(session, root);
 
         assertTrue(filter.artifactIsATransitiveDependency(dep));
         assertFalse(filter.artifactIsATransitiveDependency(other));
 
-        Set<Artifact> result = filter.filter(new java.util.LinkedHashSet<>(java.util.Arrays.asList(dep, other)));
-        assertEquals(Collections.singleton(dep), result);
+        Set<Dependency> result = filter.filter(new LinkedHashSet<>(Arrays.asList(dep, other)));
+        assertEquals(1, result.size());
+        assertTrue(result.contains(dep));
     }
 }

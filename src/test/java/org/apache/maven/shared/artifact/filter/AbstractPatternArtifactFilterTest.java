@@ -19,12 +19,11 @@
 package org.apache.maven.shared.artifact.filter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
+import org.apache.maven.api.Dependency;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -34,9 +33,7 @@ import static org.mockito.Mockito.when;
 
 public abstract class AbstractPatternArtifactFilterTest {
 
-    protected abstract ArtifactFilter createFilter(List<String> patterns);
-
-    protected abstract ArtifactFilter createFilter(List<String> patterns, boolean actTransitively);
+    protected abstract Predicate<Dependency> createFilter(List<String> patterns);
 
     protected abstract boolean isInclusionNotExpected();
 
@@ -48,30 +45,30 @@ public abstract class AbstractPatternArtifactFilterTest {
         final String groupId2 = "group2";
         final String artifactId2 = "artifact2";
 
-        Artifact artifact1 = mock(Artifact.class);
+        Dependency artifact1 = mock(Dependency.class);
         when(artifact1.getGroupId()).thenReturn(groupId1);
         when(artifact1.getArtifactId()).thenReturn(artifactId1);
-        when(artifact1.getType()).thenReturn("jar");
-        when(artifact1.getBaseVersion()).thenReturn("version");
+        when(artifact1.getType()).thenReturn(DependencyStubs.type("jar"));
+        when(artifact1.getBaseVersion()).thenReturn(DependencyStubs.version("version"));
 
-        Artifact artifact2 = mock(Artifact.class);
+        Dependency artifact2 = mock(Dependency.class);
         when(artifact2.getGroupId()).thenReturn(groupId2);
         when(artifact2.getArtifactId()).thenReturn(artifactId2);
-        when(artifact2.getType()).thenReturn("jar");
-        when(artifact2.getBaseVersion()).thenReturn("version");
+        when(artifact2.getType()).thenReturn(DependencyStubs.type("jar"));
+        when(artifact2.getBaseVersion()).thenReturn(DependencyStubs.version("version"));
 
         final List<String> patterns = new ArrayList<>();
         patterns.add(groupId1 + ":" + artifactId1 + ":*");
         patterns.add(groupId2 + ":" + artifactId2 + ":*");
 
-        final ArtifactFilter filter = createFilter(patterns);
+        final Predicate<Dependency> filter = createFilter(patterns);
 
         if (isInclusionNotExpected()) {
-            assertFalse(filter.include(artifact1));
-            assertFalse(filter.include(artifact2));
+            assertFalse(filter.test(artifact1));
+            assertFalse(filter.test(artifact2));
         } else {
-            assertTrue(filter.include(artifact1));
-            assertTrue(filter.include(artifact2));
+            assertTrue(filter.test(artifact1));
+            assertTrue(filter.test(artifact2));
         }
     }
 
@@ -83,30 +80,30 @@ public abstract class AbstractPatternArtifactFilterTest {
         final String groupId2 = "group2";
         final String artifactId2 = "artifact2";
 
-        Artifact artifact1 = mock(Artifact.class);
+        Dependency artifact1 = mock(Dependency.class);
         when(artifact1.getGroupId()).thenReturn(groupId1);
         when(artifact1.getArtifactId()).thenReturn(artifactId1);
-        when(artifact1.getType()).thenReturn("jar");
-        when(artifact1.getBaseVersion()).thenReturn("version");
+        when(artifact1.getType()).thenReturn(DependencyStubs.type("jar"));
+        when(artifact1.getBaseVersion()).thenReturn(DependencyStubs.version("version"));
 
-        Artifact artifact2 = mock(Artifact.class);
+        Dependency artifact2 = mock(Dependency.class);
         when(artifact2.getGroupId()).thenReturn(groupId2);
         when(artifact2.getArtifactId()).thenReturn(artifactId2);
-        when(artifact2.getType()).thenReturn("jar");
-        when(artifact2.getBaseVersion()).thenReturn("version");
+        when(artifact2.getType()).thenReturn(DependencyStubs.type("jar"));
+        when(artifact2.getBaseVersion()).thenReturn(DependencyStubs.version("version"));
 
         final List<String> patterns = new ArrayList<>();
         patterns.add(groupId1 + "*");
         patterns.add(groupId2 + "*");
 
-        final ArtifactFilter filter = createFilter(patterns);
+        final Predicate<Dependency> filter = createFilter(patterns);
 
         if (isInclusionNotExpected()) {
-            assertFalse(filter.include(artifact1));
-            assertFalse(filter.include(artifact2));
+            assertFalse(filter.test(artifact1));
+            assertFalse(filter.test(artifact2));
         } else {
-            assertTrue(filter.include(artifact1));
-            assertTrue(filter.include(artifact2));
+            assertTrue(filter.test(artifact1));
+            assertTrue(filter.test(artifact2));
         }
     }
 
@@ -115,18 +112,18 @@ public abstract class AbstractPatternArtifactFilterTest {
         final String groupId = "group";
         final String artifactId = "artifact";
 
-        Artifact artifact = mock(Artifact.class);
+        Dependency artifact = mock(Dependency.class);
         when(artifact.getGroupId()).thenReturn(groupId);
         when(artifact.getArtifactId()).thenReturn(artifactId);
-        when(artifact.getType()).thenReturn("jar");
-        when(artifact.getBaseVersion()).thenReturn("version");
+        when(artifact.getType()).thenReturn(DependencyStubs.type("jar"));
+        when(artifact.getBaseVersion()).thenReturn(DependencyStubs.version("version"));
 
-        final ArtifactFilter filter = createFilter(Collections.singletonList(groupId + ":" + artifactId));
+        final Predicate<Dependency> filter = createFilter(Collections.singletonList(groupId + ":" + artifactId));
 
         if (isInclusionNotExpected()) {
-            assertFalse(filter.include(artifact));
+            assertFalse(filter.test(artifact));
         } else {
-            assertTrue(filter.include(artifact));
+            assertTrue(filter.test(artifact));
         }
     }
 
@@ -135,18 +132,19 @@ public abstract class AbstractPatternArtifactFilterTest {
         final String groupId = "group";
         final String artifactId = "artifact";
 
-        Artifact artifact = mock(Artifact.class);
+        Dependency artifact = mock(Dependency.class);
         when(artifact.getGroupId()).thenReturn(groupId);
         when(artifact.getArtifactId()).thenReturn(artifactId);
-        when(artifact.getType()).thenReturn("jar");
-        when(artifact.getBaseVersion()).thenReturn("version");
+        when(artifact.getType()).thenReturn(DependencyStubs.type("jar"));
+        when(artifact.getBaseVersion()).thenReturn(DependencyStubs.version("version"));
 
-        final ArtifactFilter filter = createFilter(Collections.singletonList(groupId + ":" + artifactId + ":jar"));
+        final Predicate<Dependency> filter =
+                createFilter(Collections.singletonList(groupId + ":" + artifactId + ":jar"));
 
         if (isInclusionNotExpected()) {
-            assertFalse(filter.include(artifact));
+            assertFalse(filter.test(artifact));
         } else {
-            assertTrue(filter.include(artifact));
+            assertTrue(filter.test(artifact));
         }
     }
 
@@ -155,22 +153,22 @@ public abstract class AbstractPatternArtifactFilterTest {
         final String groupId = "group";
         final String artifactId = "artifact";
 
-        Artifact artifact = mock(Artifact.class);
+        Dependency artifact = mock(Dependency.class);
         when(artifact.getGroupId()).thenReturn(groupId);
         when(artifact.getArtifactId()).thenReturn(artifactId);
-        when(artifact.getType()).thenReturn("jar");
-        when(artifact.getBaseVersion()).thenReturn("version");
+        when(artifact.getType()).thenReturn(DependencyStubs.type("jar"));
+        when(artifact.getBaseVersion()).thenReturn(DependencyStubs.version("version"));
 
         final List<String> patterns = new ArrayList<>();
         patterns.add("otherGroup:" + artifactId + ":jar");
         patterns.add("otherGroup:" + artifactId);
 
-        final ArtifactFilter filter = createFilter(patterns);
+        final Predicate<Dependency> filter = createFilter(patterns);
 
         if (isInclusionNotExpected()) {
-            assertTrue(filter.include(artifact));
+            assertTrue(filter.test(artifact));
         } else {
-            assertFalse(filter.include(artifact));
+            assertFalse(filter.test(artifact));
         }
     }
 
@@ -179,22 +177,22 @@ public abstract class AbstractPatternArtifactFilterTest {
         final String groupId = "group";
         final String artifactId = "artifact";
 
-        Artifact artifact = mock(Artifact.class);
+        Dependency artifact = mock(Dependency.class);
         when(artifact.getGroupId()).thenReturn(groupId);
         when(artifact.getArtifactId()).thenReturn(artifactId);
-        when(artifact.getType()).thenReturn("jar");
-        when(artifact.getBaseVersion()).thenReturn("version");
+        when(artifact.getType()).thenReturn(DependencyStubs.type("jar"));
+        when(artifact.getBaseVersion()).thenReturn(DependencyStubs.version("version"));
 
         final List<String> patterns = new ArrayList<>();
         patterns.add(groupId + "otherArtifact:jar");
         patterns.add(groupId + "otherArtifact");
 
-        final ArtifactFilter filter = createFilter(patterns);
+        final Predicate<Dependency> filter = createFilter(patterns);
 
         if (isInclusionNotExpected()) {
-            assertTrue(filter.include(artifact));
+            assertTrue(filter.test(artifact));
         } else {
-            assertFalse(filter.include(artifact));
+            assertFalse(filter.test(artifact));
         }
     }
 
@@ -203,76 +201,22 @@ public abstract class AbstractPatternArtifactFilterTest {
         final String groupId = "group";
         final String artifactId = "artifact";
 
-        Artifact artifact = mock(Artifact.class);
+        Dependency artifact = mock(Dependency.class);
         when(artifact.getGroupId()).thenReturn(groupId);
         when(artifact.getArtifactId()).thenReturn(artifactId);
-        when(artifact.getType()).thenReturn("jar");
-        when(artifact.getBaseVersion()).thenReturn("version");
+        when(artifact.getType()).thenReturn(DependencyStubs.type("jar"));
+        when(artifact.getBaseVersion()).thenReturn(DependencyStubs.version("version"));
 
         final List<String> patterns = new ArrayList<>();
         patterns.add("otherGroup:otherArtifact:jar");
         patterns.add("otherGroup:otherArtifact");
 
-        final ArtifactFilter filter = createFilter(patterns);
+        final Predicate<Dependency> filter = createFilter(patterns);
 
         if (isInclusionNotExpected()) {
-            assertTrue(filter.include(artifact));
+            assertTrue(filter.test(artifact));
         } else {
-            assertFalse(filter.include(artifact));
-        }
-    }
-
-    @Test
-    public void shouldIncludeWhenPatternMatchesDependencyTrailAndTransitivityIsEnabled() {
-        final String groupId = "group";
-        final String artifactId = "artifact";
-
-        final String rootDepTrailItem = "current:project:jar:1.0";
-        final String depTrailItem = "otherGroup:otherArtifact";
-
-        final List<String> depTrail = Arrays.asList(rootDepTrailItem, depTrailItem + ":jar:1.0");
-        final List<String> patterns = Collections.singletonList(depTrailItem);
-
-        Artifact artifact = mock(Artifact.class);
-        when(artifact.getGroupId()).thenReturn(groupId);
-        when(artifact.getArtifactId()).thenReturn(artifactId);
-        when(artifact.getType()).thenReturn("jar");
-        when(artifact.getBaseVersion()).thenReturn("version");
-        when(artifact.getDependencyTrail()).thenReturn(depTrail);
-
-        final ArtifactFilter filter = createFilter(patterns, true);
-
-        if (isInclusionNotExpected()) {
-            assertFalse(filter.include(artifact));
-        } else {
-            assertTrue(filter.include(artifact));
-        }
-    }
-
-    @Test
-    public void shouldIncludeWhenPatternMatchesDepTrailWithTransitivityUsingNonColonWildcard() {
-        final String groupId = "group";
-        final String artifactId = "artifact";
-
-        final String rootDepTrailItem = "current:project:jar:1.0";
-        final String depTrailItem = "otherGroup:otherArtifact";
-
-        final List<String> depTrail = Arrays.asList(rootDepTrailItem, depTrailItem + ":jar:1.0");
-        final List<String> patterns = Collections.singletonList("otherGroup*");
-
-        Artifact artifact = mock(Artifact.class);
-        when(artifact.getGroupId()).thenReturn(groupId);
-        when(artifact.getArtifactId()).thenReturn(artifactId);
-        when(artifact.getType()).thenReturn("jar");
-        when(artifact.getBaseVersion()).thenReturn("version");
-        when(artifact.getDependencyTrail()).thenReturn(depTrail);
-
-        final ArtifactFilter filter = createFilter(patterns, true);
-
-        if (isInclusionNotExpected()) {
-            assertFalse(filter.include(artifact));
-        } else {
-            assertTrue(filter.include(artifact));
+            assertFalse(filter.test(artifact));
         }
     }
 
@@ -281,21 +225,21 @@ public abstract class AbstractPatternArtifactFilterTest {
         final String groupId = "group";
         final String artifactId = "artifact";
 
-        Artifact artifact = mock(Artifact.class);
+        Dependency artifact = mock(Dependency.class);
         when(artifact.getGroupId()).thenReturn(groupId);
         when(artifact.getArtifactId()).thenReturn(artifactId);
-        when(artifact.getType()).thenReturn("jar");
-        when(artifact.getBaseVersion()).thenReturn("version");
+        when(artifact.getType()).thenReturn(DependencyStubs.type("jar"));
+        when(artifact.getBaseVersion()).thenReturn(DependencyStubs.version("version"));
 
         final List<String> patterns = new ArrayList<>();
         patterns.add("!group:artifact:jar");
 
-        final ArtifactFilter filter = createFilter(patterns);
+        final Predicate<Dependency> filter = createFilter(patterns);
 
         if (isInclusionNotExpected()) {
-            assertTrue(filter.include(artifact));
+            assertTrue(filter.test(artifact));
         } else {
-            assertFalse(filter.include(artifact));
+            assertFalse(filter.test(artifact));
         }
     }
 
@@ -304,21 +248,21 @@ public abstract class AbstractPatternArtifactFilterTest {
         final String groupId = "group";
         final String artifactId = "artifact";
 
-        Artifact artifact = mock(Artifact.class);
+        Dependency artifact = mock(Dependency.class);
         when(artifact.getGroupId()).thenReturn(groupId);
         when(artifact.getArtifactId()).thenReturn(artifactId);
-        when(artifact.getType()).thenReturn("jar");
-        when(artifact.getBaseVersion()).thenReturn("version");
+        when(artifact.getType()).thenReturn(DependencyStubs.type("jar"));
+        when(artifact.getBaseVersion()).thenReturn(DependencyStubs.version("version"));
 
         final List<String> patterns = new ArrayList<>();
         patterns.add("group:*:jar");
 
-        final ArtifactFilter filter = createFilter(patterns);
+        final Predicate<Dependency> filter = createFilter(patterns);
 
         if (isInclusionNotExpected()) {
-            assertFalse(filter.include(artifact));
+            assertFalse(filter.test(artifact));
         } else {
-            assertTrue(filter.include(artifact));
+            assertTrue(filter.test(artifact));
         }
     }
 
@@ -327,22 +271,22 @@ public abstract class AbstractPatternArtifactFilterTest {
         final String groupId = "group";
         final String artifactId = "artifact";
 
-        Artifact artifact = mock(Artifact.class);
+        Dependency artifact = mock(Dependency.class);
 
         when(artifact.getGroupId()).thenReturn(groupId);
         when(artifact.getArtifactId()).thenReturn(artifactId);
-        when(artifact.getType()).thenReturn("jar");
-        when(artifact.getBaseVersion()).thenReturn("version");
+        when(artifact.getType()).thenReturn(DependencyStubs.type("jar"));
+        when(artifact.getBaseVersion()).thenReturn(DependencyStubs.version("version"));
 
         final List<String> patterns = new ArrayList<>();
         patterns.add("*:artifact:*");
 
-        final ArtifactFilter filter = createFilter(patterns);
+        final Predicate<Dependency> filter = createFilter(patterns);
 
         if (isInclusionNotExpected()) {
-            assertFalse(filter.include(artifact));
+            assertFalse(filter.test(artifact));
         } else {
-            assertTrue(filter.include(artifact));
+            assertTrue(filter.test(artifact));
         }
     }
 
@@ -351,22 +295,22 @@ public abstract class AbstractPatternArtifactFilterTest {
         final String groupId = "group";
         final String artifactId = "some-artifact-id";
 
-        Artifact artifact = mock(Artifact.class);
+        Dependency artifact = mock(Dependency.class);
 
         when(artifact.getGroupId()).thenReturn(groupId);
         when(artifact.getArtifactId()).thenReturn(artifactId);
-        when(artifact.getType()).thenReturn("jar");
-        when(artifact.getBaseVersion()).thenReturn("version");
+        when(artifact.getType()).thenReturn(DependencyStubs.type("jar"));
+        when(artifact.getBaseVersion()).thenReturn(DependencyStubs.version("version"));
 
         final List<String> patterns = new ArrayList<>();
         patterns.add("group:some-*-id");
 
-        final ArtifactFilter filter = createFilter(patterns);
+        final Predicate<Dependency> filter = createFilter(patterns);
 
         if (isInclusionNotExpected()) {
-            assertFalse(filter.include(artifact));
+            assertFalse(filter.test(artifact));
         } else {
-            assertTrue(filter.include(artifact));
+            assertTrue(filter.test(artifact));
         }
     }
 
@@ -375,22 +319,22 @@ public abstract class AbstractPatternArtifactFilterTest {
         final String groupId = "some.group.id";
         final String artifactId = "some-artifact-id";
 
-        Artifact artifact = mock(Artifact.class);
+        Dependency artifact = mock(Dependency.class);
 
         when(artifact.getGroupId()).thenReturn(groupId);
         when(artifact.getArtifactId()).thenReturn(artifactId);
-        when(artifact.getType()).thenReturn("jar");
-        when(artifact.getBaseVersion()).thenReturn("version");
+        when(artifact.getType()).thenReturn(DependencyStubs.type("jar"));
+        when(artifact.getBaseVersion()).thenReturn(DependencyStubs.version("version"));
 
         final List<String> patterns = new ArrayList<>();
         patterns.add("some.group*");
 
-        final ArtifactFilter filter = createFilter(patterns);
+        final Predicate<Dependency> filter = createFilter(patterns);
 
         if (isInclusionNotExpected()) {
-            assertFalse(filter.include(artifact));
+            assertFalse(filter.test(artifact));
         } else {
-            assertTrue(filter.include(artifact));
+            assertTrue(filter.test(artifact));
         }
     }
 
@@ -405,27 +349,26 @@ public abstract class AbstractPatternArtifactFilterTest {
 
         final List<String> patterns = Collections.singletonList("*:jar:*");
 
-        Artifact artifact1 = mock(Artifact.class);
+        Dependency artifact1 = mock(Dependency.class);
         when(artifact1.getGroupId()).thenReturn(groupId);
         when(artifact1.getArtifactId()).thenReturn(artifactId);
-        when(artifact1.getType()).thenReturn("jar");
-        when(artifact1.getBaseVersion()).thenReturn("version");
+        when(artifact1.getType()).thenReturn(DependencyStubs.type("jar"));
+        when(artifact1.getBaseVersion()).thenReturn(DependencyStubs.version("version"));
 
-        Artifact artifact2 = mock(Artifact.class);
+        Dependency artifact2 = mock(Dependency.class);
         when(artifact2.getGroupId()).thenReturn(otherGroup);
         when(artifact2.getArtifactId()).thenReturn(otherArtifact);
-        when(artifact2.getType()).thenReturn(otherType);
-        when(artifact2.getBaseVersion()).thenReturn("version");
-        when(artifact2.getDependencyTrail()).thenReturn(Collections.emptyList());
+        when(artifact2.getType()).thenReturn(DependencyStubs.type(otherType));
+        when(artifact2.getBaseVersion()).thenReturn(DependencyStubs.version("version"));
 
-        final ArtifactFilter filter = createFilter(patterns, true);
+        final Predicate<Dependency> filter = createFilter(patterns);
 
         if (isInclusionNotExpected()) {
-            assertTrue(filter.include(artifact2));
-            assertFalse(filter.include(artifact1));
+            assertTrue(filter.test(artifact2));
+            assertFalse(filter.test(artifact1));
         } else {
-            assertFalse(filter.include(artifact2));
-            assertTrue(filter.include(artifact1));
+            assertFalse(filter.test(artifact2));
+            assertTrue(filter.test(artifact1));
         }
     }
 
@@ -434,21 +377,21 @@ public abstract class AbstractPatternArtifactFilterTest {
         final String groupId = "com.mycompany.myproject";
         final String artifactId = "some-artifact-id";
 
-        Artifact artifact = mock(Artifact.class);
+        Dependency artifact = mock(Dependency.class);
         when(artifact.getGroupId()).thenReturn(groupId);
         when(artifact.getArtifactId()).thenReturn(artifactId);
-        when(artifact.getType()).thenReturn("jar");
-        when(artifact.getBaseVersion()).thenReturn("version");
+        when(artifact.getType()).thenReturn(DependencyStubs.type("jar"));
+        when(artifact.getBaseVersion()).thenReturn(DependencyStubs.version("version"));
 
         final List<String> patterns = new ArrayList<>();
         patterns.add("com.mycompany.*:*:jar:*:*");
 
-        final ArtifactFilter filter = createFilter(patterns);
+        final Predicate<Dependency> filter = createFilter(patterns);
 
         if (isInclusionNotExpected()) {
-            assertFalse(filter.include(artifact));
+            assertFalse(filter.test(artifact));
         } else {
-            assertTrue(filter.include(artifact));
+            assertTrue(filter.test(artifact));
         }
     }
 
@@ -457,69 +400,65 @@ public abstract class AbstractPatternArtifactFilterTest {
         final String groupId = "com.mycompany.myproject";
         final String artifactId = "some-artifact-id";
 
-        Artifact artifact = mock(Artifact.class);
+        Dependency artifact = mock(Dependency.class);
         when(artifact.getGroupId()).thenReturn(groupId);
         when(artifact.getArtifactId()).thenReturn(artifactId);
-        when(artifact.getType()).thenReturn("jar");
-        when(artifact.getBaseVersion()).thenReturn("1.1");
+        when(artifact.getType()).thenReturn(DependencyStubs.type("jar"));
+        when(artifact.getBaseVersion()).thenReturn(DependencyStubs.version("1.1"));
 
         final List<String> patterns = new ArrayList<>();
         patterns.add("com.mycompany.myproject:some-artifact-id:jar:*:[1.0,2.0)");
 
-        final ArtifactFilter filter = createFilter(patterns);
+        final Predicate<Dependency> filter = createFilter(patterns);
 
         if (isInclusionNotExpected()) {
-            assertFalse(filter.include(artifact));
+            assertFalse(filter.test(artifact));
         } else {
-            assertTrue(filter.include(artifact));
+            assertTrue(filter.test(artifact));
         }
     }
 
     @Test
     public void checkMassembly955() {
-        Artifact artifact1 = mock(Artifact.class);
+        Dependency artifact1 = mock(Dependency.class);
         when(artifact1.getGroupId()).thenReturn("org.python");
         when(artifact1.getArtifactId()).thenReturn("jython-standalone");
-        when(artifact1.getType()).thenReturn("jar");
-        when(artifact1.getBaseVersion()).thenReturn("1.0");
+        when(artifact1.getType()).thenReturn(DependencyStubs.type("jar"));
+        when(artifact1.getBaseVersion()).thenReturn(DependencyStubs.version("1.0"));
 
-        Artifact artifact2 = mock(Artifact.class);
+        Dependency artifact2 = mock(Dependency.class);
         when(artifact2.getGroupId()).thenReturn("org.teiid");
         when(artifact2.getArtifactId()).thenReturn("teiid");
-        when(artifact2.getType()).thenReturn("jar");
-        when(artifact2.hasClassifier()).thenReturn(true);
+        when(artifact2.getType()).thenReturn(DependencyStubs.type("jar"));
         when(artifact2.getClassifier()).thenReturn("jdbc");
-        when(artifact2.getBaseVersion()).thenReturn("1.0");
+        when(artifact2.getBaseVersion()).thenReturn(DependencyStubs.version("1.0"));
 
         final List<String> patterns = new ArrayList<>();
         patterns.add("org.teiid:teiid:*:jdbc:*");
         patterns.add("org.python:jython-standalone");
 
-        final ArtifactFilter filter = createFilter(patterns);
+        final Predicate<Dependency> filter = createFilter(patterns);
 
         if (isInclusionNotExpected()) {
-            assertFalse(filter.include(artifact1));
-            assertFalse(filter.include(artifact2));
+            assertFalse(filter.test(artifact1));
+            assertFalse(filter.test(artifact2));
         } else {
-            assertTrue(filter.include(artifact1));
-            assertTrue(filter.include(artifact2));
+            assertTrue(filter.test(artifact1));
+            assertTrue(filter.test(artifact2));
         }
     }
 
     @Test
     public void partialWildcardShouldNotMatchEmptyComponent() {
-        Artifact artifact = mock(Artifact.class);
-        when(artifact.getGroupId()).thenReturn("test-group");
-        when(artifact.getArtifactId()).thenReturn("test-artifact");
-        when(artifact.getVersion()).thenReturn("test-version");
-        when(artifact.hasClassifier()).thenReturn(false);
+        Dependency artifact =
+                DependencyStubs.dependency("test-group", "test-artifact", "test-version", "compile", "jar", "");
 
-        ArtifactFilter filter = createFilter(Collections.singletonList("test-group:test-artifact:*:ERROR*"));
+        Predicate<Dependency> filter = createFilter(Collections.singletonList("test-group:test-artifact:*:ERROR*"));
 
         if (isInclusionNotExpected()) {
-            assertTrue(filter.include(artifact));
+            assertTrue(filter.test(artifact));
         } else {
-            assertFalse(filter.include(artifact));
+            assertFalse(filter.test(artifact));
         }
     }
 }

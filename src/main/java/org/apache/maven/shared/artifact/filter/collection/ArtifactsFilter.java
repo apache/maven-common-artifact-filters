@@ -20,7 +20,7 @@ package org.apache.maven.shared.artifact.filter.collection;
 
 import java.util.Set;
 
-import org.apache.maven.artifact.Artifact;
+import org.apache.maven.api.Dependency;
 
 /**
  * <p>ArtifactsFilter interface.</p>
@@ -31,18 +31,18 @@ public interface ArtifactsFilter {
     /**
      * <p>filter.</p>
      *
-     * @param artifacts {@link org.apache.maven.artifact.Artifact}
+     * @param artifacts {@link org.apache.maven.api.Dependency}
      * @return Set of artifacts.
      * @throws org.apache.maven.shared.artifact.filter.collection.ArtifactFilterException in case of a failure.
      */
-    Set<Artifact> filter(Set<Artifact> artifacts) throws ArtifactFilterException;
+    Set<Dependency> filter(Set<Dependency> artifacts) throws ArtifactFilterException;
 
     /**
      * <p>isArtifactIncluded.</p>
      *
-     * @param artifact {@link org.apache.maven.artifact.Artifact}
+     * @param artifact {@link org.apache.maven.api.Dependency}
      * @return {@code true} if artifact is included {@code false} otherwise.
      * @throws org.apache.maven.shared.artifact.filter.collection.ArtifactFilterException in case of a failure.
      */
-    boolean isArtifactIncluded(Artifact artifact) throws ArtifactFilterException;
+    boolean isArtifactIncluded(Dependency artifact) throws ArtifactFilterException;
 }

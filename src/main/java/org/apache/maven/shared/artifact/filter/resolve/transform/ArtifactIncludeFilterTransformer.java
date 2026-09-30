@@ -20,10 +20,12 @@ package org.apache.maven.shared.artifact.filter.resolve.transform;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Predicate;
 
-import org.apache.maven.artifact.resolver.filter.AndArtifactFilter;
-import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
-import org.apache.maven.artifact.resolver.filter.ExcludesArtifactFilter;
+import org.apache.maven.api.Dependency;
+import org.apache.maven.api.DependencyScope;
 import org.apache.maven.shared.artifact.filter.PatternExcludesArtifactFilter;
 import org.apache.maven.shared.artifact.filter.PatternIncludesArtifactFilter;
 import org.apache.maven.shared.artifact.filter.resolve.AbstractFilter;
@@ -45,11 +47,9 @@ import org.apache.maven.shared.artifact.filter.resolve.TransformableFilter;
  * @author Robert Scholte
  * @since 3.0
  */
-public class ArtifactIncludeFilterTransformer implements FilterTransformer<ArtifactFilter> {
+public class ArtifactIncludeFilterTransformer implements FilterTransformer<Predicate<Dependency>> {
 
     private boolean includeNullScope = true;
-
-    private boolean actTransitivelyPattern = false;
 
     /**
      * Used by {@link #transform(ScopeFilter)}
@@ -63,32 +63,19 @@ public class ArtifactIncludeFilterTransformer implements FilterTransformer<Artif
         this.includeNullScope = includeNullScope;
     }
 
-    /**
-     * Used by {@link #transform(PatternExclusionsFilter)} and {@link #transform(PatternInclusionsFilter)} Determines
-     * whether the include/exclude patterns will be applied to the transitive path of a given artifact. If {@code true},
-     * and the current artifact is a transitive dependency brought in by another artifact which matches an inclusion or
-     * exclusion pattern, then the current artifact has the same inclusion/exclusion logic applied to it as well.
-     * Default is {@code false}
-     *
-     * @param actTransitivelyPattern set to {@code true} if this artifact should be included/excluded just like one of
-     *            its ancestors.
-     */
-    public void setActTransitivelyPattern(boolean actTransitivelyPattern) {
-        this.actTransitivelyPattern = actTransitivelyPattern;
-    }
-
     /** {@inheritDoc} */
     @Override
-    public ArtifactFilter transform(final ScopeFilter scopeFilter) {
+    public Predicate<Dependency> transform(final ScopeFilter scopeFilter) {
         return artifact -> {
-            if (artifact.getScope() == null) {
+            DependencyScope depScope = artifact.getScope();
+            if (depScope == null || depScope == DependencyScope.NONE || depScope == DependencyScope.UNDEFINED) {
                 return includeNullScope;
             }
 
             boolean isIncluded;
 
             if (scopeFilter.getIncluded() != null) {
-                isIncluded = scopeFilter.getIncluded().contains(artifact.getScope());
+                isIncluded = scopeFilter.getIncluded().contains(depScope.id());
             } else {
                 isIncluded = true;
             }
@@ -96,7 +83,7 @@ public class ArtifactIncludeFilterTransformer implements FilterTransformer<Artif
             boolean isExcluded;
 
             if (scopeFilter.getExcluded() != null) {
-                isExcluded = scopeFilter.getExcluded().contains(artifact.getScope());
+                isExcluded = scopeFilter.getExcluded().contains(depScope.id());
             } else {
                 isExcluded = false;
             }
@@ -107,11 +94,11 @@ public class ArtifactIncludeFilterTransformer implements FilterTransformer<Artif
 
     /** {@inheritDoc} */
     @Override
-    public AndArtifactFilter transform(AndFilter andFilter) {
-        AndArtifactFilter filter = new AndArtifactFilter();
+    public Predicate<Dependency> transform(AndFilter andFilter) {
+        Predicate<Dependency> filter = artifact -> true;
 
         for (TransformableFilter subFilter : andFilter.getFilters()) {
-            filter.add(subFilter.transform(this));
+            filter = filter.and(subFilter.transform(this));
         }
 
         return filter;
@@ -119,14 +106,15 @@ public class ArtifactIncludeFilterTransformer implements FilterTransformer<Artif
 
     /** {@inheritDoc} */
     @Override
-    public ArtifactFilter transform(final ExclusionsFilter exclusionsFilter) {
-        return new ExcludesArtifactFilter(new ArrayList<>(exclusionsFilter.getExcludes()));
+    public Predicate<Dependency> transform(final ExclusionsFilter exclusionsFilter) {
+        final Set<String> excludes = new HashSet<>(exclusionsFilter.getExcludes());
+        return artifact -> !excludes.contains(artifact.getGroupId() + ':' + artifact.getArtifactId());
     }
 
     /** {@inheritDoc} */
     @Override
-    public ArtifactFilter transform(OrFilter orFilter) {
-        final Collection<ArtifactFilter> filters =
+    public Predicate<Dependency> transform(OrFilter orFilter) {
+        final Collection<Predicate<Dependency>> filters =
                 new ArrayList<>(orFilter.getFilters().size());
 
         for (TransformableFilter subFilter : orFilter.getFilters()) {
@@ -134,8 +122,8 @@ public class ArtifactIncludeFilterTransformer implements FilterTransformer<Artif
         }
 
         return artifact -> {
-            for (ArtifactFilter filter : filters) {
-                if (filter.include(artifact)) {
+            for (Predicate<Dependency> filter : filters) {
+                if (filter.test(artifact)) {
                     return true;
                 }
             }
@@ -145,19 +133,19 @@ public class ArtifactIncludeFilterTransformer implements FilterTransformer<Artif
 
     /** {@inheritDoc} */
     @Override
-    public ArtifactFilter transform(PatternExclusionsFilter patternExclusionsFilter) {
-        return new PatternExcludesArtifactFilter(patternExclusionsFilter.getExcludes(), actTransitivelyPattern);
+    public Predicate<Dependency> transform(PatternExclusionsFilter patternExclusionsFilter) {
+        return new PatternExcludesArtifactFilter(patternExclusionsFilter.getExcludes());
     }
 
     /** {@inheritDoc} */
     @Override
-    public ArtifactFilter transform(PatternInclusionsFilter patternInclusionsFilter) {
-        return new PatternIncludesArtifactFilter(patternInclusionsFilter.getIncludes(), actTransitivelyPattern);
+    public Predicate<Dependency> transform(PatternInclusionsFilter patternInclusionsFilter) {
+        return new PatternIncludesArtifactFilter(patternInclusionsFilter.getIncludes());
     }
 
     /** {@inheritDoc} */
     @Override
-    public ArtifactFilter transform(final AbstractFilter filter) {
+    public Predicate<Dependency> transform(final AbstractFilter filter) {
         return artifact -> filter.accept(new ArtifactIncludeNode(artifact), null);
     }
 }

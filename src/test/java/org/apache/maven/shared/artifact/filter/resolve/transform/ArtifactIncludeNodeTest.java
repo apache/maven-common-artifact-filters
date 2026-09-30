@@ -18,10 +18,8 @@
  */
 package org.apache.maven.shared.artifact.filter.resolve.transform;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.versioning.VersionRange;
-import org.apache.maven.model.Dependency;
-import org.apache.maven.plugin.testing.ArtifactStubFactory;
+import org.apache.maven.api.Dependency;
+import org.apache.maven.shared.artifact.filter.DependencyStubs;
 import org.apache.maven.shared.artifact.filter.resolve.Node;
 import org.junit.jupiter.api.Test;
 
@@ -31,18 +29,16 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ArtifactIncludeNodeTest {
-    private final ArtifactStubFactory artifactFactory = new ArtifactStubFactory();
-
     @Test
     void checkGav() throws Exception {
         Node node = new ArtifactIncludeNode(newArtifact("g:a:v", null));
 
-        Dependency dependency = node.getDependency();
+        org.apache.maven.api.model.Dependency dependency = node.getDependency();
 
         assertEquals("g", dependency.getGroupId());
         assertEquals("a", dependency.getArtifactId());
         assertEquals("v", dependency.getVersion());
-        assertEquals("", dependency.getClassifier());
+        assertNull(dependency.getClassifier());
         // This is different compared to AetherNodes. Here it's based on artifact, which in the end always has a type.
         assertEquals("jar", dependency.getType());
     }
@@ -51,13 +47,12 @@ class ArtifactIncludeNodeTest {
     void checkClassifier() throws Exception {
         Node node = new ArtifactIncludeNode(newArtifact("g:a::c:v", null));
 
-        Dependency dependency = node.getDependency();
+        org.apache.maven.api.model.Dependency dependency = node.getDependency();
 
         assertEquals("g", dependency.getGroupId());
         assertEquals("a", dependency.getArtifactId());
         assertEquals("v", dependency.getVersion());
         assertEquals("c", dependency.getClassifier());
-        // empty type stays empty type when using ArtifactStubFactory
         assertEquals("", dependency.getType());
     }
 
@@ -65,7 +60,7 @@ class ArtifactIncludeNodeTest {
     void checkType() throws Exception {
         Node node = new ArtifactIncludeNode(newArtifact("g:a:pom:v", null));
 
-        Dependency dependency = node.getDependency();
+        org.apache.maven.api.model.Dependency dependency = node.getDependency();
 
         assertEquals("g", dependency.getGroupId());
         assertEquals("a", dependency.getArtifactId());
@@ -76,16 +71,16 @@ class ArtifactIncludeNodeTest {
 
     @Test
     void checkScope() throws Exception {
-        Node node = new ArtifactIncludeNode(newArtifact("g:a:v", "s"));
+        Node node = new ArtifactIncludeNode(newArtifact("g:a:v", "runtime"));
 
-        Dependency dependency = node.getDependency();
+        org.apache.maven.api.model.Dependency dependency = node.getDependency();
 
         assertEquals("g", dependency.getGroupId());
         assertEquals("a", dependency.getArtifactId());
         assertEquals("v", dependency.getVersion());
-        assertEquals("", dependency.getClassifier());
+        assertNull(dependency.getClassifier());
         assertEquals("jar", dependency.getType());
-        assertEquals("s", dependency.getScope());
+        assertEquals("runtime", dependency.getScope());
     }
 
     @Test
@@ -93,22 +88,22 @@ class ArtifactIncludeNodeTest {
         Node node = new ArtifactIncludeNode(newArtifact("g:a:pom:v", null, null));
 
         assertEquals("false", node.getDependency().getOptional());
-        assertFalse(node.getDependency().isOptional());
+        assertFalse(Boolean.parseBoolean(node.getDependency().getOptional()));
 
         node = new ArtifactIncludeNode(newArtifact("g:a:pom:v", null, true));
         assertEquals("true", node.getDependency().getOptional());
-        assertTrue(node.getDependency().isOptional());
+        assertTrue(Boolean.parseBoolean(node.getDependency().getOptional()));
 
         node = new ArtifactIncludeNode(newArtifact("g:a:pom:v", null, false));
         assertEquals("false", node.getDependency().getOptional());
-        assertFalse(node.getDependency().isOptional());
+        assertFalse(Boolean.parseBoolean(node.getDependency().getOptional()));
     }
 
-    private Artifact newArtifact(String coor, String scope) throws Exception {
+    private Dependency newArtifact(String coor, String scope) throws Exception {
         return newArtifact(coor, scope, null);
     }
 
-    private Artifact newArtifact(String coor, String scope, Boolean optional) throws Exception {
+    private Dependency newArtifact(String coor, String scope, Boolean optional) throws Exception {
         String[] gav = coor.split(":");
         String groupId = gav[0];
         String artifactId = gav[1];
@@ -127,17 +122,13 @@ class ArtifactIncludeNodeTest {
             version = gav[4];
         }
 
-        if (optional != null) {
-            VersionRange versionRange = VersionRange.createFromVersion(version);
-            return artifactFactory.createArtifact(groupId, artifactId, versionRange, scope, type, classifier, optional);
-        } else if (gav.length == 3) {
-            return artifactFactory.createArtifact(groupId, artifactId, version, scope);
-        } else if (gav.length == 4) {
-            return artifactFactory.createArtifact(groupId, artifactId, version, scope, type, null);
-        } else if (gav.length == 5) {
-            return artifactFactory.createArtifact(groupId, artifactId, version, scope, type, classifier);
-        } else {
-            throw new IllegalArgumentException("Can't translate coor to an Artifact");
-        }
+        return DependencyStubs.dependency(
+                groupId,
+                artifactId,
+                version,
+                scope,
+                type == null ? "jar" : type,
+                classifier == null ? "" : classifier,
+                Boolean.TRUE.equals(optional));
     }
 }

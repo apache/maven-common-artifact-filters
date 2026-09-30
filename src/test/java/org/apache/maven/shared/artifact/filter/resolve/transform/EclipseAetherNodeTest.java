@@ -40,7 +40,7 @@ class EclipseAetherNodeTest {
     void checkGav() {
         Node node = new EclipseAetherNode(newDependencyNode("g:a:v", null));
 
-        org.apache.maven.model.Dependency mavenDependency = node.getDependency();
+        org.apache.maven.api.model.Dependency mavenDependency = node.getDependency();
 
         assertEquals("g", mavenDependency.getGroupId());
         assertEquals("a", mavenDependency.getArtifactId());
@@ -54,7 +54,7 @@ class EclipseAetherNodeTest {
     void checkClassifier() {
         Node node = new EclipseAetherNode(newDependencyNode("g:a::c:v", null));
 
-        org.apache.maven.model.Dependency mavenDependency = node.getDependency();
+        org.apache.maven.api.model.Dependency mavenDependency = node.getDependency();
 
         assertEquals("g", mavenDependency.getGroupId());
         assertEquals("a", mavenDependency.getArtifactId());
@@ -68,7 +68,7 @@ class EclipseAetherNodeTest {
     void checkScope() {
         Node node = new EclipseAetherNode(newDependencyNode("g:a:c:v", "s"));
 
-        org.apache.maven.model.Dependency mavenDependency = node.getDependency();
+        org.apache.maven.api.model.Dependency mavenDependency = node.getDependency();
 
         assertEquals("g", mavenDependency.getGroupId());
         assertEquals("a", mavenDependency.getArtifactId());
@@ -99,7 +99,7 @@ class EclipseAetherNodeTest {
         Node node = new EclipseAetherNode(newDependencyNode("g:a:v", null, Collections.singletonList("eg:ea")));
         assertEquals(1, node.getDependency().getExclusions().size());
 
-        org.apache.maven.model.Exclusion mavenExclusion =
+        org.apache.maven.api.model.Exclusion mavenExclusion =
                 node.getDependency().getExclusions().get(0);
         assertEquals("eg", mavenExclusion.getGroupId());
         assertEquals("ea", mavenExclusion.getArtifactId());

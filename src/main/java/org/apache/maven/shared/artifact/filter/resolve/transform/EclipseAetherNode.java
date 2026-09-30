@@ -43,43 +43,41 @@ class EclipseAetherNode implements Node {
 
     /** {@inheritDoc} */
     @Override
-    public org.apache.maven.model.Dependency getDependency() {
+    public org.apache.maven.api.model.Dependency getDependency() {
         Dependency nodeDependency = node.getDependency();
 
         if (nodeDependency == null) {
             return null;
         }
 
-        org.apache.maven.model.Dependency mavenDependency = new org.apache.maven.model.Dependency();
-        mavenDependency.setGroupId(nodeDependency.getArtifact().getGroupId());
-        mavenDependency.setArtifactId(nodeDependency.getArtifact().getArtifactId());
-        mavenDependency.setVersion(nodeDependency.getArtifact().getVersion());
-        mavenDependency.setClassifier(nodeDependency.getArtifact().getClassifier());
-        mavenDependency.setType(nodeDependency.getArtifact().getProperty(ArtifactProperties.TYPE, null));
-        mavenDependency.setScope(nodeDependency.getScope());
+        org.apache.maven.api.model.Dependency.Builder builder = org.apache.maven.api.model.Dependency.newBuilder()
+                .groupId(nodeDependency.getArtifact().getGroupId())
+                .artifactId(nodeDependency.getArtifact().getArtifactId())
+                .version(nodeDependency.getArtifact().getVersion())
+                .classifier(nodeDependency.getArtifact().getClassifier())
+                .type(nodeDependency.getArtifact().getProperty(ArtifactProperties.TYPE, null))
+                .scope(nodeDependency.getScope());
         // Eclipse Aether supports three-valued logic
         if (nodeDependency.getOptional() != null) {
-            mavenDependency.setOptional(nodeDependency.isOptional());
+            builder.optional(String.valueOf(nodeDependency.isOptional()));
         }
         if (nodeDependency.getExclusions() != null) {
-            mavenDependency.setExclusions(getExclusions(nodeDependency));
+            builder.exclusions(getExclusions(nodeDependency));
         }
 
-        return mavenDependency;
+        return builder.build();
     }
 
-    private static List<org.apache.maven.model.Exclusion> getExclusions(Dependency nodeDependency) {
-        List<org.apache.maven.model.Exclusion> mavenExclusions =
+    private static List<org.apache.maven.api.model.Exclusion> getExclusions(Dependency nodeDependency) {
+        List<org.apache.maven.api.model.Exclusion> mavenExclusions =
                 new ArrayList<>(nodeDependency.getExclusions().size());
 
         for (Exclusion aetherExclusion : nodeDependency.getExclusions()) {
-            org.apache.maven.model.Exclusion mavenExclusion = new org.apache.maven.model.Exclusion();
-
-            mavenExclusion.setGroupId(aetherExclusion.getGroupId());
-            mavenExclusion.setArtifactId(aetherExclusion.getArtifactId());
             // that's all folks, although Aether has more metadata
-
-            mavenExclusions.add(mavenExclusion);
+            mavenExclusions.add(org.apache.maven.api.model.Exclusion.newBuilder()
+                    .groupId(aetherExclusion.getGroupId())
+                    .artifactId(aetherExclusion.getArtifactId())
+                    .build());
         }
         return mavenExclusions;
     }

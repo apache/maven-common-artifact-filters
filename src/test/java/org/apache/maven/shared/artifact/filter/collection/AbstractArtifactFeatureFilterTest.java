@@ -24,7 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.maven.artifact.Artifact;
+import org.apache.maven.api.Dependency;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Abstract test case for subclasses of AbstractArtifactFeatureFilter
  */
 public abstract class AbstractArtifactFeatureFilterTest {
-    protected Set<Artifact> artifacts = new HashSet<>();
+    protected Set<Dependency> artifacts = new HashSet<>();
 
     protected Class<?> filterClass;
 
@@ -71,13 +71,13 @@ public abstract class AbstractArtifactFeatureFilterTest {
     @Test
     public abstract void checkFiltering() throws Exception;
 
-    public Set<Artifact> filtering()
+    public Set<Dependency> filtering()
             throws SecurityException, IllegalArgumentException, NoSuchMethodException, InstantiationException,
                     IllegalAccessException, InvocationTargetException {
         Object[] conArgs = new Object[] {"one,two", "one,three,"};
         AbstractArtifactFeatureFilter filter =
                 (AbstractArtifactFeatureFilter) createObjectViaReflection(filterClass, conArgs);
-        Set<Artifact> result = filter.filter(artifacts);
+        Set<Dependency> result = filter.filter(artifacts);
         assertEquals(1, result.size());
         return result;
     }
@@ -85,13 +85,13 @@ public abstract class AbstractArtifactFeatureFilterTest {
     @Test
     public abstract void checkFiltering2() throws Exception;
 
-    public Set<Artifact> filtering2()
+    public Set<Dependency> filtering2()
             throws SecurityException, IllegalArgumentException, NoSuchMethodException, InstantiationException,
                     IllegalAccessException, InvocationTargetException {
         Object[] conArgs = new Object[] {null, "one,three,"};
         AbstractArtifactFeatureFilter filter =
                 (AbstractArtifactFeatureFilter) createObjectViaReflection(filterClass, conArgs);
-        Set<Artifact> result = filter.filter(artifacts);
+        Set<Dependency> result = filter.filter(artifacts);
         assertEquals(2, result.size());
         return result;
     }
@@ -105,7 +105,7 @@ public abstract class AbstractArtifactFeatureFilterTest {
         Object[] conArgs = new Object[] {null, null};
         AbstractArtifactFeatureFilter filter =
                 (AbstractArtifactFeatureFilter) createObjectViaReflection(filterClass, conArgs);
-        Set<Artifact> result = filter.filter(artifacts);
+        Set<Dependency> result = filter.filter(artifacts);
         assertEquals(4, result.size());
     }
 }

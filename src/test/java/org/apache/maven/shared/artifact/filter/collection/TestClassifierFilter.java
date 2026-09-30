@@ -20,8 +20,8 @@ package org.apache.maven.shared.artifact.filter.collection;
 
 import java.util.Set;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.plugin.testing.ArtifactStubFactory;
+import org.apache.maven.api.Dependency;
+import org.apache.maven.shared.artifact.filter.DependencyStubs;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -35,8 +35,7 @@ class TestClassifierFilter extends AbstractArtifactFeatureFilterTest {
     @BeforeEach
     void setUp() throws Exception {
         filterClass = ClassifierFilter.class;
-        ArtifactStubFactory factory = new ArtifactStubFactory(null, false);
-        artifacts = factory.getClassifiedArtifacts();
+        artifacts = DependencyStubs.classifiedDependencies();
     }
 
     @Test
@@ -46,8 +45,8 @@ class TestClassifierFilter extends AbstractArtifactFeatureFilterTest {
 
     @Test
     public void checkFiltering() throws Exception {
-        Set<Artifact> result = filtering();
-        for (Artifact artifact : result) {
+        Set<Dependency> result = filtering();
+        for (Dependency artifact : result) {
             assertTrue(artifact.getClassifier().equals("one")
                     || artifact.getClassifier().equals("two"));
         }
@@ -55,8 +54,8 @@ class TestClassifierFilter extends AbstractArtifactFeatureFilterTest {
 
     @Test
     public void checkFiltering2() throws Exception {
-        Set<Artifact> result = filtering2();
-        for (Artifact artifact : result) {
+        Set<Dependency> result = filtering2();
+        for (Dependency artifact : result) {
             assertTrue(artifact.getClassifier().equals("two")
                     || artifact.getClassifier().equals("four"));
         }

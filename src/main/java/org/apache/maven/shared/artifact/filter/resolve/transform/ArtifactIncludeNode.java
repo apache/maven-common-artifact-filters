@@ -18,8 +18,9 @@
  */
 package org.apache.maven.shared.artifact.filter.resolve.transform;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.model.Dependency;
+import org.apache.maven.api.Dependency;
+import org.apache.maven.api.model.Dependency.Builder;
+import org.apache.maven.shared.artifact.filter.internal.Utils;
 import org.apache.maven.shared.artifact.filter.resolve.Node;
 
 /**
@@ -28,9 +29,9 @@ import org.apache.maven.shared.artifact.filter.resolve.Node;
  * @since 3.0
  */
 class ArtifactIncludeNode implements Node {
-    private final Artifact artifact;
+    private final Dependency artifact;
 
-    ArtifactIncludeNode(Artifact artifact) {
+    ArtifactIncludeNode(Dependency artifact) {
         this.artifact = artifact;
     }
 
@@ -42,17 +43,17 @@ class ArtifactIncludeNode implements Node {
      * @see EclipseAetherNode
      */
     @Override
-    public Dependency getDependency() {
-        Dependency mavenDependency = new Dependency();
-        mavenDependency.setGroupId(artifact.getGroupId());
-        mavenDependency.setArtifactId(artifact.getArtifactId());
-        mavenDependency.setVersion(artifact.getVersion());
-        mavenDependency.setClassifier(artifact.getClassifier());
-        mavenDependency.setType(artifact.getType());
-        mavenDependency.setScope(artifact.getScope());
-        mavenDependency.setOptional(artifact.isOptional());
-        // no setExcludes possible
+    public org.apache.maven.api.model.Dependency getDependency() {
+        // no exclusions possible
+        Builder builder = org.apache.maven.api.model.Dependency.newBuilder()
+                .groupId(artifact.getGroupId())
+                .artifactId(artifact.getArtifactId())
+                .version(artifact.getVersion().toString())
+                .classifier(Utils.getClassifier(artifact))
+                .type(artifact.getType().id())
+                .scope(artifact.getScope() == null ? null : artifact.getScope().id())
+                .optional(String.valueOf(artifact.isOptional()));
 
-        return mavenDependency;
+        return builder.build();
     }
 }

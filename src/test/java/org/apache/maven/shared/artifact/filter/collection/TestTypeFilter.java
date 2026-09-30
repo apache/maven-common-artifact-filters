@@ -23,8 +23,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.plugin.testing.ArtifactStubFactory;
+import org.apache.maven.api.Dependency;
+import org.apache.maven.shared.artifact.filter.DependencyStubs;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -35,12 +35,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author <a href="mailto:brianf@apache.org">Brian Fox</a>
  */
 class TestTypeFilter {
-    Set<Artifact> artifacts;
+    Set<Dependency> artifacts;
 
     @BeforeEach
     void setUp() throws Exception {
-        ArtifactStubFactory factory = new ArtifactStubFactory(null, false);
-        artifacts = factory.getTypedArtifacts();
+        artifacts = DependencyStubs.typedDependencies();
     }
 
     @Test
@@ -60,47 +59,46 @@ class TestTypeFilter {
     @Test
     void checkFiltering() {
         TypeFilter filter = new TypeFilter("war,jar", "war,zip,");
-        Set<Artifact> result = filter.filter(artifacts);
+        Set<Dependency> result = filter.filter(artifacts);
         assertEquals(1, result.size());
 
-        for (Artifact artifact : result) {
-            assertEquals("jar", artifact.getType());
+        for (Dependency artifact : result) {
+            assertEquals("jar", artifact.getType().id());
         }
     }
 
     @Test
     void checkFiltering2() {
         TypeFilter filter = new TypeFilter(null, "war,jar,");
-        Set<Artifact> result = filter.filter(artifacts);
+        Set<Dependency> result = filter.filter(artifacts);
         assertEquals(3, result.size());
 
-        for (Artifact artifact : result) {
-            assertTrue(!artifact.getType().equals("war") && !artifact.getType().equals("jar"));
+        for (Dependency artifact : result) {
+            assertTrue(!artifact.getType().id().equals("war")
+                    && !artifact.getType().id().equals("jar"));
         }
     }
 
     @Test
     void checkFiltering3() {
         TypeFilter filter = new TypeFilter(null, null);
-        Set<Artifact> result = filter.filter(artifacts);
+        Set<Dependency> result = filter.filter(artifacts);
         assertEquals(5, result.size());
     }
 
     @Test
     void checkFilteringOrder() throws Exception {
         TypeFilter filter = new TypeFilter("war,jar", "zip");
-        Set<Artifact> artifacts = new LinkedHashSet<>();
+        Set<Dependency> artifacts = new LinkedHashSet<>();
+        artifacts.add(DependencyStubs.dependency("g", "a", "1.0", "compile", "jar", ""));
+        artifacts.add(DependencyStubs.dependency("g", "b", "1.0", "compile", "zip", ""));
+        artifacts.add(DependencyStubs.dependency("g", "c", "1.0", "compile", "war", ""));
 
-        ArtifactStubFactory factory = new ArtifactStubFactory(null, false);
-        artifacts.add(factory.createArtifact("g", "a", "1.0", Artifact.SCOPE_COMPILE, "jar", null));
-        artifacts.add(factory.createArtifact("g", "b", "1.0", Artifact.SCOPE_COMPILE, "zip", null));
-        artifacts.add(factory.createArtifact("g", "c", "1.0", Artifact.SCOPE_COMPILE, "war", null));
-
-        Set<Artifact> result = filter.filter(artifacts);
+        Set<Dependency> result = filter.filter(artifacts);
 
         assertEquals(2, result.size());
 
-        List<Artifact> resultList = new ArrayList<>(result);
+        List<Dependency> resultList = new ArrayList<>(result);
 
         assertEquals("a", resultList.get(0).getArtifactId());
         assertEquals("c", resultList.get(1).getArtifactId());

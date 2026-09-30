@@ -28,7 +28,7 @@ public interface Node {
     /**
      * <p>getDependency.</p>
      *
-     * @return {@link org.apache.maven.model.Dependency}
+     * @return {@link org.apache.maven.api.model.Dependency}
      */
-    org.apache.maven.model.Dependency getDependency();
+    org.apache.maven.api.model.Dependency getDependency();
 }

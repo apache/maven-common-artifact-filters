@@ -21,9 +21,9 @@ package org.apache.maven.shared.artifact.filter.collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
-import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
+import org.apache.maven.api.Dependency;
+import org.apache.maven.api.DependencyScope;
+import org.apache.maven.shared.artifact.filter.ScopeArtifactFilter;
 
 import static org.apache.maven.shared.artifact.filter.internal.Utils.isNotEmpty;
 
@@ -55,50 +55,52 @@ public class ScopeFilter extends AbstractArtifactsFilter {
      * This function determines if filtering needs to be performed. Excludes are
      * ignored if Includes are used.
      */
-    public Set<Artifact> filter(Set<Artifact> artifacts) throws ArtifactFilterException {
-        Set<Artifact> results = artifacts;
+    public Set<Dependency> filter(Set<Dependency> artifacts) throws ArtifactFilterException {
+        Set<Dependency> results = artifacts;
 
         if (isNotEmpty(includeScope)) {
-            if (!Artifact.SCOPE_COMPILE.equals(includeScope)
-                    && !Artifact.SCOPE_TEST.equals(includeScope)
-                    && !Artifact.SCOPE_PROVIDED.equals(includeScope)
-                    && !Artifact.SCOPE_RUNTIME.equals(includeScope)
-                    && !Artifact.SCOPE_SYSTEM.equals(includeScope)) {
+            if (!DependencyScope.COMPILE.id().equals(includeScope)
+                    && !DependencyScope.TEST.id().equals(includeScope)
+                    && !DependencyScope.PROVIDED.id().equals(includeScope)
+                    && !DependencyScope.RUNTIME.id().equals(includeScope)
+                    && !DependencyScope.SYSTEM.id().equals(includeScope)) {
                 throw new ArtifactFilterException("Invalid Scope in includeScope: " + includeScope);
             }
 
             results = new LinkedHashSet<>();
 
-            if (Artifact.SCOPE_PROVIDED.equals(includeScope) || Artifact.SCOPE_SYSTEM.equals(includeScope)) {
+            if (DependencyScope.PROVIDED.id().equals(includeScope)
+                    || DependencyScope.SYSTEM.id().equals(includeScope)) {
                 results = includeSingleScope(artifacts, includeScope);
             } else {
-                ArtifactFilter saf = new ScopeArtifactFilter(includeScope);
+                ScopeArtifactFilter saf = new ScopeArtifactFilter(includeScope);
 
-                for (Artifact artifact : artifacts) {
-                    if (saf.include(artifact)) {
+                for (Dependency artifact : artifacts) {
+                    if (saf.test(artifact)) {
                         results.add(artifact);
                     }
                 }
             }
         } else if (isNotEmpty(excludeScope)) {
-            if (!Artifact.SCOPE_COMPILE.equals(excludeScope)
-                    && !Artifact.SCOPE_TEST.equals(excludeScope)
-                    && !Artifact.SCOPE_PROVIDED.equals(excludeScope)
-                    && !Artifact.SCOPE_RUNTIME.equals(excludeScope)
-                    && !Artifact.SCOPE_SYSTEM.equals(excludeScope)) {
+            if (!DependencyScope.COMPILE.id().equals(excludeScope)
+                    && !DependencyScope.TEST.id().equals(excludeScope)
+                    && !DependencyScope.PROVIDED.id().equals(excludeScope)
+                    && !DependencyScope.RUNTIME.id().equals(excludeScope)
+                    && !DependencyScope.SYSTEM.id().equals(excludeScope)) {
                 throw new ArtifactFilterException("Invalid Scope in excludeScope: " + excludeScope);
             }
             results = new LinkedHashSet<>();
             // plexus ScopeArtifactFilter doesn't handle the provided scope so
             // we
             // need special handling for it.
-            if (Artifact.SCOPE_TEST.equals(excludeScope)) {
+            if (DependencyScope.TEST.id().equals(excludeScope)) {
                 throw new ArtifactFilterException(" Can't exclude Test scope, this will exclude everything.");
-            } else if (!Artifact.SCOPE_PROVIDED.equals(excludeScope) && !Artifact.SCOPE_SYSTEM.equals(excludeScope)) {
-                ArtifactFilter saf = new ScopeArtifactFilter(excludeScope);
+            } else if (!DependencyScope.PROVIDED.id().equals(excludeScope)
+                    && !DependencyScope.SYSTEM.id().equals(excludeScope)) {
+                ScopeArtifactFilter saf = new ScopeArtifactFilter(excludeScope);
 
-                for (Artifact artifact : artifacts) {
-                    if (!saf.include(artifact)) {
+                for (Dependency artifact : artifacts) {
+                    if (!saf.test(artifact)) {
                         results.add(artifact);
                     }
                 }
@@ -110,20 +112,20 @@ public class ScopeFilter extends AbstractArtifactsFilter {
         return results;
     }
 
-    private Set<Artifact> includeSingleScope(Set<Artifact> artifacts, String scope) {
-        Set<Artifact> results = new LinkedHashSet<>();
-        for (Artifact artifact : artifacts) {
-            if (scope.equals(artifact.getScope())) {
+    private Set<Dependency> includeSingleScope(Set<Dependency> artifacts, String scope) {
+        Set<Dependency> results = new LinkedHashSet<>();
+        for (Dependency artifact : artifacts) {
+            if (scope.equals(artifact.getScope().id())) {
                 results.add(artifact);
             }
         }
         return results;
     }
 
-    private Set<Artifact> excludeSingleScope(Set<Artifact> artifacts, String scope) {
-        Set<Artifact> results = new LinkedHashSet<>();
-        for (Artifact artifact : artifacts) {
-            if (!scope.equals(artifact.getScope())) {
+    private Set<Dependency> excludeSingleScope(Set<Dependency> artifacts, String scope) {
+        Set<Dependency> results = new LinkedHashSet<>();
+        for (Dependency artifact : artifacts) {
+            if (!scope.equals(artifact.getScope().id())) {
                 results.add(artifact);
             }
         }

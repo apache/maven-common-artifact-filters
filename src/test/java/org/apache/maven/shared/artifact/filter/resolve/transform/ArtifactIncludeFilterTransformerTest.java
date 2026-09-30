@@ -21,12 +21,10 @@ package org.apache.maven.shared.artifact.filter.resolve.transform;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.ArtifactUtils;
-import org.apache.maven.artifact.resolver.filter.AndArtifactFilter;
-import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
-import org.apache.maven.plugin.testing.ArtifactStubFactory;
+import org.apache.maven.api.Dependency;
+import org.apache.maven.shared.artifact.filter.DependencyStubs;
 import org.apache.maven.shared.artifact.filter.PatternExcludesArtifactFilter;
 import org.apache.maven.shared.artifact.filter.PatternIncludesArtifactFilter;
 import org.apache.maven.shared.artifact.filter.resolve.AbstractFilter;
@@ -47,8 +45,6 @@ class ArtifactIncludeFilterTransformerTest {
 
     private ArtifactIncludeFilterTransformer transformer;
 
-    private final ArtifactStubFactory artifactFactory = new ArtifactStubFactory();
-
     @BeforeEach
     void setUp() {
         transformer = new ArtifactIncludeFilterTransformer();
@@ -59,66 +55,66 @@ class ArtifactIncludeFilterTransformerTest {
         AndFilter filter = new AndFilter(Arrays.asList(
                 ScopeFilter.including("compile"), new ExclusionsFilter(Collections.singletonList("x:a"))));
 
-        AndArtifactFilter dependencyFilter = (AndArtifactFilter) filter.transform(transformer);
+        Predicate<Dependency> dependencyFilter = filter.transform(transformer);
 
-        assertTrue(dependencyFilter.include(newArtifact("g:a:v", "compile")));
+        assertTrue(dependencyFilter.test(newArtifact("g:a:v", "compile")));
 
-        assertFalse(dependencyFilter.include(newArtifact("x:a:v", "compile")));
+        assertFalse(dependencyFilter.test(newArtifact("x:a:v", "compile")));
 
-        assertFalse(dependencyFilter.include(newArtifact("g:a:v", "test")));
+        assertFalse(dependencyFilter.test(newArtifact("g:a:v", "test")));
 
-        assertFalse(dependencyFilter.include(newArtifact("x:a:v", "test")));
+        assertFalse(dependencyFilter.test(newArtifact("x:a:v", "test")));
     }
 
     @Test
     void checkTransformExclusionsFilter() throws Exception {
         ExclusionsFilter filter = new ExclusionsFilter(Collections.singletonList("x:a"));
 
-        ArtifactFilter dependencyFilter = filter.transform(transformer);
+        Predicate<Dependency> dependencyFilter = filter.transform(transformer);
 
-        assertTrue(dependencyFilter.include(newArtifact("g:a:v", "compile")));
+        assertTrue(dependencyFilter.test(newArtifact("g:a:v", "compile")));
 
-        assertFalse(dependencyFilter.include(newArtifact("x:a:v", "compile")));
+        assertFalse(dependencyFilter.test(newArtifact("x:a:v", "compile")));
     }
 
     @Test
     void checkTransformOrFilter() throws Exception {
         OrFilter filter = new OrFilter(Arrays.asList(ScopeFilter.including("compile"), ScopeFilter.including("test")));
 
-        ArtifactFilter dependencyFilter = filter.transform(transformer);
+        Predicate<Dependency> dependencyFilter = filter.transform(transformer);
 
-        assertTrue(dependencyFilter.include(newArtifact("g:a:v", "compile")));
+        assertTrue(dependencyFilter.test(newArtifact("g:a:v", "compile")));
 
-        assertTrue(dependencyFilter.include(newArtifact("g:a:v", "test")));
+        assertTrue(dependencyFilter.test(newArtifact("g:a:v", "test")));
 
-        assertFalse(dependencyFilter.include(newArtifact("g:a:v", "runtime")));
+        assertFalse(dependencyFilter.test(newArtifact("g:a:v", "runtime")));
     }
 
     @Test
     void checkTransformScopeFilter() throws Exception {
         ScopeFilter filter = ScopeFilter.including(Collections.singletonList("runtime"));
 
-        ArtifactFilter dependencyFilter = filter.transform(transformer);
+        Predicate<Dependency> dependencyFilter = filter.transform(transformer);
 
-        assertTrue(dependencyFilter.include(newArtifact("g:a:v", "runtime")));
+        assertTrue(dependencyFilter.test(newArtifact("g:a:v", "runtime")));
 
-        assertFalse(dependencyFilter.include(newArtifact("g:a:v", "compile")));
+        assertFalse(dependencyFilter.test(newArtifact("g:a:v", "compile")));
 
-        assertFalse(dependencyFilter.include(newArtifact("g:a:v", "test")));
+        assertFalse(dependencyFilter.test(newArtifact("g:a:v", "test")));
     }
 
     @Test
     void checkTransformScopeFilterIncludeNullScope() throws Exception {
         ScopeFilter filter = ScopeFilter.including();
 
-        Artifact artifact = newArtifact("g:a:v", null);
+        Dependency artifact = newArtifact("g:a:v", null);
 
         // default
-        assertTrue(filter.transform(transformer).include(artifact));
+        assertTrue(filter.transform(transformer).test(artifact));
 
         transformer.setIncludeNullScope(false);
 
-        assertFalse(filter.transform(transformer).include(artifact));
+        assertFalse(filter.transform(transformer).test(artifact));
     }
 
     @Test
@@ -127,32 +123,9 @@ class ArtifactIncludeFilterTransformerTest {
 
         PatternExcludesArtifactFilter dependencyFilter = (PatternExcludesArtifactFilter) filter.transform(transformer);
 
-        assertTrue(dependencyFilter.include(newArtifact("g:a:v", "runtime")));
+        assertTrue(dependencyFilter.test(newArtifact("g:a:v", "runtime")));
 
-        assertFalse(dependencyFilter.include(newArtifact("x:a:v", "runtime")));
-    }
-
-    @Test
-    void checkTransformPatternExclusionsFilterActTransitivily() throws Exception {
-        PatternExclusionsFilter filter = new PatternExclusionsFilter(Collections.singletonList("x:*"));
-
-        transformer.setActTransitivelyPattern(true);
-
-        Artifact parentArtifact = newArtifact("x:a:v", null);
-
-        Artifact artifact = newArtifact("g:a:v", null);
-
-        artifact.setDependencyTrail(Arrays.asList(parentArtifact.getId(), artifact.getId()));
-
-        PatternExcludesArtifactFilter dependencyFilter = (PatternExcludesArtifactFilter) filter.transform(transformer);
-
-        assertFalse(dependencyFilter.include(artifact));
-
-        transformer.setActTransitivelyPattern(false);
-
-        dependencyFilter = (PatternExcludesArtifactFilter) filter.transform(transformer);
-
-        assertTrue(dependencyFilter.include(artifact));
+        assertFalse(dependencyFilter.test(newArtifact("x:a:v", "runtime")));
     }
 
     @Test
@@ -161,32 +134,9 @@ class ArtifactIncludeFilterTransformerTest {
 
         PatternIncludesArtifactFilter dependencyFilter = (PatternIncludesArtifactFilter) filter.transform(transformer);
 
-        assertTrue(dependencyFilter.include(newArtifact("g:a:v", "runtime")));
+        assertTrue(dependencyFilter.test(newArtifact("g:a:v", "runtime")));
 
-        assertFalse(dependencyFilter.include(newArtifact("x:a:v", "runtime")));
-    }
-
-    @Test
-    void checkTransformPatternInclusionsFilterActTransitivily() throws Exception {
-        PatternInclusionsFilter filter = new PatternInclusionsFilter(Collections.singletonList("x:*"));
-
-        transformer.setActTransitivelyPattern(true);
-
-        Artifact parentArtifact = newArtifact("x:a:v", null);
-
-        Artifact artifact = newArtifact("g:a:v", null);
-
-        artifact.setDependencyTrail(Arrays.asList(parentArtifact.getId(), artifact.getId()));
-
-        PatternIncludesArtifactFilter dependencyFilter = (PatternIncludesArtifactFilter) filter.transform(transformer);
-
-        assertTrue(dependencyFilter.include(artifact));
-
-        transformer.setActTransitivelyPattern(false);
-
-        dependencyFilter = (PatternIncludesArtifactFilter) filter.transform(transformer);
-
-        assertFalse(dependencyFilter.include(artifact));
+        assertFalse(dependencyFilter.test(newArtifact("x:a:v", "runtime")));
     }
 
     @Test
@@ -194,19 +144,19 @@ class ArtifactIncludeFilterTransformerTest {
         AbstractFilter snapshotFilter = new AbstractFilter() {
             @Override
             public boolean accept(Node node, List<Node> parents) {
-                return ArtifactUtils.isSnapshot(node.getDependency().getVersion());
+                return node.getDependency().getVersion().endsWith("-SNAPSHOT");
             }
         };
 
-        ArtifactFilter dependencyFilter = snapshotFilter.transform(transformer);
+        Predicate<Dependency> dependencyFilter = snapshotFilter.transform(transformer);
 
-        assertTrue(dependencyFilter.include(newArtifact("g:a:1.0-SNAPSHOT", "compile")));
+        assertTrue(dependencyFilter.test(newArtifact("g:a:1.0-SNAPSHOT", "compile")));
 
-        assertFalse(dependencyFilter.include(newArtifact("g:a:1.0", "compile")));
+        assertFalse(dependencyFilter.test(newArtifact("g:a:1.0", "compile")));
     }
 
-    private Artifact newArtifact(String coor, String scope) throws Exception {
+    private Dependency newArtifact(String coor, String scope) throws Exception {
         String[] gav = coor.split(":");
-        return artifactFactory.createArtifact(gav[0], gav[1], gav[2], scope);
+        return DependencyStubs.dependency(gav[0], gav[1], gav[2], scope);
     }
 }

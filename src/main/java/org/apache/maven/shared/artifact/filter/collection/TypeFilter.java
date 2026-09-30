@@ -18,7 +18,7 @@
  */
 package org.apache.maven.shared.artifact.filter.collection;
 
-import org.apache.maven.artifact.Artifact;
+import org.apache.maven.api.Dependency;
 
 /**
  * <p>TypeFilter class.</p>
@@ -37,7 +37,7 @@ public class TypeFilter extends AbstractArtifactFeatureFilter {
     }
 
     /** {@inheritDoc} */
-    protected String getArtifactFeature(Artifact artifact) {
-        return artifact.getType();
+    protected String getArtifactFeature(Dependency artifact) {
+        return artifact.getType().id();
     }
 }

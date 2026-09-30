@@ -19,19 +19,15 @@
 package org.apache.maven.shared.artifact.filter;
 
 import java.util.List;
+import java.util.function.Predicate;
 
-import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
+import org.apache.maven.api.Dependency;
 
 public class PatternExcludesArtifactFilterTest extends AbstractPatternArtifactFilterTest {
 
     @Override
-    protected ArtifactFilter createFilter(final List<String> patterns) {
+    protected Predicate<Dependency> createFilter(final List<String> patterns) {
         return new PatternExcludesArtifactFilter(patterns);
-    }
-
-    @Override
-    protected ArtifactFilter createFilter(final List<String> patterns, final boolean actTransitively) {
-        return new PatternExcludesArtifactFilter(patterns, actTransitively);
     }
 
     @Override

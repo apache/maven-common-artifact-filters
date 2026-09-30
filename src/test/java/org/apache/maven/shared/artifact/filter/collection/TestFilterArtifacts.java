@@ -18,14 +18,12 @@
  */
 package org.apache.maven.shared.artifact.filter.collection;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.plugin.testing.ArtifactStubFactory;
+import org.apache.maven.api.Dependency;
+import org.apache.maven.shared.artifact.filter.DependencyStubs;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -40,13 +38,8 @@ class TestFilterArtifacts {
 
         // TODO: convert these old tests to use the abstract test case for dep
         // plugin
-        File outputFolder = new File("target/filters/");
 
-        FileUtils.deleteDirectory(outputFolder);
-
-        ArtifactStubFactory fact = new ArtifactStubFactory(outputFolder, false);
-
-        Set<Artifact> artifacts = fact.getReleaseAndSnapshotArtifacts();
+        Set<Dependency> artifacts = DependencyStubs.releaseAndSnapshotDependencies();
         FilterArtifacts fa = new FilterArtifacts();
 
         fa.filter(artifacts);
@@ -69,7 +62,7 @@ class TestFilterArtifacts {
 
     @Test
     void checkArtifactFilter() {
-        Set<Artifact> a = new HashSet<>();
+        Set<Dependency> a = new HashSet<>();
         FilterArtifacts fa = new FilterArtifacts();
         ArtifactsFilter scope = new ScopeFilter("compile", "system");
         ArtifactsFilter type = new TypeFilter("jar", "war");
@@ -102,14 +95,11 @@ class TestFilterArtifacts {
 
     @Test
     void checkArtifactFilterWithClassifier() throws Exception {
-        File outputFolder = new File("target/filters/");
-        FileUtils.deleteDirectory(outputFolder);
-        ArtifactStubFactory fact = new ArtifactStubFactory(outputFolder, false);
 
-        Set<Artifact> artifacts = fact.getClassifiedArtifacts();
+        Set<Dependency> artifacts = DependencyStubs.classifiedDependencies();
         FilterArtifacts fa = new FilterArtifacts();
         fa.addFilter(new ClassifierFilter("", "four"));
-        Set<Artifact> results = fa.filter(artifacts);
+        Set<Dependency> results = fa.filter(artifacts);
         assertEquals(3, results.size());
         fa.addFilter(new ClassifierFilter("two,three", ""));
         results = fa.filter(artifacts);

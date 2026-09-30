@@ -18,7 +18,7 @@
  */
 package org.apache.maven.shared.artifact.filter.collection;
 
-import org.apache.maven.artifact.Artifact;
+import org.apache.maven.api.Dependency;
 
 /**
  * Filter on ArtifactId name
@@ -39,7 +39,7 @@ public class ArtifactIdFilter extends AbstractArtifactFeatureFilter {
 
     /** {@inheritDoc} */
     @Override
-    protected String getArtifactFeature(Artifact artifact) {
+    protected String getArtifactFeature(Dependency artifact) {
         return artifact.getArtifactId();
     }
 }

@@ -19,12 +19,11 @@
 package org.apache.maven.shared.artifact.filter;
 
 import java.util.List;
+import java.util.function.Predicate;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
-import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
-import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
-import org.apache.maven.artifact.versioning.VersionRange;
+import org.apache.maven.api.Dependency;
+import org.eclipse.aether.util.version.GenericVersionScheme;
+import org.eclipse.aether.version.InvalidVersionSpecificationException;
 
 /**
  * Filter to include or exclude artifacts from a list of patterns. The artifact pattern syntax is of the form:
@@ -43,7 +42,9 @@ import org.apache.maven.artifact.versioning.VersionRange;
  *
  * @author <a href="mailto:markhobson@gmail.com">Mark Hobson</a>
  */
-public abstract class AbstractStrictPatternArtifactFilter implements ArtifactFilter {
+public abstract class AbstractStrictPatternArtifactFilter implements Predicate<Dependency> {
+    private static final GenericVersionScheme VERSION_SCHEME = new GenericVersionScheme();
+
     // fields -----------------------------------------------------------------
 
     /**
@@ -76,7 +77,7 @@ public abstract class AbstractStrictPatternArtifactFilter implements ArtifactFil
     // ArtifactFilter methods -------------------------------------------------
 
     /** {@inheritDoc} */
-    public boolean include(Artifact artifact) {
+    public boolean test(Dependency artifact) {
         boolean matched = false;
 
         for (String pattern : patterns) {
@@ -100,9 +101,12 @@ public abstract class AbstractStrictPatternArtifactFilter implements ArtifactFil
      *            the pattern to match, as defined above
      * @return <code>true</code> if the specified artifact is matched by the specified pattern
      */
-    private boolean include(Artifact artifact, String pattern) {
+    private boolean include(Dependency artifact, String pattern) {
         String[] tokens = new String[] {
-            artifact.getGroupId(), artifact.getArtifactId(), artifact.getType(), artifact.getBaseVersion()
+            artifact.getGroupId(),
+            artifact.getArtifactId(),
+            artifact.getType().id(),
+            artifact.getBaseVersion().toString()
         };
 
         String[] patternTokens = pattern.split(":");
@@ -163,7 +167,7 @@ public abstract class AbstractStrictPatternArtifactFilter implements ArtifactFil
 
     private boolean isVersionIncludedInRange(final String version, final String range) {
         try {
-            return VersionRange.createFromVersionSpec(range).containsVersion(new DefaultArtifactVersion(version));
+            return VERSION_SCHEME.parseVersionConstraint(range).containsVersion(VERSION_SCHEME.parseVersion(version));
         } catch (InvalidVersionSpecificationException e) {
             return false;
         }

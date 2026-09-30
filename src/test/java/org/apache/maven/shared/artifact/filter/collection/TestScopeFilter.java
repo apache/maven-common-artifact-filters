@@ -20,8 +20,8 @@ package org.apache.maven.shared.artifact.filter.collection;
 
 import java.util.Set;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.plugin.testing.ArtifactStubFactory;
+import org.apache.maven.api.Dependency;
+import org.apache.maven.shared.artifact.filter.DependencyStubs;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -34,102 +34,101 @@ import static org.junit.jupiter.api.Assertions.fail;
  * @author <a href="mailto:brianf@apache.org">Brian Fox</a>
  */
 class TestScopeFilter {
-    Set<Artifact> artifacts;
+    Set<Dependency> artifacts;
 
     @BeforeEach
     void setUp() throws Exception {
-        ArtifactStubFactory factory = new ArtifactStubFactory(null, false);
-        artifacts = factory.getScopedArtifacts();
+        artifacts = DependencyStubs.scopedDependencies();
     }
 
     @Test
     void checkScopeCompile() throws Exception {
-        ScopeFilter filter = new ScopeFilter(Artifact.SCOPE_COMPILE, null);
-        Set<Artifact> result = filter.filter(artifacts);
+        ScopeFilter filter = new ScopeFilter("compile", null);
+        Set<Dependency> result = filter.filter(artifacts);
         assertEquals(3, result.size());
     }
 
     @Test
     void checkScopeRuntime() throws Exception {
-        ScopeFilter filter = new ScopeFilter(Artifact.SCOPE_RUNTIME, null);
-        Set<Artifact> result = filter.filter(artifacts);
+        ScopeFilter filter = new ScopeFilter("runtime", null);
+        Set<Dependency> result = filter.filter(artifacts);
         assertEquals(2, result.size());
     }
 
     @Test
     void checkScopeTest() throws Exception {
-        ScopeFilter filter = new ScopeFilter(Artifact.SCOPE_TEST, null);
-        Set<Artifact> result = filter.filter(artifacts);
+        ScopeFilter filter = new ScopeFilter("test", null);
+        Set<Dependency> result = filter.filter(artifacts);
         assertEquals(5, result.size());
     }
 
     @Test
     void checkScopeProvided() throws Exception {
-        ScopeFilter filter = new ScopeFilter(Artifact.SCOPE_PROVIDED, null);
-        Set<Artifact> result = filter.filter(artifacts);
+        ScopeFilter filter = new ScopeFilter("provided", null);
+        Set<Dependency> result = filter.filter(artifacts);
         assertFalse(result.isEmpty());
-        for (Artifact artifact : result) {
-            assertEquals(Artifact.SCOPE_PROVIDED, artifact.getScope());
+        for (Dependency artifact : result) {
+            assertEquals("provided", artifact.getScope().id());
         }
     }
 
     @Test
     void checkScopeSystem() throws Exception {
-        ScopeFilter filter = new ScopeFilter(Artifact.SCOPE_SYSTEM, null);
-        Set<Artifact> result = filter.filter(artifacts);
+        ScopeFilter filter = new ScopeFilter("system", null);
+        Set<Dependency> result = filter.filter(artifacts);
         assertFalse(result.isEmpty());
-        for (Artifact artifact : result) {
-            assertEquals(Artifact.SCOPE_SYSTEM, artifact.getScope());
+        for (Dependency artifact : result) {
+            assertEquals("system", artifact.getScope().id());
         }
     }
 
     @Test
     void checkScopeFilterNull() throws Exception {
         ScopeFilter filter = new ScopeFilter(null, null);
-        Set<Artifact> result = filter.filter(artifacts);
+        Set<Dependency> result = filter.filter(artifacts);
         assertEquals(5, result.size());
     }
 
     @Test
     void checkScopeFilterEmpty() throws Exception {
         ScopeFilter filter = new ScopeFilter("", "");
-        Set<Artifact> result = filter.filter(artifacts);
+        Set<Dependency> result = filter.filter(artifacts);
         assertEquals(5, result.size());
     }
 
     @Test
     void checkExcludeProvided() throws Exception {
-        ScopeFilter filter = new ScopeFilter("", Artifact.SCOPE_PROVIDED);
-        Set<Artifact> result = filter.filter(artifacts);
+        ScopeFilter filter = new ScopeFilter("", "provided");
+        Set<Dependency> result = filter.filter(artifacts);
         assertNotNull(result);
         assertFalse(result.isEmpty());
-        for (Artifact artifact : result) {
-            assertFalse(Artifact.SCOPE_PROVIDED.equalsIgnoreCase(artifact.getScope()));
+        for (Dependency artifact : result) {
+            assertFalse("provided".equalsIgnoreCase(artifact.getScope().id()));
         }
     }
 
     @Test
     void checkExcludeSystem() throws Exception {
-        ScopeFilter filter = new ScopeFilter("", Artifact.SCOPE_SYSTEM);
-        Set<Artifact> result = filter.filter(artifacts);
+        ScopeFilter filter = new ScopeFilter("", "system");
+        Set<Dependency> result = filter.filter(artifacts);
         assertNotNull(result);
         assertFalse(result.isEmpty());
-        for (Artifact artifact : result) {
-            assertFalse(Artifact.SCOPE_SYSTEM.equalsIgnoreCase(artifact.getScope()));
+        for (Dependency artifact : result) {
+            assertFalse("system".equalsIgnoreCase(artifact.getScope().id()));
         }
     }
 
     @Test
     void checkExcludeCompile() throws Exception {
-        ScopeFilter filter = new ScopeFilter("", Artifact.SCOPE_COMPILE);
-        Set<Artifact> result = filter.filter(artifacts);
+        ScopeFilter filter = new ScopeFilter("", "compile");
+        Set<Dependency> result = filter.filter(artifacts);
         assertEquals(2, result.size());
     }
 
     @Test
     void checkExcludeTest() {
         try {
-            ScopeFilter filter = new ScopeFilter("", Artifact.SCOPE_TEST);
+            ScopeFilter filter = new ScopeFilter("", "test");
             filter.filter(artifacts);
             fail("Expected an Exception");
         } catch (ArtifactFilterException ignored) {

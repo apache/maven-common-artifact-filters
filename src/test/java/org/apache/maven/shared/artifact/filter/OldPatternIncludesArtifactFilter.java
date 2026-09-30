@@ -23,13 +23,12 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.ArtifactUtils;
-import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
-import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
-import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
-import org.apache.maven.artifact.versioning.VersionRange;
+import org.apache.maven.api.Dependency;
+import org.apache.maven.shared.artifact.filter.internal.Utils;
+import org.eclipse.aether.util.version.GenericVersionScheme;
+import org.eclipse.aether.version.InvalidVersionSpecificationException;
 import org.slf4j.Logger;
 
 /**
@@ -38,7 +37,7 @@ import org.slf4j.Logger;
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  * @see StrictPatternIncludesArtifactFilter
  */
-public class OldPatternIncludesArtifactFilter implements ArtifactFilter, StatisticsReportingArtifactFilter {
+public class OldPatternIncludesArtifactFilter implements Predicate<Dependency>, StatisticsReportingArtifactFilter {
     private final List<String> positivePatterns;
 
     private final List<String> negativePatterns;
@@ -79,11 +78,11 @@ public class OldPatternIncludesArtifactFilter implements ArtifactFilter, Statist
     }
 
     /** {@inheritDoc} */
-    public boolean include(final Artifact artifact) {
+    public boolean test(final Dependency artifact) {
         final boolean shouldInclude = patternMatches(artifact);
 
         if (!shouldInclude) {
-            addFilteredArtifactId(artifact.getId());
+            addFilteredArtifactId(Utils.getId(artifact));
         }
 
         return shouldInclude;
@@ -93,7 +92,7 @@ public class OldPatternIncludesArtifactFilter implements ArtifactFilter, Statist
      * @param artifact to check for.
      * @return true if the match is true false otherwise.
      */
-    protected boolean patternMatches(final Artifact artifact) {
+    protected boolean patternMatches(final Dependency artifact) {
         return positiveMatch(artifact) == Boolean.TRUE || negativeMatch(artifact) == Boolean.FALSE;
     }
 
@@ -104,7 +103,7 @@ public class OldPatternIncludesArtifactFilter implements ArtifactFilter, Statist
         filteredArtifactIds.add(artifactId);
     }
 
-    private Boolean negativeMatch(final Artifact artifact) {
+    private Boolean negativeMatch(final Dependency artifact) {
         if (negativePatterns == null || negativePatterns.isEmpty()) {
             return null;
         } else {
@@ -116,7 +115,7 @@ public class OldPatternIncludesArtifactFilter implements ArtifactFilter, Statist
      * @param artifact check for positive match.
      * @return true/false.
      */
-    protected Boolean positiveMatch(final Artifact artifact) {
+    protected Boolean positiveMatch(final Dependency artifact) {
         if (positivePatterns == null || positivePatterns.isEmpty()) {
             return null;
         } else {
@@ -124,10 +123,10 @@ public class OldPatternIncludesArtifactFilter implements ArtifactFilter, Statist
         }
     }
 
-    private boolean match(final Artifact artifact, final List<String> patterns) {
-        final String shortId = ArtifactUtils.versionlessKey(artifact);
-        final String id = artifact.getDependencyConflictId();
-        final String wholeId = artifact.getId();
+    private boolean match(final Dependency artifact, final List<String> patterns) {
+        final String shortId = artifact.getGroupId() + ":" + artifact.getArtifactId();
+        final String id = Utils.getConflictId(artifact);
+        final String wholeId = Utils.getId(artifact);
 
         if (matchAgainst(wholeId, patterns, false)) {
             return true;
@@ -139,18 +138,6 @@ public class OldPatternIncludesArtifactFilter implements ArtifactFilter, Statist
 
         if (matchAgainst(shortId, patterns, false)) {
             return true;
-        }
-
-        if (actTransitively) {
-            final List<String> depTrail = artifact.getDependencyTrail();
-
-            if (depTrail != null && depTrail.size() > 1) {
-                for (String trailItem : depTrail) {
-                    if (matchAgainst(trailItem, patterns, true)) {
-                        return true;
-                    }
-                }
-            }
         }
 
         return false;
@@ -268,7 +255,9 @@ public class OldPatternIncludesArtifactFilter implements ArtifactFilter, Statist
 
     private boolean isVersionIncludedInRange(final String version, final String range) {
         try {
-            return VersionRange.createFromVersionSpec(range).containsVersion(new DefaultArtifactVersion(version));
+            return new GenericVersionScheme()
+                    .parseVersionConstraint(range)
+                    .containsVersion(new GenericVersionScheme().parseVersion(version));
         } catch (final InvalidVersionSpecificationException e) {
             return false;
         }

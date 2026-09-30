@@ -20,8 +20,8 @@ package org.apache.maven.shared.artifact.filter.collection;
 
 import java.util.Set;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.plugin.testing.ArtifactStubFactory;
+import org.apache.maven.api.Dependency;
+import org.apache.maven.shared.artifact.filter.DependencyStubs;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -36,8 +36,7 @@ class TestArtifactFilter extends AbstractArtifactFeatureFilterTest {
     @BeforeEach
     void setUp() throws Exception {
         filterClass = ArtifactIdFilter.class;
-        ArtifactStubFactory factory = new ArtifactStubFactory(null, false);
-        artifacts = factory.getArtifactArtifacts();
+        artifacts = DependencyStubs.artifactIdDependencies();
     }
 
     @Test
@@ -47,16 +46,16 @@ class TestArtifactFilter extends AbstractArtifactFeatureFilterTest {
 
     @Test
     public void checkFiltering() throws Exception {
-        Set<Artifact> result = filtering();
-        for (Artifact artifact : result) {
+        Set<Dependency> result = filtering();
+        for (Dependency artifact : result) {
             assertEquals("two", artifact.getArtifactId());
         }
     }
 
     @Test
     public void checkFiltering2() throws Exception {
-        Set<Artifact> result = filtering2();
-        for (Artifact artifact : result) {
+        Set<Dependency> result = filtering2();
+        for (Dependency artifact : result) {
             assertTrue(artifact.getArtifactId().equals("two")
                     || artifact.getArtifactId().equals("four"));
         }

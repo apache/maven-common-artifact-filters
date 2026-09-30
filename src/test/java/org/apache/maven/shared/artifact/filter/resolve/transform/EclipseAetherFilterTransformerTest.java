@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.shared.artifact.filter.resolve.AbstractFilter;
 import org.apache.maven.shared.artifact.filter.resolve.AndFilter;
 import org.apache.maven.shared.artifact.filter.resolve.ExclusionsFilter;
@@ -145,7 +144,7 @@ class EclipseAetherFilterTransformerTest {
         AbstractFilter snapshotFilter = new AbstractFilter() {
             @Override
             public boolean accept(Node node, List<Node> parents) {
-                return ArtifactUtils.isSnapshot(node.getDependency().getVersion());
+                return node.getDependency().getVersion().endsWith("-SNAPSHOT");
             }
         };
 

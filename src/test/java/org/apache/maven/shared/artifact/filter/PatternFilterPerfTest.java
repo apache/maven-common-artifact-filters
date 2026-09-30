@@ -20,10 +20,9 @@ package org.apache.maven.shared.artifact.filter;
 
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.DefaultArtifact;
-import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
+import org.apache.maven.api.Dependency;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Level;
@@ -59,14 +58,14 @@ public class PatternFilterPerfTest {
         })
         private String patterns;
 
-        ArtifactFilter filter;
-        Artifact artifact;
+        Predicate<Dependency> filter;
+        Dependency artifact;
 
         @Setup(Level.Invocation)
         public void setup() {
             filter = new OldPatternIncludesArtifactFilter(
                     Arrays.asList(getPatterns().split(",")));
-            artifact = new DefaultArtifact("groupId", "artifact-99", "1.0", "runtime", "jar", "", null);
+            artifact = DependencyStubs.dependency("groupId", "artifact-99", "1.0", "runtime", "jar", "");
         }
 
         public String getPatterns() {
@@ -92,14 +91,14 @@ public class PatternFilterPerfTest {
         })
         private String patterns;
 
-        ArtifactFilter filter;
-        Artifact artifact;
+        Predicate<Dependency> filter;
+        Dependency artifact;
 
         @Setup(Level.Invocation)
         public void setup() {
             filter = new GNPatternIncludesArtifactFilter(
                     Arrays.asList(getPatterns().split(",")));
-            artifact = new DefaultArtifact("groupId", "artifact-99", "1.0", "runtime", "jar", "", null);
+            artifact = DependencyStubs.dependency("groupId", "artifact-99", "1.0", "runtime", "jar", "");
         }
 
         public String getPatterns() {
@@ -125,14 +124,14 @@ public class PatternFilterPerfTest {
         })
         private String patterns;
 
-        ArtifactFilter filter;
-        Artifact artifact;
+        Predicate<Dependency> filter;
+        Dependency artifact;
 
         @Setup(Level.Invocation)
         public void setup() {
             filter = new PatternIncludesArtifactFilter(
                     Arrays.asList(getPatterns().split(",")));
-            artifact = new DefaultArtifact("groupId", "artifact-99", "1.0", "runtime", "jar", "", null);
+            artifact = DependencyStubs.dependency("groupId", "artifact-99", "1.0", "runtime", "jar", "");
         }
 
         public String getPatterns() {
@@ -146,17 +145,17 @@ public class PatternFilterPerfTest {
 
     @Benchmark
     public boolean newPatternTest(NewPatternState state) {
-        return state.filter.include(state.artifact);
+        return state.filter.test(state.artifact);
     }
 
     @Benchmark
     public boolean gnPatternTest(GNPatternState state) {
-        return state.filter.include(state.artifact);
+        return state.filter.test(state.artifact);
     }
 
     @Benchmark
     public boolean oldPatternTest(OldPatternState state) {
-        return state.filter.include(state.artifact);
+        return state.filter.test(state.artifact);
     }
 
     public static void main(String... args) throws RunnerException {

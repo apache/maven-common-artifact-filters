@@ -22,17 +22,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
-import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
-import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
-import org.apache.maven.artifact.versioning.VersionRange;
+import org.apache.maven.api.Dependency;
+import org.apache.maven.shared.artifact.filter.internal.Utils;
+import org.eclipse.aether.util.version.GenericVersionScheme;
+import org.eclipse.aether.version.InvalidVersionSpecificationException;
+import org.eclipse.aether.version.VersionConstraint;
 import org.slf4j.Logger;
 
 import static java.util.Objects.requireNonNull;
@@ -43,18 +43,15 @@ import static java.util.Objects.requireNonNull;
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  * @see StrictPatternIncludesArtifactFilter
  */
-public class PatternIncludesArtifactFilter implements ArtifactFilter, StatisticsReportingArtifactFilter {
+public class PatternIncludesArtifactFilter implements Predicate<Dependency>, StatisticsReportingArtifactFilter {
     private static final String SEP = System.lineSeparator();
+
+    private static final GenericVersionScheme VERSION_SCHEME = new GenericVersionScheme();
 
     /**
      * Holds the set of compiled patterns
      */
     private final Set<Pattern> patterns;
-
-    /**
-     * Whether the dependency trail should be checked
-     */
-    private final boolean actTransitively;
 
     /**
      * Set of patterns that have been triggered
@@ -64,7 +61,7 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
     /**
      * Set of artifacts that have been filtered out
      */
-    private final List<Artifact> filteredArtifact = new ArrayList<>();
+    private final List<Dependency> filteredArtifact = new ArrayList<>();
 
     /**
      * <p>Constructor for PatternIncludesArtifactFilter.</p>
@@ -72,17 +69,6 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
      * @param patterns The pattern to be used.
      */
     public PatternIncludesArtifactFilter(final Collection<String> patterns) {
-        this(patterns, false);
-    }
-
-    /**
-     * <p>Constructor for PatternIncludesArtifactFilter.</p>
-     *
-     * @param patterns        The pattern to be used.
-     * @param actTransitively transitive yes/no.
-     */
-    public PatternIncludesArtifactFilter(final Collection<String> patterns, final boolean actTransitively) {
-        this.actTransitively = actTransitively;
         final Set<Pattern> pat = new LinkedHashSet<>();
         if (patterns != null && !patterns.isEmpty()) {
             for (String pattern : patterns) {
@@ -94,7 +80,7 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
     }
 
     @Override
-    public boolean include(final Artifact artifact) {
+    public boolean test(final Dependency artifact) {
         final boolean shouldInclude = patternMatches(artifact);
 
         if (!shouldInclude) {
@@ -104,24 +90,10 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
         return shouldInclude;
     }
 
-    protected boolean patternMatches(final Artifact artifact) {
+    protected boolean patternMatches(final Dependency artifact) {
         Boolean match = match(adapt(artifact));
         if (match != null) {
             return match;
-        }
-
-        if (actTransitively) {
-            final List<String> depTrail = artifact.getDependencyTrail();
-
-            if (depTrail != null && depTrail.size() > 1) {
-                for (String trailItem : depTrail) {
-                    Artifactoid artifactoid = adapt(trailItem);
-                    match = match(artifactoid);
-                    if (match != null) {
-                        return match;
-                    }
-                }
-            }
         }
 
         return false;
@@ -143,7 +115,7 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
      *
      * @param artifact add artifact to the filtered artifacts list.
      */
-    protected void addFilteredArtifact(final Artifact artifact) {
+    protected void addFilteredArtifact(final Dependency artifact) {
         filteredArtifact.add(artifact);
     }
 
@@ -196,8 +168,8 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
             final StringBuilder buffer =
                     new StringBuilder("The following artifacts were removed by this " + getFilterDescription() + ": ");
 
-            for (Artifact artifactId : filteredArtifact) {
-                buffer.append(SEP).append(artifactId.getId());
+            for (Dependency artifactId : filteredArtifact) {
+                buffer.append(SEP).append(Utils.getId(artifactId));
             }
 
             logger.debug(buffer.toString());
@@ -228,7 +200,7 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
         String getCoordinate(Coordinate coordinate);
     }
 
-    private static Artifactoid adapt(final Artifact artifact) {
+    private static Artifactoid adapt(final Dependency artifact) {
         requireNonNull(artifact);
         return coordinate -> {
             requireNonNull(coordinate);
@@ -238,41 +210,14 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
                 case ARTIFACT_ID:
                     return artifact.getArtifactId();
                 case BASE_VERSION:
-                    return artifact.getBaseVersion();
+                    return artifact.getBaseVersion().toString();
                 case CLASSIFIER:
-                    return artifact.hasClassifier() ? artifact.getClassifier() : null;
+                    return Utils.getClassifier(artifact);
                 case TYPE:
-                    return artifact.getType();
+                    return artifact.getType().id();
                 default:
             }
             throw new IllegalArgumentException("unknown coordinate: " + coordinate);
-        };
-    }
-
-    /**
-     * Parses elements of {@link Artifact#getDependencyTrail()} list, they are either {@code G:A:T:V} or if artifact
-     * has classifier {@code G:A:T:C:V}, so strictly 4 or 5 segments only.
-     */
-    private static Artifactoid adapt(final String depTrailString) {
-        requireNonNull(depTrailString);
-        String[] coordinates = depTrailString.split(":");
-        if (coordinates.length != 4 && coordinates.length != 5) {
-            throw new IllegalArgumentException("Bad dep trail string: " + depTrailString);
-        }
-        final HashMap<Coordinate, String> map = new HashMap<>();
-        map.put(Coordinate.GROUP_ID, coordinates[0]);
-        map.put(Coordinate.ARTIFACT_ID, coordinates[1]);
-        map.put(Coordinate.TYPE, coordinates[2]);
-        if (coordinates.length == 5) {
-            map.put(Coordinate.CLASSIFIER, coordinates[3]);
-            map.put(Coordinate.BASE_VERSION, coordinates[4]);
-        } else {
-            map.put(Coordinate.BASE_VERSION, coordinates[3]);
-        }
-
-        return coordinate -> {
-            requireNonNull(coordinate);
-            return map.get(coordinate);
         };
     }
 
@@ -457,7 +402,7 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
 
         private final boolean containsAsterisk;
 
-        private final VersionRange optionalVersionRange;
+        private final VersionConstraint optionalVersionRange;
 
         private CoordinateMatchingPattern(String pattern, String token, EnumSet<Coordinate> coordinates) {
             super(pattern);
@@ -469,7 +414,7 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
                     && coordinates.equals(EnumSet.of(Coordinate.BASE_VERSION))
                     && (token.startsWith("[") || token.startsWith("("))) {
                 try {
-                    this.optionalVersionRange = VersionRange.createFromVersionSpec(token);
+                    this.optionalVersionRange = VERSION_SCHEME.parseVersionConstraint(token);
                 } catch (InvalidVersionSpecificationException e) {
                     throw new IllegalArgumentException("Wrong version spec: " + token, e);
                 }
@@ -483,8 +428,12 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
             for (Coordinate coordinate : coordinates) {
                 String value = artifactoid.getCoordinate(coordinate);
                 if (Coordinate.BASE_VERSION == coordinate && optionalVersionRange != null) {
-                    if (optionalVersionRange.containsVersion(new DefaultArtifactVersion(value))) {
-                        return true;
+                    try {
+                        if (optionalVersionRange.containsVersion(VERSION_SCHEME.parseVersion(value))) {
+                            return true;
+                        }
+                    } catch (InvalidVersionSpecificationException e) {
+                        // an unparsable version cannot be in the range
                     }
                 } else if (containsWildcard) {
                     if (match(token, containsAsterisk, value)) {

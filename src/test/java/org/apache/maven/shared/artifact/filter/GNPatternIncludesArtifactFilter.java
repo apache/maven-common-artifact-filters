@@ -26,12 +26,12 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Predicate;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
-import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
-import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
-import org.apache.maven.artifact.versioning.VersionRange;
+import org.apache.maven.api.Dependency;
+import org.apache.maven.shared.artifact.filter.internal.Utils;
+import org.eclipse.aether.util.version.GenericVersionScheme;
+import org.eclipse.aether.version.InvalidVersionSpecificationException;
 import org.slf4j.Logger;
 
 /**
@@ -40,7 +40,7 @@ import org.slf4j.Logger;
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  * @see StrictPatternIncludesArtifactFilter
  */
-public class GNPatternIncludesArtifactFilter implements ArtifactFilter, StatisticsReportingArtifactFilter {
+public class GNPatternIncludesArtifactFilter implements Predicate<Dependency>, StatisticsReportingArtifactFilter {
     /** Holds the set of compiled patterns */
     private final Set<Pattern> patterns;
 
@@ -51,7 +51,7 @@ public class GNPatternIncludesArtifactFilter implements ArtifactFilter, Statisti
     private final Set<Pattern> patternsTriggered = new HashSet<>();
 
     /** Set of artifacts that have been filtered out */
-    private final List<Artifact> filteredArtifact = new ArrayList<>();
+    private final List<Dependency> filteredArtifact = new ArrayList<>();
 
     /**
      * <p>Constructor for PatternIncludesArtifactFilter.</p>
@@ -82,7 +82,7 @@ public class GNPatternIncludesArtifactFilter implements ArtifactFilter, Statisti
     }
 
     /** {@inheritDoc} */
-    public boolean include(final Artifact artifact) {
+    public boolean test(final Dependency artifact) {
         final boolean shouldInclude = patternMatches(artifact);
 
         if (!shouldInclude) {
@@ -98,32 +98,18 @@ public class GNPatternIncludesArtifactFilter implements ArtifactFilter, Statisti
      * @param artifact to check for.
      * @return true if the match is true false otherwise.
      */
-    protected boolean patternMatches(final Artifact artifact) {
+    protected boolean patternMatches(final Dependency artifact) {
         // Check if the main artifact matches
         char[][] artifactGatvCharArray = new char[][] {
             emptyOrChars(artifact.getGroupId()),
             emptyOrChars(artifact.getArtifactId()),
-            emptyOrChars(artifact.getType()),
-            emptyOrChars(artifact.getClassifier()),
-            emptyOrChars(artifact.getBaseVersion())
+            emptyOrChars(artifact.getType().id()),
+            emptyOrChars(Utils.getClassifier(artifact)),
+            emptyOrChars(artifact.getBaseVersion().toString())
         };
         Boolean match = match(artifactGatvCharArray);
         if (match != null) {
             return match;
-        }
-
-        if (actTransitively) {
-            final List<String> depTrail = artifact.getDependencyTrail();
-
-            if (depTrail != null && depTrail.size() > 1) {
-                for (String trailItem : depTrail) {
-                    char[][] depGatvCharArray = tokenizeAndSplit(trailItem);
-                    match = match(depGatvCharArray);
-                    if (match != null) {
-                        return match;
-                    }
-                }
-            }
         }
 
         return false;
@@ -145,7 +131,7 @@ public class GNPatternIncludesArtifactFilter implements ArtifactFilter, Statisti
      *
      * @param artifact add artifact to the filtered artifacts list.
      */
-    protected void addFilteredArtifact(final Artifact artifact) {
+    protected void addFilteredArtifact(final Dependency artifact) {
         filteredArtifact.add(artifact);
     }
 
@@ -209,8 +195,8 @@ public class GNPatternIncludesArtifactFilter implements ArtifactFilter, Statisti
             final StringBuilder buffer =
                     new StringBuilder("The following artifacts were removed by this " + getFilterDescription() + ": ");
 
-            for (Artifact artifactId : filteredArtifact) {
-                buffer.append('\n').append(artifactId.getId());
+            for (Dependency artifactId : filteredArtifact) {
+                buffer.append('\n').append(Utils.getId(artifactId));
             }
 
             logger.debug(buffer.toString());
@@ -383,7 +369,9 @@ public class GNPatternIncludesArtifactFilter implements ArtifactFilter, Statisti
 
     static boolean isVersionIncludedInRange(final String version, final String range) {
         try {
-            return VersionRange.createFromVersionSpec(range).containsVersion(new DefaultArtifactVersion(version));
+            return new GenericVersionScheme()
+                    .parseVersionConstraint(range)
+                    .containsVersion(new GenericVersionScheme().parseVersion(version));
         } catch (final InvalidVersionSpecificationException e) {
             return false;
         }

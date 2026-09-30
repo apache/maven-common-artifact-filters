@@ -21,11 +21,7 @@ package org.apache.maven.shared.artifact.filter;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.DefaultArtifact;
-import org.apache.maven.artifact.handler.ArtifactHandler;
-import org.apache.maven.artifact.handler.DefaultArtifactHandler;
-import org.apache.maven.artifact.versioning.VersionRange;
+import org.apache.maven.api.Dependency;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
@@ -39,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @see AbstractStrictPatternArtifactFilter
  */
 public abstract class AbstractStrictPatternArtifactFilterTest {
-    protected Artifact artifact;
+    protected Dependency artifact;
 
     @BeforeEach
     public void setUp() {
@@ -346,11 +342,8 @@ public abstract class AbstractStrictPatternArtifactFilterTest {
      *            the version for the new artifact
      * @return the artifact
      */
-    protected Artifact createArtifact(String groupId, String artifactId, String type, String version) {
-        VersionRange versionRange = VersionRange.createFromVersion(version);
-        ArtifactHandler handler = new DefaultArtifactHandler();
-
-        return new DefaultArtifact(groupId, artifactId, versionRange, null, type, null, handler);
+    protected Dependency createArtifact(String groupId, String artifactId, String type, String version) {
+        return DependencyStubs.dependency(groupId, artifactId, version, "compile", type, "");
     }
 
     /**
@@ -391,7 +384,7 @@ public abstract class AbstractStrictPatternArtifactFilterTest {
         List<String> patterns = Collections.singletonList(pattern);
         AbstractStrictPatternArtifactFilter filter = createFilter(patterns);
 
-        assertEquals(expected, filter.include(artifact));
+        assertEquals(expected, filter.test(artifact));
     }
 
     /**
