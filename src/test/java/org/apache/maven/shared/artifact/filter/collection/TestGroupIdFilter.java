@@ -18,6 +18,7 @@
  */
 package org.apache.maven.shared.artifact.filter.collection;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
@@ -109,5 +110,23 @@ class TestGroupIdFilter extends AbstractArtifactFeatureFilterTest {
         Set<Artifact> result = filter.filter(artifacts);
 
         assertEquals(2, result.size());
+    }
+
+    @Test
+    void exactMatchIgnoresLongerGroupIds() throws Exception {
+        ArtifactStubFactory factory = new ArtifactStubFactory(null, false);
+        Set<Artifact> artifacts = new HashSet<>();
+        artifacts.add(factory.createArtifact("org.example", "a", "1.0"));
+        artifacts.add(factory.createArtifact("org.example.foo", "b", "1.0"));
+
+        assertEquals(2, new GroupIdFilter("org.example", null).filter(artifacts).size());
+
+        Set<Artifact> included = new GroupIdFilter("org.example", null, true).filter(artifacts);
+        assertEquals(1, included.size());
+        assertEquals("org.example", included.iterator().next().getGroupId());
+
+        Set<Artifact> remaining = new GroupIdFilter(null, "org.example", true).filter(artifacts);
+        assertEquals(1, remaining.size());
+        assertEquals("org.example.foo", remaining.iterator().next().getGroupId());
     }
 }

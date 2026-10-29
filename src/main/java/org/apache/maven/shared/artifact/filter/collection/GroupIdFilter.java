@@ -28,6 +28,8 @@ import org.apache.maven.artifact.Artifact;
  */
 public class GroupIdFilter extends AbstractArtifactFeatureFilter {
 
+    private final boolean exactMatch;
+
     /**
      * Construction will setup the super call with a filtertype of 'GroupId'
      *
@@ -35,7 +37,21 @@ public class GroupIdFilter extends AbstractArtifactFeatureFilter {
      * @param exclude comma separated list of groupIds to exclude, may be {@code null}
      */
     public GroupIdFilter(String include, String exclude) {
+        this(include, exclude, false);
+    }
+
+    /**
+     * Construction will setup the super call with a filtertype of 'GroupId'
+     *
+     * @param include comma separated list of groupIds to include, may be {@code null}
+     * @param exclude comma separated list of groupIds to exclude, may be {@code null}
+     * @param exactMatch {@code true} to match only the listed groupIds; {@code false} to also match every groupId
+     *        that starts with one of them, so that {@code org.example} matches {@code org.example.foo}
+     * @since 3.5.0
+     */
+    public GroupIdFilter(String include, String exclude, boolean exactMatch) {
         super(include, exclude);
+        this.exactMatch = exactMatch;
     }
 
     /** {@inheritDoc} */
@@ -47,6 +63,6 @@ public class GroupIdFilter extends AbstractArtifactFeatureFilter {
     /** {@inheritDoc} */
     @Override
     protected boolean compareFeatures(String lhs, String rhs) {
-        return lhs.startsWith(rhs);
+        return exactMatch ? lhs.equals(rhs) : lhs.startsWith(rhs);
     }
 }
