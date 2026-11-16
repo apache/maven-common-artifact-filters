@@ -30,6 +30,7 @@ import org.apache.maven.artifact.Artifact;
  */
 public abstract class AbstractArtifactsFilter implements ArtifactsFilter {
     /** {@inheritDoc} */
+    @Override
     public boolean isArtifactIncluded(Artifact artifact) throws ArtifactFilterException {
         Set<Artifact> set = new LinkedHashSet<>();
         set.add(artifact);

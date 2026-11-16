@@ -46,6 +46,7 @@ public class ProjectTransitivityFilter extends AbstractArtifactsFilter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Set<Artifact> filter(Set<Artifact> artifacts) {
         // why not just take the directDependencies here?
         // because if this filter is run after some other process, the

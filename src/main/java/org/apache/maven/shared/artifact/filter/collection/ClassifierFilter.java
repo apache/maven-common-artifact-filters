@@ -37,6 +37,7 @@ public class ClassifierFilter extends AbstractArtifactFeatureFilter {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected String getArtifactFeature(Artifact artifact) {
         return artifact.getClassifier();
     }

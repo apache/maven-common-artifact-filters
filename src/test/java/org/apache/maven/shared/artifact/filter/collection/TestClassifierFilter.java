@@ -39,11 +39,13 @@ class TestClassifierFilter extends AbstractArtifactFeatureFilterTest {
         artifacts = factory.getClassifiedArtifacts();
     }
 
+    @Override
     @Test
     public void checkParsing() throws Exception {
         parsing();
     }
 
+    @Override
     @Test
     public void checkFiltering() throws Exception {
         Set<Artifact> result = filtering();
@@ -53,6 +55,7 @@ class TestClassifierFilter extends AbstractArtifactFeatureFilterTest {
         }
     }
 
+    @Override
     @Test
     public void checkFiltering2() throws Exception {
         Set<Artifact> result = filtering2();
@@ -62,6 +65,7 @@ class TestClassifierFilter extends AbstractArtifactFeatureFilterTest {
         }
     }
 
+    @Override
     @Test
     public void checkFiltering3() throws Exception {
         filtering3();

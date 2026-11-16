@@ -82,6 +82,7 @@ public class ArtifactTransitivityFilter extends AbstractArtifactsFilter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Set<Artifact> filter(Set<Artifact> artifacts) {
         Set<Artifact> result = new LinkedHashSet<>();
         for (Artifact artifact : artifacts) {

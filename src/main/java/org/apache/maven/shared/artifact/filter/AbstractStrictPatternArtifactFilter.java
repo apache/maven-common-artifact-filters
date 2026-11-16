@@ -76,6 +76,7 @@ public abstract class AbstractStrictPatternArtifactFilter implements ArtifactFil
     // ArtifactFilter methods -------------------------------------------------
 
     /** {@inheritDoc} */
+    @Override
     public boolean include(Artifact artifact) {
         boolean matched = false;
 
