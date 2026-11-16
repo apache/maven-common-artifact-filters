@@ -30,6 +30,7 @@ public class StrictPatternIncludesArtifactFilterTest extends AbstractStrictPatte
     /*
      * @see org.apache.maven.shared.artifact.filter.AbstractStrictPatternArtifactFilterTest#createFilter(java.util.List)
      */
+    @Override
     protected AbstractStrictPatternArtifactFilter createFilter(List<String> patterns) {
         return new StrictPatternIncludesArtifactFilter(patterns);
     }

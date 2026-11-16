@@ -41,11 +41,13 @@ class TestGroupIdFilter extends AbstractArtifactFeatureFilterTest {
         artifacts = factory.getGroupIdArtifacts();
     }
 
+    @Override
     @Test
     public void checkParsing() throws Exception {
         parsing();
     }
 
+    @Override
     @Test
     public void checkFiltering() throws Exception {
         Set<Artifact> result = filtering();
@@ -55,6 +57,7 @@ class TestGroupIdFilter extends AbstractArtifactFeatureFilterTest {
         }
     }
 
+    @Override
     @Test
     public void checkFiltering2() throws Exception {
         Set<Artifact> result = filtering2();
@@ -64,6 +67,7 @@ class TestGroupIdFilter extends AbstractArtifactFeatureFilterTest {
         }
     }
 
+    @Override
     @Test
     public void checkFiltering3() throws Exception {
         filtering3();

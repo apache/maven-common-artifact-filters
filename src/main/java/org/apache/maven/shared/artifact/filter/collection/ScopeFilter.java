@@ -55,6 +55,7 @@ public class ScopeFilter extends AbstractArtifactsFilter {
      * This function determines if filtering needs to be performed. Excludes are
      * ignored if Includes are used.
      */
+    @Override
     public Set<Artifact> filter(Set<Artifact> artifacts) throws ArtifactFilterException {
         Set<Artifact> results = artifacts;
 

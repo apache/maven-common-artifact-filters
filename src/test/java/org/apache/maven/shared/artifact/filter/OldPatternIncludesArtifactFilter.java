@@ -79,6 +79,7 @@ public class OldPatternIncludesArtifactFilter implements ArtifactFilter, Statist
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean include(final Artifact artifact) {
         final boolean shouldInclude = patternMatches(artifact);
 
@@ -275,6 +276,7 @@ public class OldPatternIncludesArtifactFilter implements ArtifactFilter, Statist
     }
 
     /** {@inheritDoc} */
+    @Override
     public void reportMissedCriteria(final Logger logger) {
         // if there are no patterns, there is nothing to report.
         if (!positivePatterns.isEmpty() || !negativePatterns.isEmpty()) {
@@ -327,6 +329,7 @@ public class OldPatternIncludesArtifactFilter implements ArtifactFilter, Statist
     }
 
     /** {@inheritDoc} */
+    @Override
     public void reportFilteredArtifacts(final Logger logger) {
         if (!filteredArtifactIds.isEmpty() && logger.isDebugEnabled()) {
             final StringBuilder buffer =
@@ -341,6 +344,7 @@ public class OldPatternIncludesArtifactFilter implements ArtifactFilter, Statist
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean hasMissedCriteria() {
         // if there are no patterns, there is nothing to report.
         if (!positivePatterns.isEmpty() || !negativePatterns.isEmpty()) {

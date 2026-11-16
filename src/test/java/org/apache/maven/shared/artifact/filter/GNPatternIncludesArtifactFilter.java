@@ -82,6 +82,7 @@ public class GNPatternIncludesArtifactFilter implements ArtifactFilter, Statisti
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean include(final Artifact artifact) {
         final boolean shouldInclude = patternMatches(artifact);
 
@@ -150,6 +151,7 @@ public class GNPatternIncludesArtifactFilter implements ArtifactFilter, Statisti
     }
 
     /** {@inheritDoc} */
+    @Override
     public void reportMissedCriteria(final Logger logger) {
         // if there are no patterns, there is nothing to report.
         if (!patterns.isEmpty()) {
@@ -204,6 +206,7 @@ public class GNPatternIncludesArtifactFilter implements ArtifactFilter, Statisti
     }
 
     /** {@inheritDoc} */
+    @Override
     public void reportFilteredArtifacts(final Logger logger) {
         if (!filteredArtifact.isEmpty() && logger.isDebugEnabled()) {
             final StringBuilder buffer =
@@ -222,6 +225,7 @@ public class GNPatternIncludesArtifactFilter implements ArtifactFilter, Statisti
      *
      * @return a boolean.
      */
+    @Override
     public boolean hasMissedCriteria() {
         // if there are no patterns, there is nothing to report.
         if (!patterns.isEmpty()) {
@@ -710,6 +714,7 @@ public class GNPatternIncludesArtifactFilter implements ArtifactFilter, Statisti
             return translateEquals(0);
         }
 
+        @Override
         public String translateEquals(int pos) {
             return posMin == pos && posMax == pos && (pos < 3 || (token[0] != '[' && token[0] != '('))
                     ? String.valueOf(token)

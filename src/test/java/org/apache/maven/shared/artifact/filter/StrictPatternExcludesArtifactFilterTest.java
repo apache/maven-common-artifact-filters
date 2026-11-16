@@ -30,6 +30,7 @@ public class StrictPatternExcludesArtifactFilterTest extends AbstractStrictPatte
     /*
      * @see org.apache.maven.shared.artifact.filter.AbstractStrictPatternArtifactFilterTest#createFilter(java.util.List)
      */
+    @Override
     protected AbstractStrictPatternArtifactFilter createFilter(List<String> patterns) {
         return new StrictPatternExcludesArtifactFilter(patterns);
     }
@@ -38,6 +39,7 @@ public class StrictPatternExcludesArtifactFilterTest extends AbstractStrictPatte
      * @see org.apache.maven.shared.artifact.filter.AbstractStrictPatternArtifactFilterTest#assertFilter(boolean,
      *      java.lang.String)
      */
+    @Override
     protected void assertFilter(boolean expected, String pattern) {
         super.assertFilter(!expected, pattern);
     }

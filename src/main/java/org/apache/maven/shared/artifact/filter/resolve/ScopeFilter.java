@@ -108,6 +108,7 @@ public class ScopeFilter implements TransformableFilter {
      *
      * Transform this filter to a tool specific implementation
      */
+    @Override
     public <T> T transform(FilterTransformer<T> transformer) {
         return transformer.transform(this);
     }

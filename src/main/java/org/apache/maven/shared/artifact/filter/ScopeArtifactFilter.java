@@ -93,6 +93,7 @@ public class ScopeArtifactFilter implements ArtifactFilter, StatisticsReportingA
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean include(Artifact artifact) {
         boolean result = true;
 
@@ -138,6 +139,7 @@ public class ScopeArtifactFilter implements ArtifactFilter, StatisticsReportingA
      *
      * @return Information converted to a string.
      */
+    @Override
     public String toString() {
         return "Scope filter [null-scope=" + includeNullScope + ", compile=" + includeCompileScope + ", runtime="
                 + includeRuntimeScope + ", test=" + includeTestScope + ", provided=" + includeProvidedScope
@@ -146,6 +148,7 @@ public class ScopeArtifactFilter implements ArtifactFilter, StatisticsReportingA
     }
 
     /** {@inheritDoc} */
+    @Override
     public void reportFilteredArtifacts(Logger logger) {
         if (!filteredArtifactIds.isEmpty() && logger.isDebugEnabled()) {
             StringBuilder buffer = new StringBuilder("The following artifacts were removed by this filter: ");
@@ -159,6 +162,7 @@ public class ScopeArtifactFilter implements ArtifactFilter, StatisticsReportingA
     }
 
     /** {@inheritDoc} */
+    @Override
     public void reportMissedCriteria(Logger logger) {
         if (logger.isDebugEnabled()) {
             StringBuilder buffer = new StringBuilder();
@@ -200,6 +204,7 @@ public class ScopeArtifactFilter implements ArtifactFilter, StatisticsReportingA
      *
      * @return a boolean.
      */
+    @Override
     public boolean hasMissedCriteria() {
         return !nullScopeHit
                 || !compileScopeHit

@@ -58,6 +58,7 @@ public abstract class AbstractArtifactFeatureFilter extends AbstractArtifactsFil
      *
      * This function determines if filtering needs to be performed. Includes are processed before Excludes.
      */
+    @Override
     public Set<Artifact> filter(Set<Artifact> artifacts) {
         Set<Artifact> results = artifacts;
 
