@@ -429,7 +429,7 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
         }
     }
 
-    private static class AndPattern extends Pattern {
+    private static final class AndPattern extends Pattern {
         private final Pattern[] patterns;
 
         private AndPattern(String pattern, Pattern[] patterns) {
@@ -448,7 +448,7 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
         }
     }
 
-    private static class CoordinateMatchingPattern extends Pattern {
+    private static final class CoordinateMatchingPattern extends Pattern {
         private final String token;
 
         private final EnumSet<Coordinate> coordinates;
@@ -503,7 +503,7 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
     /**
      * Matches all input
      */
-    private static class MatchAllPattern extends Pattern {
+    private static final class MatchAllPattern extends Pattern {
         private MatchAllPattern(String pattern) {
             super(pattern);
         }
@@ -517,7 +517,7 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
     /**
      * Negative pattern
      */
-    private static class NegativePattern extends Pattern {
+    private static final class NegativePattern extends Pattern {
         private final Pattern inner;
 
         private NegativePattern(String pattern, Pattern inner) {
@@ -616,8 +616,8 @@ public class PatternIncludesArtifactFilter implements ArtifactFilter, Statistics
             }
             // Find the pattern between padIdxStart & padIdxTmp in str between
             // strIdxStart & strIdxEnd
-            int patLength = (patIdxTmp - patIdxStart - 1);
-            int strLength = (strIdxEnd - strIdxStart + 1);
+            int patLength = patIdxTmp - patIdxStart - 1;
+            int strLength = strIdxEnd - strIdxStart + 1;
             int foundIdx = -1;
             strLoop:
             for (int i = 0; i <= strLength - patLength; i++) {

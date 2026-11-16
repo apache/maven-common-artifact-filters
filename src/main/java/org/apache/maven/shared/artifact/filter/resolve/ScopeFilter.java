@@ -41,8 +41,8 @@ public class ScopeFilter implements TransformableFilter {
      * @param excluded specific scopes to exclude or {@code null} to exclude none
      */
     public ScopeFilter(Collection<String> included, Collection<String> excluded) {
-        this.included = (included == null ? null : Collections.unmodifiableCollection(included));
-        this.excluded = (excluded == null ? null : Collections.unmodifiableCollection(excluded));
+        this.included = included == null ? null : Collections.unmodifiableCollection(included);
+        this.excluded = excluded == null ? null : Collections.unmodifiableCollection(excluded);
     }
 
     /**
