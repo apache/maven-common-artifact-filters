@@ -184,6 +184,6 @@ public abstract class AbstractArtifactFeatureFilter extends AbstractArtifactsFil
      * @return boolean true if features match
      */
     protected boolean compareFeatures(String lhs, String rhs) {
-        return (Objects.equals(lhs, rhs));
+        return Objects.equals(lhs, rhs);
     }
 }
