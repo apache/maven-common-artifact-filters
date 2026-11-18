@@ -119,7 +119,7 @@
       <!-- used by maven-plugin-testing-harness -->
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-archiver</artifactId>
-      <version>4.15.0</version>
+      <version>4.16.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
