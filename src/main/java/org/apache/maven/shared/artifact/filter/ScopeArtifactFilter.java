@@ -48,17 +48,17 @@ public class ScopeArtifactFilter implements ArtifactFilter, StatisticsReportingA
 
     private boolean includeNullScope = true;
 
-    private boolean nullScopeHit = false;
+    private boolean nullScopeHit;
 
-    private boolean compileScopeHit = false;
+    private boolean compileScopeHit;
 
-    private boolean runtimeScopeHit = false;
+    private boolean runtimeScopeHit;
 
-    private boolean testScopeHit = false;
+    private boolean testScopeHit;
 
-    private boolean providedScopeHit = false;
+    private boolean providedScopeHit;
 
-    private boolean systemScopeHit = false;
+    private boolean systemScopeHit;
 
     private final List<String> filteredArtifactIds = new ArrayList<>();
 

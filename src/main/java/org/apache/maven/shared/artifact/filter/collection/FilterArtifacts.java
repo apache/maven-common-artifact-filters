@@ -81,7 +81,6 @@ public class FilterArtifacts {
     public Set<Artifact> filter(Set<Artifact> artifacts) throws ArtifactFilterException {
         // apply filters
         for (ArtifactsFilter filter : filters) {
-            // log(artifacts,log);
             try {
                 artifacts = filter.filter(artifacts);
             } catch (NullPointerException e) {
